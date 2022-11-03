@@ -1,5 +1,9 @@
 # Authentication Library
-Developed and used by the GoodRequest s.r.o
+Developed and used by the GoodRequest s.r.o. This library should take of the user authentication, specifically:
+- Login
+- Logout
+- Refresh token rotation
+- Reset password
 
 ## Installation 
 `npm i --save @goodrequest/auth`
@@ -61,6 +65,17 @@ Config needs to have properties specified in [IPassportConfig interface](./src/t
 |--------------|-------------|------------|--------------------------------------------|
 | JWT_SECRET   | required    | required   | development/test/production															 |
 
+
+## Philosophy
+This library should be used in all GR products, so it needs to be highly **customizable**. Customization is achieved by a combination of technics.
+
+#### Repositories
+Library needs access to users and user tokens, but the these are stored is different for every project, so to archive compatibility repository pattern is used.
+When the library is initialized it needs repositories for creating / getting / invalidating user tokens (JWTs) and for getting users.
+
+#### Helper functions
+Another way to achieve for greater adaptability is to export helper functions which are used internally on each level.
+These helper functions can be swapped for custom functions when needed.
 
 ## API
 ### Endpoints

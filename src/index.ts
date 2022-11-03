@@ -9,12 +9,12 @@ import { IPassportConfig } from './types/config'
 import { State } from './State'
 import { PASSPORT_NAME } from './utils/enums'
 import { AuthGuard } from './middlewares/AuthGuard'
-import { refreshTokenEndpoint } from './endpoints/refreshTokenEndpoint'
+import { refreshTokenEndpoint, refreshTokenRequestSchema, refreshTokenResponseSchema } from './endpoints/refreshTokenEndpoint'
 import { getPasswordResetToken } from './functions/getPasswordResetToken'
 import { resetPasswordMiddleware } from './middlewares/resetPasswordMiddleware'
-import { resetPasswordEndpoint } from './endpoints/resetPasswordEndpoint'
+import { resetPasswordEndpoint, resetPasswordRequestSchema, resetPasswordResponseSchema } from './endpoints/resetPasswordEndpoint'
 
-function initAuth(passport: PassportStatic, userRepository: IUserRepository<ID>, userTokenRepository: IUserTokenRepository<ID>) {
+function initAuth(passport: PassportStatic, userRepository: IUserRepository<ID>, userTokenRepository: IUserTokenRepository<ID, ID>) {
 	passport.use(PASSPORT_NAME.LOCAL, defaultLocalStrategy(userRepository.getUserByEmail))
 
 	passport.use(PASSPORT_NAME.JWT_API, defaultJWTStrategy(userRepository.getUserById))
@@ -25,6 +25,7 @@ function initAuth(passport: PassportStatic, userRepository: IUserRepository<ID>,
 	passport.serializeUser((user, done) => done(null, user as Express.User))
 
 	passport.deserializeUser((user, done) => done(null, user as Express.User))
+
 	State.passport = passport
 	State.userRepository = userRepository
 	State.userTokenRepository = userTokenRepository
@@ -47,6 +48,11 @@ export {
 	//endpoints
 	refreshTokenEndpoint,
 	resetPasswordEndpoint,
+	// joi schemas
+	refreshTokenRequestSchema,
+	refreshTokenResponseSchema,
+	resetPasswordRequestSchema,
+	resetPasswordResponseSchema,
 	// types
 	IPassportConfig,
 	IUserTokenRepository,

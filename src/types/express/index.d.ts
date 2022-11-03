@@ -9,12 +9,11 @@ interface UserModel {
 declare module 'express' {
 	export interface Request extends Omit<OriginalRequest, 'query'> {
 		query: any,
-		user?: UserModel
 		requestID: string
 		t: TFunction
 	}
 
-	interface AuthRequest extends Request {
+	export interface AuthRequest extends Request {
 		user: UserModel
 	}
 }
