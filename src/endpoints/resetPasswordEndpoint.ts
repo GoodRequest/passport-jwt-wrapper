@@ -21,17 +21,15 @@ export async function resetPasswordEndpoint(req: Request, res: Response, next: N
 	try {
 		const { body } = req
 
-		// TODO: body as any
-		const password = await createHash((body as any).password)
+		const password = await createHash(body.password)
 
 		// TODO: update user password
 
 		// TODO: invalidate token family
 
-		// TODO: i18next
 		return res.json({
 			messages: [{
-				message: 'Password was successfully changed',
+				message: req.t ? req.t('Password was successfully changed') : 'Password was successfully changed',
 				type: MESSAGE_TYPE.SUCCESS
 			}]
 		})

@@ -10,8 +10,8 @@ export function resetPasswordMiddleware(req: Request, res: Response, next: NextF
 				return next(err)
 			}
 			if (!userData) {
-				// TODO: i18next
-				return next(new ErrorBuilder(401, 'error:Token is not valid'))
+				const message = 'error:Token is not valid'
+				return next(new ErrorBuilder(401, req.t ? req.t(message): message))
 			}
 
 			req.user = userData

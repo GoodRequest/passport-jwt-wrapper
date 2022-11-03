@@ -55,3 +55,6 @@ export {
 	IJwtPayload,
 	IRefreshJwtPayload
 }
+
+
+// TODO: test i18next scanner

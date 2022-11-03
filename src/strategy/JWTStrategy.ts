@@ -15,9 +15,8 @@ export function jwtVerifyUserApi(getUser: GetUserByIdFunction<ID>) {
 			const user = getUser(`${payload.uid}`)
 
 			if(!user) {
-				// TODO: i18next
-				// TODO: logging middleware
-				throw new ErrorBuilder(401, 'error:User was not found')
+				const message = 'error:User was not found'
+				throw new ErrorBuilder(401, req.t ? req.t(message) : message)
 			}
 
 			return done(null, user)
@@ -42,7 +41,6 @@ export async function secretOrKeyProvider(req: Request, rawJwtToken: string, don
 		const user = await State.userRepository.getUserById(decodedToken.uid)
 
 		if (!user) {
-			// TODO: maybe error:
 			return done(null)
 		}
 

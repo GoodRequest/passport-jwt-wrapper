@@ -1,6 +1,5 @@
 import { Request as OriginalRequest } from 'express'
-
-import { Models } from '../../db/models'
+import { TFunction } from 'i18next'
 
 interface UserModel {
 	id: number
@@ -8,15 +7,11 @@ interface UserModel {
 }
 
 declare module 'express' {
-	interface Request extends OriginalRequest {
-		// eslint-disable-next-line @typescript-eslint/ban-types
-		body: {}
-		// eslint-disable-next-line @typescript-eslint/ban-types
-		query: {}
-		// eslint-disable-next-line @typescript-eslint/ban-types
-		params: {}
-		models: Models & ViewModels
+	export interface Request extends Omit<OriginalRequest, 'query'> {
+		query: any,
+		user?: UserModel
 		requestID: string
+		t: TFunction
 	}
 
 	interface AuthRequest extends Request {

@@ -7,9 +7,7 @@ export function LoginMiddleware(req: Request, res: Response, next: NextFunction)
 	State.passport.authenticate(PASSPORT_NAME.LOCAL, { session: false }, (err, userData) => {
 		try {
 			if (err || !userData) {
-				// TODO: i18next
-				// TODO: logging middleware
-				throw new ErrorBuilder(401, 'error:Incorrect email or password')
+				throw new ErrorBuilder(401, req.t ? req.t('error:Incorrect email or password') : 'error:Incorrect email or password')
 			}
 
 			req.user = userData
