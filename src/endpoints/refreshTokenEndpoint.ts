@@ -8,10 +8,25 @@ import { JWT_AUDIENCE } from '../utils/enums'
 import { State } from '../State'
 import { getLoginTokens } from '../functions/getLoginTokens'
 import { IRefreshJwtPayload } from '../types/interfaces'
+import { TFunction } from 'i18next'
+import Joi from 'joi'
 
 const passportConfig: IPassportConfig = config.get('passport')
 
-function decodeJwt(token: string): Promise<IRefreshJwtPayload> {
+export const refreshTokenRequestSchema = Joi.object({
+	body: Joi.object({
+		refreshToken: Joi.string().required()
+	}),
+	query: Joi.object(),
+	params: Joi.object()
+})
+
+export const refreshTokenResponseSchema = Joi.object({
+	accessToken: Joi.string().required(),
+	refreshToken: Joi.string().required()
+})
+
+function decodeJwt(token: string, t?: TFunction): Promise<IRefreshJwtPayload> {
 	return new Promise((resolve, reject) => {
 		jsonwebtoken.verify(
 			token,
@@ -23,8 +38,8 @@ function decodeJwt(token: string): Promise<IRefreshJwtPayload> {
 			{
 				if(err)
 				{
-					// TODO: i18next
-					return reject(new ErrorBuilder(401, 'error:Refresh token is not valid'))
+					const message = 'error:Refresh token is not valid'
+					return reject(new ErrorBuilder(401, t ? t(message) : message))
 				}
 
 				return resolve(decoded)
@@ -37,20 +52,17 @@ export async function refreshTokenEndpoint(req: Request, res: Response) {
 	const { body } = req
 
 	// decode refresh token
-	const decodedRefreshTokenData = await decodeJwt((<any>body).refreshToken)
+	const decodedRefreshTokenData = await decodeJwt(body.refreshToken, req.t)
 
-	// TODO: split getting tokens by ID or by token
-	// TODO: we don't need the token from storage, we just need to know if it is not invalidated
 	// find if the token si valid
-	const userToken = await State.userTokenRepository.getRefreshToken(decodedRefreshTokenData.jwtid, decodedRefreshTokenData.fid)
+	const isTokenValid = await State.userTokenRepository.isRefreshTokenValid(decodedRefreshTokenData.jwtid, decodedRefreshTokenData.fid)
 
-	if(!userToken) {
+	if(!isTokenValid) {
 		// invalidate refresh token family and if possible also access tokens
 		await State.userTokenRepository.invalidateRefreshTokenFamily(decodedRefreshTokenData.fid)
-		State.userTokenRepository.invalidateAccessTokenFamily?.(decodedRefreshTokenData.fid)
 
-		// TODO: i18next
-		throw new ErrorBuilder(401, 'error:Refresh token is not valid')
+		const message = 'error:Refresh token is not valid'
+		throw new ErrorBuilder(401, req.t ? req.t(message) : message)
 	}
 
 	// check if the user exists
@@ -59,10 +71,9 @@ export async function refreshTokenEndpoint(req: Request, res: Response) {
 	if(!user) {
 		// invalidate refresh token family and if possible also access tokens
 		await State.userTokenRepository.invalidateRefreshTokenFamily(decodedRefreshTokenData.fid)
-		State.userTokenRepository.invalidateAccessTokenFamily?.(decodedRefreshTokenData.fid)
 
-		// TODO: i18next
-		throw new ErrorBuilder(401, 'error:Refresh token is not valid')
+		const message = 'error:Refresh token is not valid'
+		throw new ErrorBuilder(401, req.t ? req.t(message) : message)
 	}
 
 	// refresh token rotation - invalidate already used token

@@ -1,10 +1,11 @@
-import { Request, Response, NextFunction } from 'express'
-//import Joi from 'joi'
-import { createHash } from 'crypto'
+import { AuthRequest, Response, NextFunction } from 'express'
+import Joi from 'joi'
 import { MESSAGE_TYPE } from '../utils/ErrorBuilder'
+import { fullMessagesResponse, passwordSchema } from '../utils/joiSchemas'
+import { State } from '../State'
+import { createHash } from '../utils/jwt'
 
-/*
-export const requestSchema = Joi.object({
+export const resetPasswordRequestSchema = Joi.object({
 	body: Joi.object({
 		password: passwordSchema
 	}),
@@ -12,20 +13,17 @@ export const requestSchema = Joi.object({
 	params: Joi.object()
 })
 
-export const responseSchema = fullMessagesResponse
- */
+export const resetPasswordResponseSchema = fullMessagesResponse
 
-// TODO: joi
-
-export async function resetPasswordEndpoint(req: Request, res: Response, next: NextFunction) {
+export async function resetPasswordEndpoint(req: AuthRequest, res: Response, next: NextFunction) {
 	try {
-		const { body } = req
+		const { body, user } = req
 
-		const password = await createHash(body.password)
+		const hash = await createHash(body.password)
 
-		// TODO: update user password
+		await State.userRepository.UpdateUserPassword(hash)
 
-		// TODO: invalidate token family
+		await State.userTokenRepository.invalidateUserRefreshTokens(user.id)
 
 		return res.json({
 			messages: [{

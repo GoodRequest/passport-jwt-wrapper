@@ -1,5 +1,7 @@
 import { sign, SignOptions } from 'jsonwebtoken'
 import config from 'config'
+import bcrypt from 'bcrypt'
+
 import { IPassportConfig } from '../types/config'
 
 const passportConfig: IPassportConfig = config.get('passport')
@@ -24,3 +26,13 @@ export function createJwt(payload: Object, options: SignOptions, secret?: string
 	})
 }
 
+/**
+ * Created hash fom provided value
+ * @param {string} password value to hash
+ * @returns {Promise<string>} hashed value
+ */
+export const createHash = async (password: string): Promise<string> => {
+	const BCRYPT_WORK_FACTOR = 13
+	const salt = await bcrypt.genSalt(BCRYPT_WORK_FACTOR)
+	return await bcrypt.hash(password, salt)
+}
