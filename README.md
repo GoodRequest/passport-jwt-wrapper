@@ -55,7 +55,7 @@ router.post('/reset-password', resetPasswordMiddleware, resetPasswordEndpoint)
 - `postlogin.workflow`: user creation is not in the scope of this library
 - `postResetPassowrd.workflow`: Reset password email should be sent from this endpoint
 ### Authentication Guard
-[`AuthGuard`](./src/middlewares/AuthGuard.ts) is middleware which checks if the request includes valid `access_token` based on jwt extractor specified in the config.
+[`AuthGuard`](src/guards/AuthGuard.ts) is middleware which checks if the request includes valid `access_token` based on jwt extractor specified in the config.
 
 ### ENV variables
 Library read from config using [config package](https://www.npmjs.com/package/config).
@@ -85,14 +85,14 @@ Express endpoints (`(req, res, next)`). Typically creates entities (e.g. users)
 
 ### Middlewares
 Similar to endpoints, but calls `next()` function.
-- [`loginMiddleware`](./src/middlewares/loginMiddleware.ts): helper function calling `passport.authenticate`. Should be used before used specified login endpoint
-- [`resetPasswordMiddleware`](./src/middlewares/resetPasswordMiddleware.ts): just a helper middleware for the 
-- [`AuthGuard`](./src/middlewares/AuthGuard.ts): see [Authentication Guard](#Authentication-Guard)
+- [`loginMiddleware`](src/login/middleware.ts): helper function calling `passport.authenticate`. Should be used before used specified login endpoint
+- [`resetPasswordMiddleware`](src/passwordReset/middleware.ts): just a helper middleware for the 
+- [`AuthGuard`](src/guards/AuthGuard.ts): see [Authentication Guard](#Authentication-Guard)
 
 ### Functions
 Function used in project specific middlewares, or endpoints.
-- [`getLoginTokens(userID: ID, familyID?: ID)`](src/functions/getLoginTokens.ts): used in the login endpoint and in refresh token endpoint
-- [`getPasswordResetToken(email: string)`](src/functions/getPasswordResetToken.ts): used in the reset password endpoint. Token created by this function should be send to the user (probably by email)
+- [`getLoginTokens(userID: ID, familyID?: ID)`](src/login/getTokens.ts): used in the login endpoint and in refresh token endpoint
+- [`getPasswordResetToken(email: string)`](src/passwordReset/getToken.ts): used in the reset password endpoint. Token created by this function should be send to the user (probably by email)
 
 ## TODO:
 - `repository.getByID`: id is `string` | `number`

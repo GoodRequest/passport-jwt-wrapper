@@ -22,7 +22,7 @@ export interface ILoginResponse {
  * @param userID
  * @param familyID: when none is provided, refresh token id (jwtid) is used (creates new family ID)
  */
-export async function getLoginTokens(userID: ID, familyID?: ID): Promise<ILoginResponse> {
+export async function getTokens(userID: ID, familyID?: ID): Promise<ILoginResponse> {
 	// get refresh token id
 	const rid = await State.userTokenRepository.createTokenID();
 	if(!familyID) {

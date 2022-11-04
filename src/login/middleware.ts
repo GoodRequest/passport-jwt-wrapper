@@ -3,7 +3,7 @@ import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { State } from '../State'
 import { PASSPORT_NAME } from '../utils/enums'
 
-export function LoginMiddleware(req: Request, res: Response, next: NextFunction) {
+export function middleware(req: Request, res: Response, next: NextFunction) {
 	State.passport.authenticate(PASSPORT_NAME.LOCAL, { session: false }, (err, userData) => {
 		try {
 			if (err || !userData) {

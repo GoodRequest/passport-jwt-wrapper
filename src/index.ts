@@ -1,25 +1,21 @@
 import { PassportStatic } from 'passport'
 
-import { getLoginTokens } from './functions/getLoginTokens'
-import { LoginMiddleware } from './middlewares/loginMiddleware'
-import { defaultLocalStrategy, defaultLocalVerify } from './strategy/localStrategy'
-import { defaultJWTStrategy, resetPasswordJWTStrategy } from './strategy/JWTStrategy'
+import * as Guards from './guards';
+import * as Login from './login';
+import * as PasswordReset from './passwordReset';
+import * as RefreshToken from './refreshToken';
+
 import { ID, IJwtPayload, IRefreshJwtPayload, IUserRepository, IUserTokenRepository } from './types/interfaces'
 import { IPassportConfig } from './types/config'
 import { State } from './State'
-import { PASSPORT_NAME } from './utils/enums'
-import { AuthGuard } from './middlewares/AuthGuard'
-import { refreshTokenEndpoint, refreshTokenRequestSchema, refreshTokenResponseSchema } from './endpoints/refreshTokenEndpoint'
-import { getPasswordResetToken } from './functions/getPasswordResetToken'
-import { resetPasswordMiddleware } from './middlewares/resetPasswordMiddleware'
-import { resetPasswordEndpoint, resetPasswordRequestSchema, resetPasswordResponseSchema } from './endpoints/resetPasswordEndpoint'
+import { JWT_AUDIENCE, PASSPORT_NAME } from './utils/enums'
 
 function initAuth(passport: PassportStatic, userRepository: IUserRepository<ID>, userTokenRepository: IUserTokenRepository<ID, ID>) {
-	passport.use(PASSPORT_NAME.LOCAL, defaultLocalStrategy(userRepository.getUserByEmail))
+	passport.use(PASSPORT_NAME.LOCAL, Login.strategy(userRepository.getUserByEmail))
 
-	passport.use(PASSPORT_NAME.JWT_API, defaultJWTStrategy(userRepository.getUserById))
+	passport.use(PASSPORT_NAME.JWT_API, Guards.strategy(userRepository.getUserById))
 
-	passport.use(PASSPORT_NAME.JWT_PASSWORD_RESET, resetPasswordJWTStrategy())
+	passport.use(PASSPORT_NAME.JWT_PASSWORD_RESET, PasswordReset.strategy())
 	// passport.use('jwt-invitation', new JwtStrategy({ ...passportConfig.jwt.invitation, secretOrKey: passportConfig.jwt.secretOrKey }, jwtVerifyInvitation))
 
 	passport.serializeUser((user, done) => done(null, user as Express.User))
@@ -32,27 +28,14 @@ function initAuth(passport: PassportStatic, userRepository: IUserRepository<ID>,
 }
 
 export {
-	// init
 	initAuth,
-	// JWT strategies
-	defaultLocalVerify,
-	defaultLocalStrategy,
-	resetPasswordJWTStrategy,
-	// functions
-	getLoginTokens,
-	getPasswordResetToken,
-	// middlewares
-	LoginMiddleware,
-	resetPasswordMiddleware,
-	AuthGuard,
-	//endpoints
-	refreshTokenEndpoint,
-	resetPasswordEndpoint,
-	// joi schemas
-	refreshTokenRequestSchema,
-	refreshTokenResponseSchema,
-	resetPasswordRequestSchema,
-	resetPasswordResponseSchema,
+	Guards,
+	Login,
+	PasswordReset,
+	RefreshToken,
+	// enums
+	PASSPORT_NAME,
+	JWT_AUDIENCE,
 	// types
 	IPassportConfig,
 	IUserTokenRepository,
@@ -60,7 +43,6 @@ export {
 	ID,
 	IJwtPayload,
 	IRefreshJwtPayload
-}
-
+};
 
 // TODO: test i18next scanner

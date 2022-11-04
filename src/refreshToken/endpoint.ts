@@ -6,7 +6,7 @@ import { IPassportConfig } from '../types/config'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { JWT_AUDIENCE } from '../utils/enums'
 import { State } from '../State'
-import { getLoginTokens } from '../functions/getLoginTokens'
+import { getTokens } from '../login'
 import { IRefreshJwtPayload } from '../types/interfaces'
 import { TFunction } from 'i18next'
 import Joi from 'joi'
@@ -48,7 +48,7 @@ function decodeJwt(token: string, t?: TFunction): Promise<IRefreshJwtPayload> {
 	})
 }
 
-export async function refreshTokenEndpoint(req: Request, res: Response) {
+export async function endpoint(req: Request, res: Response) {
 	const { body } = req
 
 	// decode refresh token
@@ -79,7 +79,7 @@ export async function refreshTokenEndpoint(req: Request, res: Response) {
 	// refresh token rotation - invalidate already used token
 	await State.userTokenRepository.invalidateRefreshToken(decodedRefreshTokenData.jwtid, decodedRefreshTokenData.fid)
 
-	const tokens = getLoginTokens(user.id, decodedRefreshTokenData.fid)
+	const tokens = getTokens(user.id, decodedRefreshTokenData.fid)
 
 	// TODO: return user?
 	return res.json({

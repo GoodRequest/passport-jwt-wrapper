@@ -5,7 +5,7 @@ import { fullMessagesResponse, passwordSchema } from '../utils/joiSchemas'
 import { State } from '../State'
 import { createHash } from '../utils/jwt'
 
-export const resetPasswordRequestSchema = Joi.object({
+export const requestSchema = Joi.object({
 	body: Joi.object({
 		password: passwordSchema
 	}),
@@ -13,9 +13,9 @@ export const resetPasswordRequestSchema = Joi.object({
 	params: Joi.object()
 })
 
-export const resetPasswordResponseSchema = fullMessagesResponse
+export const responseSchema = fullMessagesResponse
 
-export async function resetPasswordEndpoint(req: AuthRequest, res: Response, next: NextFunction) {
+export async function endpoint(req: AuthRequest, res: Response, next: NextFunction) {
 	try {
 		const { body, user } = req
 

@@ -3,7 +3,7 @@ import { PASSPORT_NAME } from '../utils/enums'
 import { NextFunction, Request, Response } from 'express'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 
-export function resetPasswordMiddleware(req: Request, res: Response, next: NextFunction) {
+export function middleware(req: Request, res: Response, next: NextFunction) {
 	State.passport.authenticate(PASSPORT_NAME.JWT_PASSWORD_RESET, (err, userData) => {
 		try {
 			if (err) {

@@ -1,37 +1,15 @@
 import { Strategy as JwtStrategy, VerifiedCallback } from 'passport-jwt'
-import { IPassportConfig } from '../types/config'
 import config from 'config'
 import { Request } from 'express'
-import { ErrorBuilder } from '../utils/ErrorBuilder'
-import { GetUserByIdFunction, ID, IJwtPayload } from '../types/interfaces'
 import jsonwebtoken from 'jsonwebtoken'
+
+import { IJwtPayload } from '../types/interfaces'
+import { IPassportConfig } from '../types/config'
 import { State } from '../State'
+import { ErrorBuilder } from '../utils/ErrorBuilder'
 
 const passportConfig: IPassportConfig = config.get('passport')
 
-export function jwtVerifyUserApi(getUser: GetUserByIdFunction<ID>) {
-	return async (req: Request, payload: IJwtPayload, done: VerifiedCallback) => {
-		try {
-			const user = getUser(`${payload.uid}`)
-
-			if(!user) {
-				const message = 'error:User was not found'
-				throw new ErrorBuilder(401, req.t ? req.t(message) : message)
-			}
-
-			return done(null, user)
-		} catch(e) {
-			return done(e)
-		}
-	}
-}
-
-export function defaultJWTStrategy(getUser: GetUserByIdFunction<ID>) {
-	return new JwtStrategy({
-		...passportConfig.jwt.api,
-		secretOrKey: passportConfig.jwt.secretOrKey,
-	}, jwtVerifyUserApi(getUser))
-}
 
 // get custom secret (hash + secret) for forgot-password token
 export async function secretOrKeyProvider(req: Request, rawJwtToken: string, done: (err: any, secretOrKey?: string | Buffer) => void): Promise<void> {
@@ -51,8 +29,7 @@ export async function secretOrKeyProvider(req: Request, rawJwtToken: string, don
 	}
 }
 
-
-export async function jwtVerifyPasswordReset(payload: IJwtPayload, done: VerifiedCallback) {
+export async function strategyVerifyFunction(payload: IJwtPayload, done: VerifiedCallback) {
 	try {
 		const user = await State.userRepository.getUserById(payload.uid)
 		if(State.userTokenRepository.isPasswordTokenValid) {
@@ -74,9 +51,9 @@ export async function jwtVerifyPasswordReset(payload: IJwtPayload, done: Verifie
 	}
 }
 
-export function resetPasswordJWTStrategy() {
+export function strategy() {
 	return new JwtStrategy({
 		...passportConfig.jwt.passwordReset,
 		secretOrKeyProvider
-	}, jwtVerifyPasswordReset)
+	}, strategyVerifyFunction)
 }
