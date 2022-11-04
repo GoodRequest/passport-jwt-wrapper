@@ -10,8 +10,12 @@ import { ErrorBuilder } from '../utils/ErrorBuilder'
 
 const passportConfig: IPassportConfig = config.get('passport')
 
-
-// get custom secret (hash + secret) for forgot-password token
+/**
+ * get custom secret (hash + secret) for forgot-password token
+ * @param req
+ * @param rawJwtToken
+ * @param done
+ */
 export async function secretOrKeyProvider(req: Request, rawJwtToken: string, done: (err: any, secretOrKey?: string | Buffer) => void): Promise<void> {
 	try {
 		const decodedToken: any = jsonwebtoken.decode(rawJwtToken)
@@ -32,9 +36,9 @@ export async function secretOrKeyProvider(req: Request, rawJwtToken: string, don
 export async function strategyVerifyFunction(payload: IJwtPayload, done: VerifiedCallback) {
 	try {
 		const user = await State.userRepository.getUserById(payload.uid)
-		if(State.userTokenRepository.isPasswordTokenValid) {
+		if (State.userTokenRepository.isPasswordTokenValid) {
 			const isTokenValid = await State.userTokenRepository.isPasswordTokenValid?.(payload.uid)
-			if(!isTokenValid) {
+			if (!isTokenValid) {
 				// TODO: i18next
 				throw new ErrorBuilder(401, 'error:Password reset was cancelled')
 			}
@@ -52,8 +56,11 @@ export async function strategyVerifyFunction(payload: IJwtPayload, done: Verifie
 }
 
 export function strategy() {
-	return new JwtStrategy({
-		...passportConfig.jwt.passwordReset,
-		secretOrKeyProvider
-	}, strategyVerifyFunction)
+	return new JwtStrategy(
+		{
+			...passportConfig.jwt.passwordReset,
+			secretOrKeyProvider
+		},
+		strategyVerifyFunction
+	)
 }

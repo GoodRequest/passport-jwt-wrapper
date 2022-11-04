@@ -24,31 +24,36 @@ export interface ILoginResponse {
  */
 export async function getTokens(userID: ID, familyID?: ID): Promise<ILoginResponse> {
 	// get refresh token id
-	const rid = await State.userTokenRepository.createTokenID();
-	if(!familyID) {
-		familyID = rid
-	}
+	const rid = await State.userTokenRepository.createTokenID()
+	const fid = familyID ?? rid
+
 	const [accessToken, refreshToken] = await Promise.all([
-		createJwt({
-			uid: userID,
-			rid,
-			familyID
-		}, {
-			audience: JWT_AUDIENCE.API_ACCESS,
-			expiresIn: passportConfig.jwt.api.exp
-		}),
-		createJwt({
-			uid: userID,
-			familyID
-		}, {
-			audience: JWT_AUDIENCE.API_REFRESH,
-			expiresIn: passportConfig.jwt.api.refresh.exp,
-			jwtid: `${rid}`
-		})
+		createJwt(
+			{
+				uid: userID,
+				rid,
+				familyID: fid
+			},
+			{
+				audience: JWT_AUDIENCE.API_ACCESS,
+				expiresIn: passportConfig.jwt.api.exp
+			}
+		),
+		createJwt(
+			{
+				uid: userID,
+				familyID: fid
+			},
+			{
+				audience: JWT_AUDIENCE.API_REFRESH,
+				expiresIn: passportConfig.jwt.api.refresh.exp,
+				jwtid: `${rid}`
+			}
+		)
 	])
 
 	// save tokens
-	await State.userTokenRepository.saveRefreshToken(userID, familyID, refreshToken)
+	await State.userTokenRepository.saveRefreshToken(userID, fid, refreshToken)
 
 	return {
 		accessToken,

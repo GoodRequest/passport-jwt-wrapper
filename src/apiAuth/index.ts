@@ -1,8 +1,4 @@
-import { guard } from "./guard";
-import { strategy, strategyVerifyFunction } from "./strategy";
+import guard from './guard'
+import { strategy, strategyVerifyFunction } from './strategy'
 
-export {
-	guard,
-	strategy,
-	strategyVerifyFunction
-}
+export { guard, strategy, strategyVerifyFunction }

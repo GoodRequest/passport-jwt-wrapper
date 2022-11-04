@@ -13,20 +13,23 @@ export async function strategyVerifyFunction(req: Request, payload: IJwtPayload,
 	try {
 		const user = await State.userRepository.getUserById(`${payload.uid}`)
 
-		if(!user) {
+		if (!user) {
 			const message = 'error:User was not found'
 			throw new ErrorBuilder(401, req.t ? req.t(message) : message)
 		}
 
 		return done(null, user)
-	} catch(e) {
+	} catch (e) {
 		return done(e)
 	}
 }
 
 export function strategy() {
-	return new JwtStrategy({
-		...passportConfig.jwt.api,
-		secretOrKey: passportConfig.jwt.secretOrKey,
-	}, strategyVerifyFunction)
+	return new JwtStrategy(
+		{
+			...passportConfig.jwt.api,
+			secretOrKey: passportConfig.jwt.secretOrKey
+		},
+		strategyVerifyFunction
+	)
 }

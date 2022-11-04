@@ -1,8 +1,8 @@
 import { Strategy as JwtStrategy, VerifiedCallback } from 'passport-jwt'
 import config from 'config'
 
-import { IPassportConfig } from '../types/config'
 import { Request } from 'express'
+import { IPassportConfig } from '../types/config'
 import { IJwtPayload } from '../types/interfaces'
 import { State } from '../State'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
@@ -13,7 +13,7 @@ const passportConfig: IPassportConfig = config.get('passport')
 export const strategyVerifyFunction = async (req: Request, payload: IJwtPayload, done: VerifiedCallback) => {
 	try {
 		let getUser = State.userRepository.getUserById
-		if(State.userRepository.getNewUserById) {
+		if (State.userRepository.getNewUserById) {
 			getUser = State.userRepository.getNewUserById
 		}
 
@@ -32,8 +32,11 @@ export const strategyVerifyFunction = async (req: Request, payload: IJwtPayload,
 }
 
 export function strategy() {
-	return new JwtStrategy({
-		...passportConfig.jwt.api,
-		secretOrKey: passportConfig.jwt.secretOrKey,
-	}, strategyVerifyFunction)
+	return new JwtStrategy(
+		{
+			...passportConfig.jwt.api,
+			secretOrKey: passportConfig.jwt.secretOrKey
+		},
+		strategyVerifyFunction
+	)
 }

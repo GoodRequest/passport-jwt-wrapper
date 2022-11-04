@@ -1,7 +1,3 @@
-import { endpoint, requestSchema, responseSchema } from "./endpoint";
+import { endpoint, requestSchema, responseSchema } from './endpoint'
 
-export {
-	endpoint,
-	requestSchema,
-	responseSchema
-}
+export { endpoint, requestSchema, responseSchema }

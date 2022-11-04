@@ -1,9 +1,9 @@
 import { Request, Response } from 'express'
 
+import Joi from 'joi'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { State } from '../State'
 import { getTokens } from '../login'
-import Joi from 'joi'
 import { decodeRefreshJwt } from '../utils/jwt'
 
 export const requestSchema = Joi.object({
@@ -28,7 +28,7 @@ export async function endpoint(req: Request, res: Response) {
 	// find if the token si valid
 	const isTokenValid = await State.userTokenRepository.isRefreshTokenValid(decodedRefreshTokenData.jwtid, decodedRefreshTokenData.fid)
 
-	if(!isTokenValid) {
+	if (!isTokenValid) {
 		// invalidate refresh token family and if possible also access tokens
 		await State.userTokenRepository.invalidateRefreshTokenFamily(decodedRefreshTokenData.fid)
 
@@ -39,7 +39,7 @@ export async function endpoint(req: Request, res: Response) {
 	// check if the user exists
 	const user = await State.userRepository.getUserById(`${decodedRefreshTokenData.uid}`)
 
-	if(!user) {
+	if (!user) {
 		// invalidate refresh token family and if possible also access tokens
 		await State.userTokenRepository.invalidateRefreshTokenFamily(decodedRefreshTokenData.fid)
 
@@ -52,7 +52,6 @@ export async function endpoint(req: Request, res: Response) {
 
 	const tokens = getTokens(user.id, decodedRefreshTokenData.fid)
 
-	// TODO: return user?
 	return res.json({
 		...tokens
 	})

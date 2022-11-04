@@ -17,7 +17,6 @@ interface IJWTPassportConfig {
 	invitation: JWTConfig
 }
 
-
 export interface IPassportConfig {
 	local: IStrategyOptions
 	jwt: IJWTPassportConfig

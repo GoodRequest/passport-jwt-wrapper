@@ -1,10 +1,10 @@
 import { PassportStatic } from 'passport'
 
-import * as ApiAuth from './apiAuth';
-import * as Login from './login';
-import * as PasswordReset from './passwordReset';
-import * as RefreshToken from './refreshToken';
-import * as Invitation from './invitation';
+import * as ApiAuth from './apiAuth'
+import * as Login from './login'
+import * as PasswordReset from './passwordReset'
+import * as RefreshToken from './refreshToken'
+import * as Invitation from './invitation'
 
 import { ID, IJwtPayload, IRefreshJwtPayload, IUserRepository, IUserTokenRepository } from './types/interfaces'
 import { IPassportConfig } from './types/config'
@@ -42,6 +42,6 @@ export {
 	ID,
 	IJwtPayload,
 	IRefreshJwtPayload
-};
+}
 
 // TODO: test i18next scanner

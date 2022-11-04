@@ -7,11 +7,11 @@ import { createJwt } from '../utils/jwt'
 
 const passportConfig: IPassportConfig = config.get('passport')
 
-export async function getToken(email: string): Promise<string | null> {
+export default async (email: string): Promise<string | null> => {
 	const user = await State.userRepository.getUserByEmail(email)
 
 	let resetPasswordToken: string | null = null
-	if(user) {
+	if (user) {
 		const tokenPayload = {
 			uid: user.id
 		}

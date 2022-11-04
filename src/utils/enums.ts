@@ -18,4 +18,3 @@ export enum MESSAGE_TYPE {
 	SUCCESS = 'SUCCESS',
 	INFO = 'INFO'
 }
-

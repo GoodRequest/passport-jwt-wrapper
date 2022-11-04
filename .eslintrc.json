@@ -1,0 +1,3 @@
+{
+  "extends": ["@goodrequest/eslint-config-typescript"]
+}

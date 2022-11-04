@@ -3,7 +3,7 @@ import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { State } from '../State'
 import { PASSPORT_NAME } from '../utils/enums'
 
-export function guard(req: Request, res: Response, next: NextFunction) {
+export default (req: Request, res: Response, next: NextFunction) => {
 	State.passport.authenticate(PASSPORT_NAME.LOCAL, { session: false }, (err, userData) => {
 		try {
 			if (err || !userData) {

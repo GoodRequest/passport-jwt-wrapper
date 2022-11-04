@@ -1,8 +1,12 @@
-export enum MESSAGE_TYPE {
-	ERROR = 'ERROR',
-	WARNING = 'WARNING',
-	SUCCESS = 'SUCCESS',
-	INFO = 'INFO'
+import { MESSAGE_TYPE } from './enums'
+
+const prepareErrorItems = (name: string) => {
+	return [
+		{
+			type: MESSAGE_TYPE.ERROR,
+			message: name
+		}
+	]
 }
 
 interface IErrorBuilderItem {
@@ -11,13 +15,7 @@ interface IErrorBuilderItem {
 	path?: string
 }
 
-const prepareErrorItems = (name: string) => {
-	return [{
-		type: MESSAGE_TYPE.ERROR,
-		message: name
-	}]
-}
-
+// eslint-disable-next-line import/prefer-default-export
 export class ErrorBuilder extends Error {
 	status: number
 	items: IErrorBuilderItem[]

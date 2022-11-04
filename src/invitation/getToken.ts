@@ -8,7 +8,7 @@ import { State } from '../State'
 
 const passportConfig: IPassportConfig = config.get('passport')
 
-export async function getToken(userID: ID): Promise<string> {
+export default async (userID: ID): Promise<string> => {
 	const tokenPayload = {
 		uid: userID
 	}
