@@ -1,8 +1,10 @@
-import { AuthGuard } from "./AuthGuard";
+import { getToken } from "./getToken";
+import { guard } from "./guard";
 import { strategy, strategyVerifyFunction } from "./strategy";
 
 export {
-	AuthGuard,
+	guard,
+	getToken,
 	strategy,
 	strategyVerifyFunction
 }

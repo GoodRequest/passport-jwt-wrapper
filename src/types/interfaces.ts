@@ -9,6 +9,7 @@ export type GetUserByIdFunction<T extends ID> = (id: T) => Promise<IUser | null>
 
 export interface IUserRepository<T extends ID> {
 	getUserById: GetUserByIdFunction<T>
+	getNewUserById?: GetUserByIdFunction<T>
 	getUserByEmail: GetUserByEmailFunction
 	UpdateUserPassword: (newPassword: string) => Promise<any>
 }

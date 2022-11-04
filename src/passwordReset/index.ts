@@ -1,6 +1,6 @@
 import { getToken } from "./getToken";
 import { endpoint, requestSchema, responseSchema } from "./endpoint";
-import { middleware } from "./middleware";
+import { guard } from "./guard";
 import { strategy, strategyVerifyFunction, secretOrKeyProvider } from "./strategy";
 
 export {
@@ -8,7 +8,7 @@ export {
 	endpoint,
 	requestSchema,
 	responseSchema,
-	middleware,
+	guard,
 	strategy,
 	strategyVerifyFunction,
 	secretOrKeyProvider

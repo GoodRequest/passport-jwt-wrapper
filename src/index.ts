@@ -1,9 +1,10 @@
 import { PassportStatic } from 'passport'
 
-import * as Guards from './guards';
+import * as ApiAuth from './apiAuth';
 import * as Login from './login';
 import * as PasswordReset from './passwordReset';
 import * as RefreshToken from './refreshToken';
+import * as Invitation from './invitation';
 
 import { ID, IJwtPayload, IRefreshJwtPayload, IUserRepository, IUserTokenRepository } from './types/interfaces'
 import { IPassportConfig } from './types/config'
@@ -11,12 +12,10 @@ import { State } from './State'
 import { JWT_AUDIENCE, PASSPORT_NAME } from './utils/enums'
 
 function initAuth(passport: PassportStatic, userRepository: IUserRepository<ID>, userTokenRepository: IUserTokenRepository<ID, ID>) {
-	passport.use(PASSPORT_NAME.LOCAL, Login.strategy(userRepository.getUserByEmail))
-
-	passport.use(PASSPORT_NAME.JWT_API, Guards.strategy(userRepository.getUserById))
-
+	passport.use(PASSPORT_NAME.LOCAL, Login.strategy())
+	passport.use(PASSPORT_NAME.JWT_API, ApiAuth.strategy())
 	passport.use(PASSPORT_NAME.JWT_PASSWORD_RESET, PasswordReset.strategy())
-	// passport.use('jwt-invitation', new JwtStrategy({ ...passportConfig.jwt.invitation, secretOrKey: passportConfig.jwt.secretOrKey }, jwtVerifyInvitation))
+	passport.use(PASSPORT_NAME.JWT_INVITATION, Invitation.strategy())
 
 	passport.serializeUser((user, done) => done(null, user as Express.User))
 
@@ -29,7 +28,7 @@ function initAuth(passport: PassportStatic, userRepository: IUserRepository<ID>,
 
 export {
 	initAuth,
-	Guards,
+	ApiAuth,
 	Login,
 	PasswordReset,
 	RefreshToken,
