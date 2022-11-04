@@ -1,8 +1,12 @@
-import { sign, SignOptions } from 'jsonwebtoken'
+import jsonwebtoken, { sign, SignOptions } from 'jsonwebtoken'
 import config from 'config'
 import bcrypt from 'bcrypt'
 
 import { IPassportConfig } from '../types/config'
+import { IRefreshJwtPayload } from '../types/interfaces'
+import { TFunction } from 'i18next'
+import { JWT_AUDIENCE } from './enums'
+import { ErrorBuilder } from './ErrorBuilder'
 
 const passportConfig: IPassportConfig = config.get('passport')
 
@@ -36,3 +40,30 @@ export const createHash = async (password: string): Promise<string> => {
 	const salt = await bcrypt.genSalt(BCRYPT_WORK_FACTOR)
 	return await bcrypt.hash(password, salt)
 }
+
+/**
+ * Decode jwt with secret from config and 'API_REFRESH' audience
+ * @param token
+ * @param t
+ */
+export function decodeRefreshJwt(token: string, t: TFunction): Promise<IRefreshJwtPayload> {
+	return new Promise((resolve, reject) => {
+		jsonwebtoken.verify(
+			token,
+			passportConfig.jwt.secretOrKey,
+			{
+				audience: JWT_AUDIENCE.API_REFRESH,
+			},
+			(err, decoded: any) =>
+			{
+				if(err)
+				{
+					return reject(new ErrorBuilder(401, t('error:Refresh token is not valid')))
+				}
+
+				return resolve(decoded)
+			}
+		)
+	})
+}
+

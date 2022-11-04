@@ -1,19 +1,12 @@
 import { Request, Response } from 'express'
-import jsonwebtoken from 'jsonwebtoken'
-import config from 'config'
 
-import { IPassportConfig } from '../types/config'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
-import { JWT_AUDIENCE } from '../utils/enums'
 import { State } from '../State'
 import { getTokens } from '../login'
-import { IRefreshJwtPayload } from '../types/interfaces'
-import { TFunction } from 'i18next'
 import Joi from 'joi'
+import { decodeRefreshJwt } from '../utils/jwt'
 
-const passportConfig: IPassportConfig = config.get('passport')
-
-export const refreshTokenRequestSchema = Joi.object({
+export const requestSchema = Joi.object({
 	body: Joi.object({
 		refreshToken: Joi.string().required()
 	}),
@@ -21,38 +14,16 @@ export const refreshTokenRequestSchema = Joi.object({
 	params: Joi.object()
 })
 
-export const refreshTokenResponseSchema = Joi.object({
+export const responseSchema = Joi.object({
 	accessToken: Joi.string().required(),
 	refreshToken: Joi.string().required()
 })
-
-function decodeJwt(token: string, t?: TFunction): Promise<IRefreshJwtPayload> {
-	return new Promise((resolve, reject) => {
-		jsonwebtoken.verify(
-			token,
-			passportConfig.jwt.secretOrKey,
-			{
-				audience: JWT_AUDIENCE.API_REFRESH,
-			},
-			(err, decoded: any) =>
-			{
-				if(err)
-				{
-					const message = 'error:Refresh token is not valid'
-					return reject(new ErrorBuilder(401, t ? t(message) : message))
-				}
-
-				return resolve(decoded)
-			}
-		)
-	})
-}
 
 export async function endpoint(req: Request, res: Response) {
 	const { body } = req
 
 	// decode refresh token
-	const decodedRefreshTokenData = await decodeJwt(body.refreshToken, req.t)
+	const decodedRefreshTokenData = await decodeRefreshJwt(body.refreshToken, req.t)
 
 	// find if the token si valid
 	const isTokenValid = await State.userTokenRepository.isRefreshTokenValid(decodedRefreshTokenData.jwtid, decodedRefreshTokenData.fid)

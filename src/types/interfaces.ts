@@ -24,6 +24,10 @@ export interface IUserTokenRepository<TokenIDType extends ID, UserIDType extends
 	invalidateRefreshToken: (id: TokenIDType, familyID: TokenIDType) => Promise<void>
 	invalidateRefreshTokenFamily: (familyID: TokenIDType) => Promise<void>
 	invalidateUserRefreshTokens: (userID: UserIDType) => Promise<void>
+	// invitation tokens
+	saveInvitationToken: (userID: UserIDType, token: string) => Promise<any>
+	isInvitationTokenValid: (userID: UserIDType) => Promise<boolean>
+	// invalidateInvitationToken: (userID: UserIDType) => Promise<void> // not needed in the library
 	// password reset tokens -- are optional, needed only when password reset cancellation is required
 	savePasswordResetToken?: (userID: UserIDType, token: string) => Promise<any> // user can have one password reset token
 	isPasswordTokenValid?: (userID: UserIDType) => Promise<boolean>

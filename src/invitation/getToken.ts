@@ -4,10 +4,11 @@ import { createJwt } from '../utils/jwt'
 import { ID } from '../types/interfaces'
 import { IPassportConfig } from '../types/config'
 import { JWT_AUDIENCE } from '../utils/enums'
+import { State } from '../State'
 
 const passportConfig: IPassportConfig = config.get('passport')
 
-export function getToken(userID: ID): Promise<string> {
+export async function getToken(userID: ID): Promise<string> {
 	const tokenPayload = {
 		uid: userID
 	}
@@ -17,5 +18,8 @@ export function getToken(userID: ID): Promise<string> {
 		expiresIn: passportConfig.jwt.invitation.exp
 	}
 
-	return createJwt(tokenPayload, tokenOptions)
+	const token = await createJwt(tokenPayload, tokenOptions)
+	await State.userTokenRepository.saveInvitationToken?.(userID, token)
+
+	return token
 }
