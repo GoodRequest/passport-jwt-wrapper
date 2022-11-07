@@ -32,6 +32,7 @@ export {
 	ApiAuth,
 	Login,
 	Logout,
+	LogoutEverywhere,
 	PasswordReset,
 	RefreshToken,
 	// enums
