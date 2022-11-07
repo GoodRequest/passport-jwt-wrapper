@@ -2,8 +2,7 @@ import { AuthRequest, Response, NextFunction } from 'express'
 import Joi from 'joi'
 
 import { fullMessagesResponse, passwordSchema } from '../utils/joiSchemas'
-import { State } from '../State'
-import { createHash } from '../utils/jwt'
+import workflow from './workflow'
 import { MESSAGE_TYPE } from '../utils/enums'
 
 export const requestSchema = Joi.object({
@@ -20,11 +19,7 @@ export async function endpoint(req: AuthRequest, res: Response, next: NextFuncti
 	try {
 		const { body, user } = req
 
-		const hash = await createHash(body.password)
-
-		await State.userRepository.UpdateUserPassword(hash)
-
-		await State.userTokenRepository.invalidateUserRefreshTokens(user.id)
+		await workflow(body.password, user.id)
 
 		return res.json({
 			messages: [
