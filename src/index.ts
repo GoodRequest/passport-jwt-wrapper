@@ -2,6 +2,7 @@ import { PassportStatic } from 'passport'
 
 import * as ApiAuth from './apiAuth'
 import * as Login from './login'
+import * as Logout from './logout'
 import * as PasswordReset from './passwordReset'
 import * as RefreshToken from './refreshToken'
 import * as Invitation from './invitation'
@@ -30,6 +31,7 @@ export {
 	initAuth,
 	ApiAuth,
 	Login,
+	Logout,
 	PasswordReset,
 	RefreshToken,
 	// enums
