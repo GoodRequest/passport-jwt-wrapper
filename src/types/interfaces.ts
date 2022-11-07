@@ -11,7 +11,7 @@ export interface IUserRepository<T extends ID> {
 	getUserById: GetUserByIdFunction<T>
 	getNewUserById?: GetUserByIdFunction<T>
 	getUserByEmail: GetUserByEmailFunction
-	UpdateUserPassword: (newPassword: string) => Promise<unknown>
+	updateUserPassword: (userID: T, newPassword: string) => Promise<unknown>
 }
 
 export type ID = string | number
