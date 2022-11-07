@@ -3,16 +3,33 @@ import { PassportStatic } from 'passport'
 import * as ApiAuth from './apiAuth'
 import * as Login from './login'
 import * as Logout from './logout'
+import * as LogoutEverywhere from './logoutEverywhere'
 import * as PasswordReset from './passwordReset'
 import * as RefreshToken from './refreshToken'
 import * as Invitation from './invitation'
 
-import { ID, IJwtPayload, IRefreshJwtPayload, IUserRepository, IUserTokenRepository } from './types/interfaces'
+import {
+	ID,
+	IJwtPayload,
+	IRefreshJwtPayload,
+	IUserRepository,
+	IRefreshTokenRepository,
+	IInvitationTokenRepository,
+	IPasswordResetTokenRepository
+} from './types/interfaces'
 import { IPassportConfig } from './types/config'
 import { State } from './State'
 import { JWT_AUDIENCE, PASSPORT_NAME } from './utils/enums'
 
-function initAuth(passport: PassportStatic, userRepository: IUserRepository<ID>, userTokenRepository: IUserTokenRepository<ID, ID>) {
+function initAuth(
+	passport: PassportStatic,
+	repositories: {
+		userRepository: IUserRepository<ID>
+		refreshTokenRepository: IRefreshTokenRepository<ID, ID>
+		invitationTokenRepository?: IInvitationTokenRepository<ID>
+		passwordResetTokenRepository?: IPasswordResetTokenRepository<ID>
+	}
+) {
 	passport.use(PASSPORT_NAME.LOCAL, Login.strategy())
 	passport.use(PASSPORT_NAME.JWT_API, ApiAuth.strategy())
 	passport.use(PASSPORT_NAME.JWT_PASSWORD_RESET, PasswordReset.strategy())
@@ -23,8 +40,10 @@ function initAuth(passport: PassportStatic, userRepository: IUserRepository<ID>,
 	passport.deserializeUser((user, done) => done(null, user as Express.User))
 
 	State.passport = passport
-	State.userRepository = userRepository
-	State.userTokenRepository = userTokenRepository
+	State.userRepository = repositories.userRepository
+	State.refreshTokenRepository = repositories.refreshTokenRepository
+	State.invitationTokenRepository = repositories.invitationTokenRepository
+	State.passwordResetTokenRepository = repositories.passwordResetTokenRepository
 }
 
 export {
@@ -40,7 +59,7 @@ export {
 	JWT_AUDIENCE,
 	// types
 	IPassportConfig,
-	IUserTokenRepository,
+	IRefreshTokenRepository,
 	IUserRepository,
 	ID,
 	IJwtPayload,

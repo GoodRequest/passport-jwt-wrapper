@@ -24,7 +24,7 @@ export interface ILoginResponse {
  */
 export async function getTokens(userID: ID, familyID?: ID): Promise<ILoginResponse> {
 	// get refresh token id
-	const rid = await State.userTokenRepository.createTokenID()
+	const rid = await State.refreshTokenRepository.createTokenID()
 	const fid = familyID ?? rid
 
 	const [accessToken, refreshToken] = await Promise.all([
@@ -53,7 +53,7 @@ export async function getTokens(userID: ID, familyID?: ID): Promise<ILoginRespon
 	])
 
 	// save tokens
-	await State.userTokenRepository.saveRefreshToken(userID, fid, refreshToken)
+	await State.refreshTokenRepository.saveRefreshToken(userID, fid, refreshToken)
 
 	return {
 		accessToken,

@@ -16,22 +16,26 @@ export interface IUserRepository<T extends ID> {
 
 export type ID = string | number
 
-export interface IUserTokenRepository<TokenIDType extends ID, UserIDType extends ID> {
-	// refresh tokens
+export interface IInvitationTokenRepository<UserIDType extends ID> {
+	saveInvitationToken: (userID: UserIDType, token: string) => Promise<unknown>
+	isInvitationTokenValid: (userID: UserIDType) => Promise<boolean>
+	// invalidateInvitationToken: (userID: UserIDType) => Promise<void> // not needed in the library
+}
+
+export interface IPasswordResetTokenRepository<UserIDType extends ID> {
+	// password reset tokens -- are optional, needed only when password reset cancellation is required
+	savePasswordResetToken: (userID: UserIDType, token: string) => Promise<unknown> // user can have one password reset token
+	isPasswordTokenValid: (userID: UserIDType) => Promise<boolean>
+	// invalidatePasswordResetToken?: (userID: UserIDType) => Promise<void> // not needed in the library
+}
+
+export interface IRefreshTokenRepository<TokenIDType extends ID, UserIDType extends ID> {
 	createTokenID: () => Promise<TokenIDType>
 	saveRefreshToken: (id: TokenIDType, familyID: TokenIDType, token: string) => Promise<unknown>
 	isRefreshTokenValid: (id: TokenIDType, familyID: TokenIDType) => Promise<boolean>
 	invalidateRefreshToken: (id: TokenIDType, familyID: TokenIDType) => Promise<void>
 	invalidateRefreshTokenFamily: (familyID: TokenIDType) => Promise<void>
-	invalidateUserRefreshTokens: (userID: UserIDType) => Promise<void>
-	// invitation tokens
-	saveInvitationToken: (userID: UserIDType, token: string) => Promise<unknown>
-	isInvitationTokenValid: (userID: UserIDType) => Promise<boolean>
-	// invalidateInvitationToken: (userID: UserIDType) => Promise<void> // not needed in the library
-	// password reset tokens -- are optional, needed only when password reset cancellation is required
-	savePasswordResetToken?: (userID: UserIDType, token: string) => Promise<unknown> // user can have one password reset token
-	isPasswordTokenValid?: (userID: UserIDType) => Promise<boolean>
-	// invalidatePasswordResetToken?: (userID: UserIDType) => Promise<void> // not needed in the library
+	invalidateUserRefreshTokens?: (userID: UserIDType) => Promise<void>
 }
 
 export interface IBaseJwtPayload {

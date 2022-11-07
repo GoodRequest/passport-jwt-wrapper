@@ -36,8 +36,8 @@ export async function secretOrKeyProvider(req: Request, rawJwtToken: string, don
 export async function strategyVerifyFunction(payload: IJwtPayload, done: VerifiedCallback) {
 	try {
 		const user = await State.userRepository.getUserById(payload.uid)
-		if (State.userTokenRepository.isPasswordTokenValid) {
-			const isTokenValid = await State.userTokenRepository.isPasswordTokenValid?.(payload.uid)
+		if (State.refreshTokenRepository.isPasswordTokenValid) {
+			const isTokenValid = await State.refreshTokenRepository.isPasswordTokenValid?.(payload.uid)
 			if (!isTokenValid) {
 				// TODO: i18next
 				throw new ErrorBuilder(401, 'error:Password reset was cancelled')
