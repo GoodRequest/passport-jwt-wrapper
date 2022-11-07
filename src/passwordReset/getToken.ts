@@ -25,7 +25,9 @@ export default async (email: string): Promise<string | null> => {
 		resetPasswordToken = await createJwt(tokenPayload, tokenOptions, tokenSecret)
 
 		// save token when savePasswordResetToken function is provided
-		await State.refreshTokenRepository.savePasswordResetToken?.(user.id, resetPasswordToken)
+		if (State.passwordResetTokenRepository) {
+			await State.passwordResetTokenRepository.savePasswordResetToken(user.id, resetPasswordToken)
+		}
 	}
 
 	return resetPasswordToken

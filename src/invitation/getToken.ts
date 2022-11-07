@@ -9,6 +9,10 @@ import { State } from '../State'
 const passportConfig: IPassportConfig = config.get('passport')
 
 export default async (userID: ID): Promise<string> => {
+	if (!State.invitationTokenRepository) {
+		throw new Error("'invitationTokenRepository' not provided.")
+	}
+
 	const tokenPayload = {
 		uid: userID
 	}
@@ -19,7 +23,7 @@ export default async (userID: ID): Promise<string> => {
 	}
 
 	const token = await createJwt(tokenPayload, tokenOptions)
-	await State.refreshTokenRepository.saveInvitationToken?.(userID, token)
+	await State.invitationTokenRepository.saveInvitationToken(userID, token)
 
 	return token
 }

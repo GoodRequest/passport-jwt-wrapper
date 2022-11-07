@@ -7,5 +7,5 @@ export default async function workflow(password: string, userID: ID): Promise<vo
 
 	await State.userRepository.UpdateUserPassword(hash)
 
-	await State.refreshTokenRepository.invalidateUserRefreshTokens(userID)
+	await State.refreshTokenRepository.invalidateUserRefreshTokens?.(userID)
 }
