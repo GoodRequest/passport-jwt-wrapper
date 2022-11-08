@@ -20,6 +20,7 @@ import {
 import { IPassportConfig } from './types/config'
 import { State } from './State'
 import { JWT_AUDIENCE, PASSPORT_NAME } from './utils/enums'
+import { createHash } from './utils/jwt'
 
 function initAuth(
 	passport: PassportStatic,
@@ -57,10 +58,14 @@ export {
 	// enums
 	PASSPORT_NAME,
 	JWT_AUDIENCE,
+	// helper functions
+	createHash,
 	// types
 	IPassportConfig,
 	IRefreshTokenRepository,
 	IUserRepository,
+	IInvitationTokenRepository,
+	IPasswordResetTokenRepository,
 	ID,
 	IJwtPayload,
 	IRefreshJwtPayload

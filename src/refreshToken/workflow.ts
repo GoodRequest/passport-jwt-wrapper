@@ -11,7 +11,7 @@ export default async function workflow(refreshToken: string, t: TFunction): Prom
 	const decodedRefreshTokenData = await decodeRefreshJwt(refreshToken, t)
 
 	// find if the token si valid
-	const isTokenValid = await State.refreshTokenRepository.isRefreshTokenValid(decodedRefreshTokenData.jwtid, decodedRefreshTokenData.fid)
+	const isTokenValid = await State.refreshTokenRepository.isRefreshTokenValid(decodedRefreshTokenData.jti, decodedRefreshTokenData.fid)
 
 	if (!isTokenValid) {
 		// invalidate refresh token family and if possible also access tokens
@@ -33,7 +33,7 @@ export default async function workflow(refreshToken: string, t: TFunction): Prom
 	}
 
 	// refresh token rotation - invalidate already used token
-	await State.refreshTokenRepository.invalidateRefreshToken(decodedRefreshTokenData.jwtid, decodedRefreshTokenData.fid)
+	await State.refreshTokenRepository.invalidateRefreshToken(decodedRefreshTokenData.jti, decodedRefreshTokenData.fid)
 
 	return getTokens(user.id, decodedRefreshTokenData.fid)
 }

@@ -4,7 +4,7 @@ import { createJwt } from '../utils/jwt'
 import { JWT_AUDIENCE } from '../utils/enums'
 import { IPassportConfig } from '../types/config'
 import { State } from '../State'
-import { ID } from '../types/interfaces'
+import { ID, IJwtPayload, IRefreshJwtPayload } from '../types/interfaces'
 
 const passportConfig: IPassportConfig = config.get('passport')
 
@@ -29,10 +29,10 @@ export async function getTokens(userID: ID, familyID?: ID): Promise<ILoginRespon
 
 	const [accessToken, refreshToken] = await Promise.all([
 		createJwt(
-			{
+			<IJwtPayload>{
 				uid: userID,
 				rid,
-				familyID: fid
+				fid
 			},
 			{
 				audience: JWT_AUDIENCE.API_ACCESS,
@@ -40,9 +40,9 @@ export async function getTokens(userID: ID, familyID?: ID): Promise<ILoginRespon
 			}
 		),
 		createJwt(
-			{
+			<IRefreshJwtPayload>{
 				uid: userID,
-				familyID: fid
+				fid
 			},
 			{
 				audience: JWT_AUDIENCE.API_REFRESH,
@@ -53,7 +53,7 @@ export async function getTokens(userID: ID, familyID?: ID): Promise<ILoginRespon
 	])
 
 	// save tokens
-	await State.refreshTokenRepository.saveRefreshToken(userID, fid, refreshToken)
+	await State.refreshTokenRepository.saveRefreshToken(rid, fid, refreshToken)
 
 	return {
 		accessToken,

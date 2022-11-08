@@ -49,5 +49,5 @@ export interface IJwtPayload extends IBaseJwtPayload {
 	rid: ID // refresh token ID
 }
 export interface IRefreshJwtPayload extends IBaseJwtPayload {
-	jwtid: ID // jwt ID
+	jti: ID // jwt ID
 }
