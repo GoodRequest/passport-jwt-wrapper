@@ -26,12 +26,14 @@ initAuth(passport, {
 	}
 )
 ```
+
 `invitationTokenRepository` is used for saving and checking validity of invitation tokens.
 This means, that invitations can be cancelled.
 
 `passwordResetTokenRepository` is similarly used to save and check the validity of password reset tokens.
 This can be used to cancel password reset.
- ---
+
+---
 
 ## Usage
 ### Login / Logout / Refresh Tokens / Reset Password
@@ -67,10 +69,11 @@ router.post('/reset-password',
 	PasswordReset.endpoint)
 ```
 
-#### User specified methods
-- `postlogin.workflow`: user creation is not in the scope of this library
-- `postResetPassword.workflow`: Reset password email should be sent from this endpoint
--
+#### Methods that needs to be implemented separately
+- `postlogin.workflow` (and `postLogin.requestSchema`): user creation is not in the scope of this library
+- `postResetPasswordRequest.workflow` (and `postResetPasswordRequest.requestSchema`): Reset password email should be sent from this endpoint
+
+
 ### Authentication Guard
 [`AuthGuard`](src/apiAuth/guard.ts) is middleware which checks if the request includes valid `access_token` based on jwt extractor specified in the config.
 It needs to be used as function call: `AuthGuard()`, since it uses passport which is provided after this guard is imported to your project.
@@ -78,7 +81,7 @@ It needs to be used as function call: `AuthGuard()`, since it uses passport whic
 ### Config
 [Config interface](src/types/config.ts) (`IPassportConfig`) is also exported from this library and needs to be present in your project config.
 Example:
-```json
+```
 passport: {
 	local: {
 		usernameField: 'email',
