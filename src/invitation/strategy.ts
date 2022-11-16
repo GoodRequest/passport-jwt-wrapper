@@ -12,9 +12,10 @@ const passportConfig: IPassportConfig = config.get('passport')
 
 export const strategyVerifyFunction = async (req: Request, payload: IJwtPayload, done: VerifiedCallback) => {
 	try {
-		let getUser = State.userRepository.getUserById
-		if (State.userRepository.getNewUserById) {
-			getUser = State.userRepository.getNewUserById
+		const state = State.getInstance()
+		let getUser = state.userRepository.getUserById
+		if (state.userRepository.getNewUserById) {
+			getUser = state.userRepository.getNewUserById
 		}
 
 		const user = await getUser(payload.uid)

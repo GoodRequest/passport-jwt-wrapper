@@ -1,5 +1,5 @@
 import { JwtFromRequestFunction } from 'passport-jwt'
-import { IStrategyOptions } from 'passport-local'
+import { IStrategyOptionsWithRequest } from 'passport-local'
 
 interface JWTConfig {
 	exp: string
@@ -18,6 +18,6 @@ interface IJWTPassportConfig {
 }
 
 export interface IPassportConfig {
-	local: IStrategyOptions
+	local: IStrategyOptionsWithRequest
 	jwt: IJWTPassportConfig
 }

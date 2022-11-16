@@ -1,11 +1,52 @@
-import { PassportStatic } from 'passport'
+import passport, { PassportStatic } from 'passport'
 import { ID, IUserRepository, IRefreshTokenRepository, IInvitationTokenRepository, IPasswordResetTokenRepository } from './types/interfaces'
 
 // eslint-disable-next-line import/prefer-default-export
-export class State {
-	static passport: PassportStatic
-	static userRepository: IUserRepository<ID>
-	static refreshTokenRepository: IRefreshTokenRepository<ID, ID>
-	static invitationTokenRepository?: IInvitationTokenRepository<ID>
-	static passwordResetTokenRepository?: IPasswordResetTokenRepository<ID>
+export class State<T extends ID, U extends ID> {
+	static instance: State<any, any>
+	static getInstance<T extends ID, U extends ID>() {
+		if(!this.instance) {
+			this.instance = new State<T, U>()
+		}
+
+		return this.instance
+	}
+
+	private constructor() {}
+	private _passport: PassportStatic | undefined
+	private _userRepository: IUserRepository<T> | undefined
+	private _refreshTokenRepository: IRefreshTokenRepository<T, U> | undefined
+	invitationTokenRepository?: IInvitationTokenRepository<U>
+	passwordResetTokenRepository?: IPasswordResetTokenRepository<U>
+
+	get passport(): passport.PassportStatic {
+		if(!this._passport) {
+			throw new Error("Authentication library ('@goodrequest/jwt-auth') is not initialized")
+		}
+		return this._passport;
+	}
+
+	set passport(value: passport.PassportStatic) {
+		this._passport = value;
+	}
+	get userRepository(): IUserRepository<T> {
+		if(!this._userRepository) {
+			throw new Error("Authentication library ('@goodrequest/jwt-auth') is not initialized")
+		}
+		return this._userRepository;
+	}
+
+	set userRepository(value: IUserRepository<T>) {
+		this._userRepository = value;
+	}
+	get refreshTokenRepository(): IRefreshTokenRepository<T, U> {
+		if(!this._refreshTokenRepository) {
+			throw new Error("Authentication library ('@goodrequest/jwt-auth') is not initialized")
+		}
+		return this._refreshTokenRepository;
+	}
+
+	set refreshTokenRepository(value: IRefreshTokenRepository<T, U>) {
+		this._refreshTokenRepository = value;
+	}
 }

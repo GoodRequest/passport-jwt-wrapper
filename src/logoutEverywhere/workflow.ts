@@ -9,9 +9,10 @@ export default async function workflow(authHeader: string) {
 	// NOTE: token is valid, cause it already passed through verification (by passport)
 	const decodedAccessTokenData = <IJwtPayload>jsonwebtoken.decode(accessToken)
 
-	if (!State.refreshTokenRepository.invalidateUserRefreshTokens) {
+	const state = State.getInstance()
+	if (!state.refreshTokenRepository.invalidateUserRefreshTokens) {
 		throw new Error("'invalidateUserRefreshTokens' is not implemented on UserTokenRepository")
 	}
 
-	await State.refreshTokenRepository.invalidateUserRefreshTokens(decodedAccessTokenData.uid)
+	await state.refreshTokenRepository.invalidateUserRefreshTokens(decodedAccessTokenData.uid)
 }

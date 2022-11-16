@@ -5,7 +5,7 @@ import { PASSPORT_NAME } from '../utils/enums'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 
 export default (req: Request, res: Response, next: NextFunction) => {
-	State.passport.authenticate(PASSPORT_NAME.JWT_PASSWORD_RESET, (err, userData) => {
+	State.getInstance().passport.authenticate(PASSPORT_NAME.JWT_PASSWORD_RESET, (err, userData) => {
 		try {
 			if (err) {
 				return next(err)

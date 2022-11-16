@@ -5,7 +5,8 @@ import { ID } from '../types/interfaces'
 export default async function workflow(password: string, userID: ID): Promise<void> {
 	const hash = await createHash(password)
 
-	await State.userRepository.updateUserPassword(userID, hash)
+	const state = State.getInstance()
+	await state.userRepository.updateUserPassword(userID, hash)
 
-	await State.refreshTokenRepository.invalidateUserRefreshTokens?.(userID)
+	await state.refreshTokenRepository.invalidateUserRefreshTokens?.(userID)
 }

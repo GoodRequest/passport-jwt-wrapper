@@ -21,7 +21,7 @@ export class ErrorBuilder extends Error {
 	items: IErrorBuilderItem[]
 
 	constructor(status: number, name: string) {
-		super(JSON.stringify(name))
+		super(name)
 		this.status = status
 		this.items = prepareErrorItems(name)
 	}

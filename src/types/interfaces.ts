@@ -1,17 +1,17 @@
-interface IUser {
-	id: number | string
-	hash: string
+interface IUser<UserIDType extends ID> {
+	id: UserIDType
+	hash?: string
 }
 
-export type GetUserByEmailFunction = (email: string) => Promise<IUser | null>
+export type GetUserByEmailFunction<UserIDType extends ID> = (email: string) => Promise<IUser<UserIDType> | undefined>
 
-export type GetUserByIdFunction<T extends ID> = (id: T) => Promise<IUser | null>
+export type GetUserByIdFunction<UserIDType extends ID> = (id: UserIDType) => Promise<IUser<UserIDType> | undefined>
 
-export interface IUserRepository<T extends ID> {
-	getUserById: GetUserByIdFunction<T>
-	getNewUserById?: GetUserByIdFunction<T>
-	getUserByEmail: GetUserByEmailFunction
-	updateUserPassword: (userID: T, newPassword: string) => Promise<unknown>
+export interface IUserRepository<UserIDType extends ID> {
+	getUserById: GetUserByIdFunction<UserIDType>
+	getNewUserById?: GetUserByIdFunction<UserIDType>
+	getUserByEmail: GetUserByEmailFunction<UserIDType>
+	updateUserPassword: (userID: UserIDType, newPassword: string) => Promise<unknown>
 }
 
 export type ID = string | number

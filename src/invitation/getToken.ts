@@ -19,7 +19,7 @@ export default async (userID: ID): Promise<string> => {
 	}
 
 	const token = await createJwt(tokenPayload, tokenOptions)
-	await State.invitationTokenRepository?.saveInvitationToken(userID, token)
+	await State.getInstance().invitationTokenRepository?.saveInvitationToken(userID, token)
 
 	return token
 }

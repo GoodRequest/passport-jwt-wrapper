@@ -22,29 +22,30 @@ import { State } from './State'
 import { JWT_AUDIENCE, PASSPORT_NAME } from './utils/enums'
 import { createHash } from './utils/jwt'
 
-function initAuth(
+function initAuth<TokenIDType extends ID, UserIDType extends ID>(
 	passport: PassportStatic,
 	repositories: {
-		userRepository: IUserRepository<ID>
-		refreshTokenRepository: IRefreshTokenRepository<ID, ID>
-		invitationTokenRepository?: IInvitationTokenRepository<ID>
-		passwordResetTokenRepository?: IPasswordResetTokenRepository<ID>
+		userRepository: IUserRepository<UserIDType>
+		refreshTokenRepository: IRefreshTokenRepository<TokenIDType, UserIDType>
+		invitationTokenRepository?: IInvitationTokenRepository<UserIDType>
+		passwordResetTokenRepository?: IPasswordResetTokenRepository<UserIDType>
 	}
 ) {
-	passport.use(PASSPORT_NAME.LOCAL, Login.strategy())
-	passport.use(PASSPORT_NAME.JWT_API, ApiAuth.strategy())
-	passport.use(PASSPORT_NAME.JWT_PASSWORD_RESET, PasswordReset.strategy())
-	passport.use(PASSPORT_NAME.JWT_INVITATION, Invitation.strategy())
+	const instance = State.getInstance()
+	instance.passport = passport
+	instance.userRepository = repositories.userRepository
+	instance.refreshTokenRepository = repositories.refreshTokenRepository
+	instance.invitationTokenRepository = repositories.invitationTokenRepository
+	instance.passwordResetTokenRepository = repositories.passwordResetTokenRepository
 
-	passport.serializeUser((user, done) => done(null, user as Express.User))
+	instance.passport.use(PASSPORT_NAME.LOCAL, Login.strategy())
+	instance.passport.use(PASSPORT_NAME.JWT_API, ApiAuth.strategy())
+	instance.passport.use(PASSPORT_NAME.JWT_PASSWORD_RESET, PasswordReset.strategy())
+	instance.passport.use(PASSPORT_NAME.JWT_INVITATION, Invitation.strategy())
 
-	passport.deserializeUser((user, done) => done(null, user as Express.User))
+	instance.passport.serializeUser((user, done) => done(null, user as Express.User))
 
-	State.passport = passport
-	State.userRepository = repositories.userRepository
-	State.refreshTokenRepository = repositories.refreshTokenRepository
-	State.invitationTokenRepository = repositories.invitationTokenRepository
-	State.passwordResetTokenRepository = repositories.passwordResetTokenRepository
+	instance.passport.deserializeUser((user, done) => done(null, user as Express.User))
 }
 
 export {

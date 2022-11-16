@@ -4,7 +4,7 @@ import { State } from '../State'
 import { PASSPORT_NAME } from '../utils/enums'
 
 export default (req: Request, res: Response, next: NextFunction) => {
-	State.passport.authenticate(PASSPORT_NAME.LOCAL, { session: false }, (err, userData) => {
+	State.getInstance().passport.authenticate(PASSPORT_NAME.LOCAL, { session: false }, (err, userData) => {
 		try {
 			if (err || !userData) {
 				throw new ErrorBuilder(401, req.t ? req.t('error:Incorrect email or password') : 'error:Incorrect email or password')

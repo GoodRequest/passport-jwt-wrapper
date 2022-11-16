@@ -23,8 +23,9 @@ export interface ILoginResponse {
  * @param familyID: when none is provided, refresh token id (jwtid) is used (creates new family ID)
  */
 export async function getTokens(userID: ID, familyID?: ID): Promise<ILoginResponse> {
+	const state = State.getInstance()
 	// get refresh token id
-	const rid = await State.refreshTokenRepository.createTokenID()
+	const rid = await state.refreshTokenRepository.createTokenID()
 	const fid = familyID ?? rid
 
 	const [accessToken, refreshToken] = await Promise.all([
@@ -53,7 +54,7 @@ export async function getTokens(userID: ID, familyID?: ID): Promise<ILoginRespon
 	])
 
 	// save tokens
-	await State.refreshTokenRepository.saveRefreshToken(rid, fid, refreshToken)
+	await state.refreshTokenRepository.saveRefreshToken(rid, fid, refreshToken)
 
 	return {
 		accessToken,

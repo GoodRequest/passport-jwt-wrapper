@@ -11,7 +11,7 @@ const passportConfig: IPassportConfig = config.get('passport')
 
 export async function strategyVerifyFunction(req: Request, payload: IJwtPayload, done: VerifiedCallback) {
 	try {
-		const user = await State.userRepository.getUserById(`${payload.uid}`)
+		const user = await State.getInstance().userRepository.getUserById(`${payload.uid}`)
 
 		if (!user) {
 			throw new Error('User was not found')
@@ -19,7 +19,6 @@ export async function strategyVerifyFunction(req: Request, payload: IJwtPayload,
 
 		return done(null, user)
 	} catch (e) {
-		console.log('catch error', e)
 		return done(e)
 	}
 }
