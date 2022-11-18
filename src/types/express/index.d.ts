@@ -9,7 +9,7 @@ interface UserModel {
 declare module 'express' {
 	export interface Request extends Omit<OriginalRequest, 'query'> {
 		query: any
-		requestID: string
+		requestID?: string
 		t: TFunction
 	}
 
