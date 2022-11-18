@@ -3,9 +3,9 @@ import Joi from 'joi'
 
 import { fullMessagesResponse } from '../utils/joiSchemas'
 import { MESSAGE_TYPE } from '../utils/enums'
-import { getTFunction } from '../utils/helpers'
 import workflow from './workflow'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
+import { customTFunction } from '../utils/helpers'
 
 export const requestSchema = Joi.object({
 	body: Joi.object(),
@@ -17,11 +17,10 @@ export const responseSchema = fullMessagesResponse
 
 export async function endpoint(req: Request, res: Response, next: NextFunction) {
 	try {
-		const t = getTFunction(req)
 		const authHeader = req.headers.authorization
 
 		if (!authHeader) {
-			throw new ErrorBuilder(401, t('Unauthorized'))
+			throw new ErrorBuilder(401, customTFunction(req, 'Unauthorized'))
 		}
 
 		await workflow(authHeader)
@@ -30,7 +29,7 @@ export async function endpoint(req: Request, res: Response, next: NextFunction) 
 			messages: [
 				{
 					type: MESSAGE_TYPE.SUCCESS,
-					message: t('You were successfully logged out')
+					message: customTFunction(req, 'You were successfully logged out')
 				}
 			]
 		})

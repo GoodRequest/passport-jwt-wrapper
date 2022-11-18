@@ -6,7 +6,7 @@ import { IPassportConfig } from '../types/config'
 import { IJwtPayload } from '../types/interfaces'
 import { State } from '../State'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
-import { getTFunction } from '../utils/helpers'
+import { customTFunction } from '../utils/helpers'
 
 const passportConfig: IPassportConfig = config.get('passport')
 
@@ -20,10 +20,8 @@ export const strategyVerifyFunction = async (req: Request, payload: IJwtPayload,
 
 		const user = await getUser(payload.uid)
 
-		const t = getTFunction(req)
-
 		if (!user) {
-			throw new ErrorBuilder(401, t('error:User was not found'))
+			throw new ErrorBuilder(401, customTFunction(req, 'error:User was not found'))
 		}
 
 		return done(null, user)
