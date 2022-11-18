@@ -14,7 +14,7 @@ const passwordsDomains = {
 	testWrong: new Domain('wrongPass456', [], true, false)
 }
 
-class LoginUser implements DomainSet {
+export class LoginUser implements DomainSet {
 	email: Domain<string, EmailProperties>
 	password?: Domain<string, PasswordProperties>
 

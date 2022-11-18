@@ -6,6 +6,8 @@ import { IPassportConfig } from '../types/config'
 import { IJwtPayload } from '../types/interfaces'
 import { State } from '../State'
 import { JWT_AUDIENCE } from '../utils/enums'
+import { ErrorBuilder } from '../utils/ErrorBuilder'
+import { customTFunction } from '../utils/helpers'
 
 const passportConfig: IPassportConfig = config.get('passport')
 
@@ -14,7 +16,7 @@ export async function strategyVerifyFunction(req: Request, payload: IJwtPayload,
 		const user = await State.getInstance().userRepository.getUserById(`${payload.uid}`)
 
 		if (!user) {
-			throw new Error('User was not found')
+			throw new ErrorBuilder(401, customTFunction(req, 'error:User was not found'))
 		}
 
 		return done(null, user)

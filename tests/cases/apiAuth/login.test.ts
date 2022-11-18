@@ -23,6 +23,11 @@ let app: Express
 
 const languages = ['en', 'sk']
 
+/**
+ * return error string based on language
+ * en is default
+ * @param language
+ */
 function incorrectPasswordErrorString(language?: string): string {
 	if (language && language === 'sk') {
 		return skErrors['Incorrect email or password']
@@ -31,8 +36,10 @@ function incorrectPasswordErrorString(language?: string): string {
 	return enErrors['Incorrect email or password']
 }
 
+let userRepo: UserRepository
+
 before(async () => {
-	const userRepo = new UserRepository()
+	userRepo = new UserRepository()
 
 	const promises: Promise<void>[] = []
 	// seed users
@@ -44,13 +51,6 @@ before(async () => {
 
 	await Promise.all(promises)
 
-	// init express app
-	app = express()
-
-	app.use(express.urlencoded({ extended: true }))
-	app.use(express.json())
-	app.use(passport.initialize())
-
 	// init authentication library
 	initAuth(passport, {
 		userRepository: userRepo,
@@ -58,6 +58,12 @@ before(async () => {
 	})
 })
 
+/**
+ * tests response for invalid call
+ * default language is en
+ * @param response
+ * @param lang
+ */
 function testInvalidResponse(response: Response, lang?: string): void {
 	expect(response.statusCode).to.eq(401)
 	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -67,6 +73,12 @@ function testInvalidResponse(response: Response, lang?: string): void {
 
 describe('Login with i18next', () => {
 	before(async () => {
+		// init express app
+		app = express()
+
+		app.use(express.urlencoded({ extended: true }))
+		app.use(express.json())
+
 		// i18next config
 		await i18next
 			.use(i18nextMiddleware.LanguageDetector)
@@ -128,6 +140,12 @@ describe('Login with i18next', () => {
 
 describe('Login without i18next', () => {
 	before(async () => {
+		// init express app
+		app = express()
+
+		app.use(express.urlencoded({ extended: true }))
+		app.use(express.json())
+
 		app.use('/auth', loginRouter())
 		app.use(errorMiddleware)
 	})
@@ -157,25 +175,26 @@ describe('Login without i18next', () => {
 						password: user.password?.value
 					})
 
-					testInvalidResponse(response, lang)
+					// message should be in EN
+					testInvalidResponse(response)
 				})
 			})
 		}
 	}
 
-	languages.forEach((lang) => {
-		it(`[${lang}] No email`, async () => {
-			const response = await request(app).post('/auth/login').set('Accept-Language', lang).send({
-				password: 'testPass1234.'
-			})
-
-			testInvalidResponse(response, lang)
+	it('No email', async () => {
+		const response = await request(app).post('/auth/login').set('Accept-Language', 'sk').send({
+			password: 'testPass1234.'
 		})
 
-		it(`[${lang}] No data`, async () => {
-			const response = await request(app).post('/auth/login').set('Accept-Language', lang)
+		// message should be in EN
+		testInvalidResponse(response)
+	})
 
-			testInvalidResponse(response, lang)
-		})
+	it('No data', async () => {
+		const response = await request(app).post('/auth/login').set('Accept-Language', 'sk')
+
+		// message should be in EN
+		testInvalidResponse(response)
 	})
 })

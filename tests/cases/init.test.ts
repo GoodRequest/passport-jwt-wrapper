@@ -1,9 +1,8 @@
-import { before } from "mocha";
-import passport from "passport";
+import passport from 'passport'
 
-import { initAuth } from "../../src";
-import { UserRepository } from "../mocks/userRepository";
-import { TokenRepository } from "../mocks/tokenRepository";
+import { initAuth } from '../../src'
+import { UserRepository } from '../mocks/userRepository'
+import { TokenRepository } from '../mocks/tokenRepository'
 
 describe('Initialization', () => {
 	it('no passport', () => {
