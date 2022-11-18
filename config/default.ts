@@ -4,9 +4,9 @@ import { IPassportConfig } from '../src'
 
 export default {
 	i18next: {
-		preload: ['en', 'de'],
+		preload: ['en', 'sk'],
 		fallbackLng: 'en',
-		ns: ['translation', 'error', 'success', 'email'],
+		ns: ['error', 'translation'],
 		defaultNS: 'translation',
 		detection: {
 			order: ['header']
@@ -14,7 +14,9 @@ export default {
 		backend: {
 			loadPath: 'locales/{{lng}}/{{ns}}.json',
 			jsonIndent: 2
-		}
+		},
+		nsSeparator: ':',
+		keySeparator: false
 	},
 	passport: <IPassportConfig>{
 		local: {
@@ -27,8 +29,7 @@ export default {
 			secretOrKey: process.env.JWT_SECRET,
 			api: {
 				exp: '1h',
-				jwtFromRequest: ExtractJwt.fromExtractors(
-					[ExtractJwt.fromAuthHeaderAsBearerToken(), ExtractJwt.fromUrlQueryParameter('t')]),
+				jwtFromRequest: ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken(), ExtractJwt.fromUrlQueryParameter('t')]),
 				refresh: {
 					exp: '30d'
 				}
