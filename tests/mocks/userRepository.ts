@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import { IUserRepository } from "../../src";
+import { createHash, IUserRepository } from '../../src'
 
 export interface IUser {
 	id: string
@@ -9,44 +9,40 @@ export interface IUser {
 	hash?: string
 }
 
-export class UserRepository implements IUserRepository<string>
-{
+export class UserRepository implements IUserRepository<string> {
 	private users = new Map<string, IUser>()
 
-	getUserByEmail(email: string): Promise<IUser | undefined>
-	{
-		for(let user of this.users.values()) {
-			if(user.email === email) {
-				return Promise.resolve(user)
+	getUserByEmail(email: string): Promise<IUser | undefined> {
+		let result: IUser | undefined
+		Array.from(this.users.values()).forEach((user) => {
+			if (user.email === email) {
+				result = user
 			}
-		}
+		})
 
-		return Promise.resolve(undefined)
+		return Promise.resolve(result)
 	}
 
-	getUserById(id: string): Promise<IUser | undefined>
-	{
+	getUserById(id: string): Promise<IUser | undefined> {
 		return Promise.resolve(this.users.get(id))
 	}
 
-	updateUserPassword(userID: string, newPassword: string): Promise<void>
-	{
-
+	updateUserPassword(userID: string, newPassword: string): Promise<void> {
 		const user = this.users.get(userID)
-		if(user) {
-			user.hash = newPassword;
+		if (user) {
+			user.hash = newPassword
 		}
 
 		return Promise.resolve()
 	}
 
-	add(email: string, password?: string): void {
+	async add(email: string, password?: string): Promise<void> {
 		const id = uuidv4()
+		const hash = password ? await createHash(password) : undefined
 		this.users.set(id, {
 			id,
 			email,
-			// just for testing -> !!! HASH PASSWORDS IN PRODUCTION !!!
-			hash: password
+			hash
 		})
 	}
 }

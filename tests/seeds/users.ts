@@ -1,36 +1,47 @@
-import { v4 as uuidv4 } from 'uuid'
+import { Domain, DomainSet } from '../domain'
 
-import { IUser } from "../mocks/userRepository";
+const enum EmailProperties {}
+const enum PasswordProperties {}
 
-enum UserProperties {
-
+const emailDomains = {
+	test: new Domain('test@goodrequest.com', [], true, true),
+	nonExisting: new Domain('nonExisting@goodrequest.com', [], true, false),
+	wrongFormat: new Domain('wrongFormat.com', [], false, false)
 }
 
-enum LoginUserProps {
-
+const passwordsDomains = {
+	test: new Domain('password1234.', [], true, true),
+	testWrong: new Domain('wrongPass456', [], true, false)
 }
 
-export interface ILoginUser {
-	email: string
-	password: string
-}
+class LoginUser implements DomainSet {
+	email: Domain<string, EmailProperties>
+	password?: Domain<string, PasswordProperties>
 
-class LoginUserStorage {
-	private store = new Map<LoginUserProps, ILoginUser[]>()
+	constructor(email: Domain<string, EmailProperties>, password?: Domain<string, PasswordProperties>) {
+		this.email = email
+		this.password = password
+	}
 
-	getUser(property?: LoginUserProps) {
-		if(property) {
-			return this.store.get(property)?.[0]
-		}
+	get isPositive(): boolean {
+		return this.email.isPositive && (this.password?.isPositive ?? false) // no password -> invalid
+	}
 
-		for(let key of this.store.keys()) {
-			return this.store.get(key)?.[0]
-		}
+	get isValid(): boolean {
+		return this.email.isValid && (this.password?.isValid ?? false) // no password -> invalid
+	}
 
-		return undefined
+	toString(): string {
+		return `LoginUser<"${this.email.value}", "${this.password?.value}">`
 	}
 }
 
-class UserStorage {
-	private store = new Map<UserProperties, IUser[]>()
+type LoginUsersType = { [keyof: string]: LoginUser }
+
+export const loginUsers: LoginUsersType = {
+	test: new LoginUser(emailDomains.test, passwordsDomains.test),
+	testWrong: new LoginUser(emailDomains.test, passwordsDomains.testWrong),
+	noPassword: new LoginUser(emailDomains.test),
+	nonExisting: new LoginUser(emailDomains.nonExisting),
+	wrongEmailFormat: new LoginUser(emailDomains.wrongFormat)
 }
