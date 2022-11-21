@@ -1,16 +1,14 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import {IRefreshTokenRepository} from "../../src";
+import { IRefreshTokenRepository } from '../../src'
 
-export class TokenRepository implements IRefreshTokenRepository<string, number>
-{
+// eslint-disable-next-line import/prefer-default-export
+export class TokenRepository implements IRefreshTokenRepository<string, number> {
 	private static instance: TokenRepository
 	private map = new Map<string, Map<string, string>>()
 
-	static getInstance(): TokenRepository
-	{
-		if(!this.instance)
-		{
+	static getInstance(): TokenRepository {
+		if (!this.instance) {
 			this.instance = new TokenRepository()
 		}
 
@@ -19,20 +17,17 @@ export class TokenRepository implements IRefreshTokenRepository<string, number>
 
 	private constructor() {}
 
-	createTokenID(): Promise<string>
-	{
+	createTokenID(): Promise<string> {
 		const id = uuidv4()
 		console.log(`[TokenRepository] new id: ${id}`)
 
 		return Promise.resolve(id)
 	}
 
-	saveRefreshToken(id: string, familyID: string, token: string): Promise<unknown>
-	{
+	saveRefreshToken(id: string, familyID: string, token: string): Promise<unknown> {
 		console.log(`[TokenRepository] saving refresh token: ${id} (${familyID}): ${token}`)
 		let familyMap = this.map.get(familyID)
-		if(!familyMap)
-		{
+		if (!familyMap) {
 			familyMap = new Map<string, string>()
 			this.map.set(familyID, familyMap)
 		}
@@ -42,8 +37,7 @@ export class TokenRepository implements IRefreshTokenRepository<string, number>
 		return Promise.resolve(token)
 	}
 
-	isRefreshTokenValid(id: string, familyID: string): Promise<boolean>
-	{
+	isRefreshTokenValid(id: string, familyID: string): Promise<boolean> {
 		const familyMap = this.map.get(familyID)
 
 		const result = familyMap ? familyMap.has(id) : false
@@ -51,8 +45,7 @@ export class TokenRepository implements IRefreshTokenRepository<string, number>
 		return Promise.resolve(result)
 	}
 
-	invalidateRefreshToken(id: string, familyID: string): Promise<void>
-	{
+	invalidateRefreshToken(id: string, familyID: string): Promise<void> {
 		console.log(`[TokenRepository] invalidate refresh token: ${id} (${familyID})`)
 		const familyMap = this.map.get(familyID)
 		familyMap?.delete(id)
@@ -60,8 +53,7 @@ export class TokenRepository implements IRefreshTokenRepository<string, number>
 		return Promise.resolve()
 	}
 
-	invalidateRefreshTokenFamily(familyID: string): Promise<void>
-	{
+	invalidateRefreshTokenFamily(familyID: string): Promise<void> {
 		console.log(`[TokenRepository] invalidate refresh token family: ${familyID}`)
 		this.map.delete(familyID)
 

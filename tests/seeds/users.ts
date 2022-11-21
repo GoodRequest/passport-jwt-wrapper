@@ -1,47 +1,53 @@
-import { Domain, DomainSet } from '../domain'
+import { DomainSet, DomainStorage } from '../domain'
 
-const enum EmailProperties {}
-const enum PasswordProperties {}
-
-const emailDomains = {
-	test: new Domain('test@goodrequest.com', [], true, true),
-	nonExisting: new Domain('nonExisting@goodrequest.com', [], true, false),
-	wrongFormat: new Domain('wrongFormat.com', [], false, false)
+const emails = {
+	test: 'test@goodrequest.com',
+	nonExisting: 'nonExisting@goodrequest.com',
+	wrongFormat: 'wrongFormat.com'
 }
 
-const passwordsDomains = {
-	test: new Domain('password1234.', [], true, true),
-	testWrong: new Domain('wrongPass456', [], true, false)
+const passwords = {
+	test: 'password1234.',
+	testWrong: 'wrongPass456'
 }
 
-export class LoginUser implements DomainSet {
-	email: Domain<string, EmailProperties>
-	password?: Domain<string, PasswordProperties>
+export enum LoginUserProperty {}
 
-	constructor(email: Domain<string, EmailProperties>, password?: Domain<string, PasswordProperties>) {
+export class LoginUser implements DomainSet<LoginUserProperty> {
+	email: string
+	password?: string
+	properties: LoginUserProperty[]
+	accessToken?: string
+	refreshToken?: string
+	isValid: boolean
+	isPositive: boolean
+
+	constructor(email: string, password: string | undefined, properties: LoginUserProperty[] | undefined, isValid: boolean, isPositive?: boolean) {
 		this.email = email
 		this.password = password
+		this.properties = properties ?? []
+		this.isValid = isValid
+		this.isPositive = isPositive ?? false
 	}
 
-	get isPositive(): boolean {
-		return this.email.isPositive && (this.password?.isPositive ?? false) // no password -> invalid
-	}
-
-	get isValid(): boolean {
-		return this.email.isValid && (this.password?.isValid ?? false) // no password -> invalid
+	setTokens(accessToken: string, refreshToken: string) {
+		this.accessToken = accessToken
+		this.refreshToken = refreshToken
 	}
 
 	toString(): string {
-		return `LoginUser<"${this.email.value}", "${this.password?.value}">`
+		if (this.password) {
+			return `LoginUser<"${this.email}", "${this.password}">`
+		}
+
+		return `LoginUser<"${this.email}">`
 	}
 }
 
-type LoginUsersType = { [keyof: string]: LoginUser }
-
-export const loginUsers: LoginUsersType = {
-	test: new LoginUser(emailDomains.test, passwordsDomains.test),
-	testWrong: new LoginUser(emailDomains.test, passwordsDomains.testWrong),
-	noPassword: new LoginUser(emailDomains.test),
-	nonExisting: new LoginUser(emailDomains.nonExisting),
-	wrongEmailFormat: new LoginUser(emailDomains.wrongFormat)
-}
+export const loginUsers = new DomainStorage<LoginUserProperty, LoginUser>([
+	new LoginUser(emails.test, passwords.test, [], true, true),
+	new LoginUser(emails.test, passwords.testWrong, [], true, false),
+	new LoginUser(emails.nonExisting, passwords.test, undefined, true, false),
+	new LoginUser(emails.test, undefined, undefined, false),
+	new LoginUser(emails.wrongFormat, undefined, undefined, false)
+])

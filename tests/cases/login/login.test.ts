@@ -4,8 +4,8 @@ import i18nextMiddleware from 'i18next-http-middleware'
 import i18nextBackend from 'i18next-fs-backend'
 import config from 'config'
 import request, { Response } from 'supertest'
-import { expect } from 'chai'
 import passport from 'passport'
+import { expect } from 'chai'
 
 import { initAuth } from '../../../src'
 import { UserRepository } from '../../mocks/userRepository'
@@ -13,6 +13,7 @@ import { TokenRepository } from '../../mocks/tokenRepository'
 import loginRouter from '../../mocks/loginRouter'
 import errorMiddleware from '../../mocks/errorMiddleware'
 import { loginUsers } from '../../seeds/users'
+import { languages } from '../../helpers'
 
 import * as enErrors from '../../../locales/en/error.json'
 import * as skErrors from '../../../locales/sk/error.json'
@@ -21,7 +22,7 @@ const i18NextConfig: I18nextOptions = config.get('i18next')
 
 let app: Express
 
-const languages = ['en', 'sk']
+let userRepo: UserRepository
 
 /**
  * return error string based on language
@@ -36,17 +37,26 @@ function incorrectPasswordErrorString(language?: string): string {
 	return enErrors['Incorrect email or password']
 }
 
-let userRepo: UserRepository
+/**
+ * tests response for invalid call
+ * default language is en
+ * @param response
+ * @param lang
+ */
+function expectInvalidResponse(response: Response, lang?: string): void {
+	expect(response.statusCode).to.eq(401)
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+	expect(response.body.messages).to.exist
+	expect(response.body.messages[0]).to.eq(incorrectPasswordErrorString(lang))
+}
 
 before(async () => {
 	userRepo = new UserRepository()
 
 	const promises: Promise<void>[] = []
 	// seed users
-	Object.entries(loginUsers).forEach(([, user]) => {
-		if (user.isValid && user.isPositive) {
-			promises.push(userRepo.add(user.email.value, user.password?.value))
-		}
+	loginUsers.getAllPositiveValues().forEach((user) => {
+		promises.push(userRepo.add(user.email, user.password))
 	})
 
 	await Promise.all(promises)
@@ -57,19 +67,6 @@ before(async () => {
 		refreshTokenRepository: TokenRepository.getInstance()
 	})
 })
-
-/**
- * tests response for invalid call
- * default language is en
- * @param response
- * @param lang
- */
-function testInvalidResponse(response: Response, lang?: string): void {
-	expect(response.statusCode).to.eq(401)
-	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-	expect(response.body.messages).to.exist
-	expect(response.body.messages[0]).to.eq(incorrectPasswordErrorString(lang))
-}
 
 describe('Login with i18next', () => {
 	before(async () => {
@@ -91,34 +88,35 @@ describe('Login with i18next', () => {
 		app.use(errorMiddleware)
 	})
 
-	Object.entries(loginUsers).forEach(([, user]) => {
-		if (user.isValid && user.isPositive) {
+	loginUsers.getAllPositiveValues().forEach((user) => {
+		it(`Testing valid user: ${user}`, async () => {
+			const response = await request(app).post('/auth/login').send({
+				email: user.email,
+				password: user.password
+			})
+
+			expect(response.statusCode).to.eq(200)
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			expect(response.body.accessToken).to.exist
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			expect(response.body.refreshToken).to.exist
+		})
+	})
+
+	const invalidUsers = loginUsers.getAllNegativeValues()
+	invalidUsers.push(...loginUsers.getAllInvalidValues())
+	invalidUsers.forEach((user) => {
+		languages.forEach((lang) => {
 			// eslint-disable-next-line @typescript-eslint/no-loop-func
-			it(`Testing valid user: ${user}`, async () => {
-				const response = await request(app).post('/auth/login').send({
-					email: user.email.value,
-					password: user.password?.value
+			it(`[${lang}] Testing invalid user: ${user}`, async () => {
+				const response = await request(app).post('/auth/login').set('Accept-Language', lang).send({
+					email: user.email,
+					password: user.password
 				})
 
-				expect(response.statusCode).to.eq(200)
-				// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-				expect(response.body.accessToken).to.exist
-				// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-				expect(response.body.refreshToken).to.exist
+				expectInvalidResponse(response, lang)
 			})
-		} else {
-			languages.forEach((lang) => {
-				// eslint-disable-next-line @typescript-eslint/no-loop-func
-				it(`[${lang}] Testing invalid user: ${user}`, async () => {
-					const response = await request(app).post('/auth/login').set('Accept-Language', lang).send({
-						email: user.email.value,
-						password: user.password?.value
-					})
-
-					testInvalidResponse(response, lang)
-				})
-			})
-		}
+		})
 	})
 
 	languages.forEach((lang) => {
@@ -127,13 +125,13 @@ describe('Login with i18next', () => {
 				password: 'testPass1234.'
 			})
 
-			testInvalidResponse(response, lang)
+			expectInvalidResponse(response, lang)
 		})
 
 		it(`[${lang}] No data`, async () => {
 			const response = await request(app).post('/auth/login').set('Accept-Language', lang)
 
-			testInvalidResponse(response, lang)
+			expectInvalidResponse(response, lang)
 		})
 	})
 })
@@ -150,37 +148,36 @@ describe('Login without i18next', () => {
 		app.use(errorMiddleware)
 	})
 
-	// eslint-disable-next-line no-restricted-syntax
-	for (const [, user] of Object.entries(loginUsers)) {
-		if (user.isValid && user.isPositive) {
+	loginUsers.getAllPositiveValues().forEach((user) => {
+		it(`Testing valid user: ${user}`, async () => {
+			const response = await request(app).post('/auth/login').send({
+				email: user.email,
+				password: user.password
+			})
+
+			expect(response.statusCode).to.eq(200)
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			expect(response.body.accessToken).to.exist
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			expect(response.body.refreshToken).to.exist
+		})
+	})
+
+	const invalidUsers = loginUsers.getAllNegativeValues()
+	invalidUsers.push(...loginUsers.getAllInvalidValues())
+	invalidUsers.forEach((user) => {
+		languages.forEach((lang) => {
 			// eslint-disable-next-line @typescript-eslint/no-loop-func
-			it(`Testing valid user: ${user}`, async () => {
-				const response = await request(app).post('/auth/login').send({
-					email: user.email.value,
-					password: user.password?.value
+			it(`[${lang}] Testing invalid user: ${user}`, async () => {
+				const response = await request(app).post('/auth/login').set('Accept-Language', lang).send({
+					email: user.email,
+					password: user.password
 				})
 
-				expect(response.statusCode).to.eq(200)
-				// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-				expect(response.body.accessToken).to.exist
-				// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-				expect(response.body.refreshToken).to.exist
+				expectInvalidResponse(response)
 			})
-		} else {
-			// eslint-disable-next-line @typescript-eslint/no-loop-func
-			languages.forEach((lang) => {
-				it(`[${lang}] Testing invalid user: ${user}`, async () => {
-					const response = await request(app).post('/auth/login').set('Accept-Language', lang).send({
-						email: user.email.value,
-						password: user.password?.value
-					})
-
-					// message should be in EN
-					testInvalidResponse(response)
-				})
-			})
-		}
-	}
+		})
+	})
 
 	it('No email', async () => {
 		const response = await request(app).post('/auth/login').set('Accept-Language', 'sk').send({
@@ -188,13 +185,13 @@ describe('Login without i18next', () => {
 		})
 
 		// message should be in EN
-		testInvalidResponse(response)
+		expectInvalidResponse(response)
 	})
 
 	it('No data', async () => {
 		const response = await request(app).post('/auth/login').set('Accept-Language', 'sk')
 
 		// message should be in EN
-		testInvalidResponse(response)
+		expectInvalidResponse(response)
 	})
 })
