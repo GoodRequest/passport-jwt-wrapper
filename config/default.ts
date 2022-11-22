@@ -28,10 +28,10 @@ export default {
 		jwt: {
 			secretOrKey: process.env.JWT_SECRET,
 			api: {
-				exp: '1h',
+				exp: '15m',
 				jwtFromRequest: ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken(), ExtractJwt.fromUrlQueryParameter('t')]),
 				refresh: {
-					exp: '30d'
+					exp: '4h'
 				}
 			},
 			passwordReset: {
