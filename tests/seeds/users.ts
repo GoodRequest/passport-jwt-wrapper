@@ -14,6 +14,7 @@ const passwords = {
 export enum LoginUserProperty {}
 
 export class LoginUser implements DomainSet<LoginUserProperty> {
+	private ID?: string
 	email: string
 	password?: string
 	properties: LoginUserProperty[]
@@ -33,6 +34,18 @@ export class LoginUser implements DomainSet<LoginUserProperty> {
 	setTokens(accessToken: string, refreshToken: string) {
 		this.accessToken = accessToken
 		this.refreshToken = refreshToken
+	}
+
+	setID(id: string) {
+		this.ID = id
+	}
+
+	get id() {
+		if (!this.ID) {
+			throw new Error(`User have no id set: ${this}`)
+		}
+
+		return this.ID
 	}
 
 	toString(): string {

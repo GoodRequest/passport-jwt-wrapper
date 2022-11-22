@@ -53,7 +53,7 @@ function expectInvalidResponse(response: Response, lang?: string): void {
 before(async () => {
 	userRepo = new UserRepository()
 
-	const promises: Promise<void>[] = []
+	const promises: Promise<unknown>[] = []
 	// seed users
 	loginUsers.getAllPositiveValues().forEach((user) => {
 		promises.push(userRepo.add(user.email, user.password))
