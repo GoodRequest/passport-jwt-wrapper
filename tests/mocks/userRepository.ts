@@ -36,13 +36,17 @@ export class UserRepository implements IUserRepository<string> {
 		return Promise.resolve()
 	}
 
-	async add(email: string, password?: string): Promise<void> {
+	async add(email: string, password?: string): Promise<IUser> {
 		const id = uuidv4()
 		const hash = password ? await createHash(password) : undefined
-		this.users.set(id, {
+		const user = {
 			id,
 			email,
 			hash
-		})
+		}
+
+		this.users.set(id, user)
+
+		return user
 	}
 }

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 
 import Joi from 'joi'
 import workflow from './workflow'
@@ -16,12 +16,16 @@ export const responseSchema = Joi.object({
 	refreshToken: Joi.string().required()
 })
 
-export async function endpoint(req: Request, res: Response) {
-	const { body } = req
+export async function endpoint(req: Request, res: Response, next: NextFunction) {
+	try {
+		const { body } = req
 
-	const tokens = await workflow(body.refreshToken, req.t)
+		const tokens = await workflow(body.refreshToken, req.t)
 
-	return res.json({
-		...tokens
-	})
+		return res.json({
+			...tokens
+		})
+	} catch (e) {
+		return next(e)
+	}
 }
