@@ -25,6 +25,7 @@ const i18NextConfig: I18nextOptions = config.get('i18next')
 const passportConfig: IPassportConfig = config.get('passport')
 
 let app: Express
+let userRepo: UserRepository
 
 function sleep(ms: number) {
 	return new Promise((resolve) => {
@@ -51,7 +52,7 @@ async function testEndpoint(accessToken: string) {
 	expect(response.statusCode).to.eq(200)
 }
 
-async function seedUserAndSetID(user: LoginUser, userRepo: UserRepository): Promise<void> {
+async function seedUserAndSetID(user: LoginUser): Promise<void> {
 	const repoUser = await userRepo.add(user.email, user.password)
 	user.setID(repoUser.id)
 }
@@ -66,12 +67,12 @@ function getUser(): LoginUser {
 }
 
 before(async () => {
-	const userRepo = new UserRepository()
+	userRepo = new UserRepository()
 
 	const promises: Promise<void>[] = []
 	// seed users
 	loginUsers.getAllPositiveValues().forEach((u) => {
-		promises.push(seedUserAndSetID(u, userRepo))
+		promises.push(seedUserAndSetID(u))
 	})
 
 	await Promise.all(promises)
@@ -240,6 +241,23 @@ function declareNegativeTests(lang?: string) {
 
 		await runNegativeTest(rt1, lang)
 		await runNegativeTest(rt2, lang)
+	})
+
+	it(`${lang ? `[${lang}] ` : ''}Removed user`, async () => {
+		const user = getUser()
+		await loginUserAndSetTokens(app, user)
+
+		const { refreshToken } = user
+		if (!refreshToken) {
+			throw new Error('No refresh token set')
+		}
+
+		await userRepo.delete(user.id)
+
+		await runNegativeTest(refreshToken, lang)
+
+		// clean up
+		await seedUserAndSetID(user)
 	})
 }
 

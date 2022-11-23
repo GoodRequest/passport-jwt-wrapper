@@ -49,4 +49,10 @@ export class UserRepository implements IUserRepository<string> {
 
 		return user
 	}
+
+	delete(userID: string): Promise<void> {
+		this.users.delete(userID)
+
+		return Promise.resolve()
+	}
 }
