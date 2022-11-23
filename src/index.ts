@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { PassportStatic } from 'passport'
 
 import * as ApiAuth from './apiAuth'
@@ -71,5 +72,3 @@ export {
 	IJwtPayload,
 	IRefreshJwtPayload
 }
-
-// TODO: test i18next scanner

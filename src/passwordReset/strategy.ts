@@ -40,13 +40,11 @@ export async function strategyVerifyFunction(payload: IJwtPayload, done: Verifie
 		if (state.passwordResetTokenRepository) {
 			const isTokenValid = await state.passwordResetTokenRepository.isPasswordTokenValid(payload.uid)
 			if (!isTokenValid) {
-				// TODO: i18next
 				throw new ErrorBuilder(401, 'error:Password reset was cancelled')
 			}
 		}
 
 		if (!user) {
-			// TODO: i18next
 			throw new ErrorBuilder(401, 'error:User was not found')
 		}
 
