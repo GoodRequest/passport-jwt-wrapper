@@ -5,9 +5,10 @@ import { State } from '../State'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { getTokens } from '../login'
 import { ILoginResponse } from '../login/getTokens'
-import { customTFunction } from '../utils/helpers'
+import { customTFunction } from '../utils/translations'
 
 export default async function workflow(refreshToken: string, req: Request): Promise<ILoginResponse> {
+	const t = req.t ?? customTFunction
 	// decode refresh token
 	const decodedRefreshTokenData = await decodeRefreshJwt(refreshToken, req)
 
@@ -18,7 +19,7 @@ export default async function workflow(refreshToken: string, req: Request): Prom
 		// invalidate refresh token family and if possible also access tokens
 		await State.getInstance().refreshTokenRepository.invalidateRefreshTokenFamily(decodedRefreshTokenData.fid)
 
-		throw new ErrorBuilder(401, customTFunction(req, 'error:Refresh token is not valid'))
+		throw new ErrorBuilder(401, t('error:Refresh token is not valid'))
 	}
 
 	// check if the user exists
@@ -28,7 +29,7 @@ export default async function workflow(refreshToken: string, req: Request): Prom
 		// invalidate refresh token family and if possible also access tokens
 		await State.getInstance().refreshTokenRepository.invalidateRefreshTokenFamily(decodedRefreshTokenData.fid)
 
-		throw new ErrorBuilder(401, customTFunction(req, 'error:Refresh token is not valid'))
+		throw new ErrorBuilder(401, t('error:Refresh token is not valid'))
 	}
 
 	// refresh token rotation - invalidate already used token

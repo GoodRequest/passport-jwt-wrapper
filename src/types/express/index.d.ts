@@ -1,5 +1,4 @@
 import { Request as OriginalRequest } from 'express'
-import { TFunction } from 'i18next'
 
 interface UserModel {
 	id: number

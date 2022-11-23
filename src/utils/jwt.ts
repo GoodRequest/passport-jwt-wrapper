@@ -7,7 +7,7 @@ import { IPassportConfig } from '../types/config'
 import { IRefreshJwtPayload } from '../types/interfaces'
 import { JWT_AUDIENCE } from './enums'
 import { ErrorBuilder } from './ErrorBuilder'
-import { customTFunction } from './helpers'
+import { customTFunction } from './translations'
 
 const passportConfig: IPassportConfig = config.get('passport')
 
@@ -56,7 +56,8 @@ export function decodeRefreshJwt(token: string, req: Request): Promise<IRefreshJ
 			},
 			(err, decoded: any) => {
 				if (err) {
-					return reject(new ErrorBuilder(401, customTFunction(req, 'error:Refresh token is not valid')))
+					const t = req.t ?? customTFunction
+					return reject(new ErrorBuilder(401, t('error:Refresh token is not valid')))
 				}
 
 				return resolve(decoded)
