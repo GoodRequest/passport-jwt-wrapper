@@ -10,10 +10,10 @@ import config from 'config'
 import { ApiAuth, initAuth, IPassportConfig, JWT_AUDIENCE, RefreshToken } from '../../../src'
 
 import { UserRepository } from '../../mocks/userRepository'
-import { LoginUser, loginUsers } from '../../seeds/users'
+import { loginUsers } from '../../seeds/users'
 import { TokenRepository } from '../../mocks/tokenRepository'
 import errorMiddleware from '../../mocks/errorMiddleware'
-import { languages, loginUserAndSetTokens } from '../../helpers'
+import { getUser, languages, loginUserAndSetTokens, seedUserAndSetID, testEndpoint } from '../../helpers'
 import LoginRouter from '../../mocks/loginRouter'
 import schemaMiddleware from '../../mocks/schemaMiddleware'
 import { createJwt, decodeRefreshJwt } from '../../../src/utils/jwt'
@@ -46,33 +46,13 @@ function invalidRefreshTokenErrorString(language?: string): string {
 	return enErrors['Refresh token is not valid']
 }
 
-async function testEndpoint(accessToken: string) {
-	const response = await request(app).get('/endpoint').set('Authorization', `Bearer ${accessToken}`)
-
-	expect(response.statusCode).to.eq(200)
-}
-
-async function seedUserAndSetID(user: LoginUser): Promise<void> {
-	const repoUser = await userRepo.add(user.email, user.password)
-	user.setID(repoUser.id)
-}
-
-function getUser(): LoginUser {
-	const user = loginUsers.getPositiveValue()
-	if (!user) {
-		throw new Error('No positive user')
-	}
-
-	return user
-}
-
 before(async () => {
 	userRepo = new UserRepository()
 
 	const promises: Promise<void>[] = []
 	// seed users
 	loginUsers.getAllPositiveValues().forEach((u) => {
-		promises.push(seedUserAndSetID(u))
+		promises.push(seedUserAndSetID(userRepo, u))
 	})
 
 	await Promise.all(promises)
@@ -164,16 +144,12 @@ function declareNegativeTests(lang?: string) {
 		await loginUserAndSetTokens(app, user)
 		const tokenRepo = TokenRepository.getInstance()
 
-		const { refreshToken } = user
-		if (!refreshToken) {
-			throw new Error('No refresh token set')
-		}
-
-		const payload = await decodeRefreshJwt(refreshToken, { t } as Request)
+		const { rt } = user
+		const payload = await decodeRefreshJwt(rt, { t } as Request)
 
 		await tokenRepo.invalidateRefreshToken(`${payload.jti}`, `${payload.fid}`)
 
-		await runNegativeTest(refreshToken, lang)
+		await runNegativeTest(rt, lang)
 	})
 
 	it(`${lang ? `[${lang}] ` : ''}Refresh invalidated family token`, async () => {
@@ -182,18 +158,12 @@ function declareNegativeTests(lang?: string) {
 
 		await loginUserAndSetTokens(app, user)
 
-		const { refreshToken: rt1 } = user
-		if (!rt1) {
-			throw new Error('No refresh token set')
-		}
+		const { rt: rt1 } = user
 
 		// login user again to simulate other session
 		await loginUserAndSetTokens(app, user)
 
-		const { refreshToken: rt2 } = user
-		if (!rt2) {
-			throw new Error('No refresh token set')
-		}
+		const { rt: rt2 } = user
 
 		// invalidate rt1
 		const payload = await decodeRefreshJwt(rt1, { t } as Request)
@@ -219,10 +189,7 @@ function declareNegativeTests(lang?: string) {
 
 		await loginUserAndSetTokens(app, user)
 
-		const { refreshToken: rt1 } = user
-		if (!rt1) {
-			throw new Error('No refresh token set')
-		}
+		const { rt: rt1 } = user
 
 		const response = await request(app).post('/auth/refresh-token').send({
 			refreshToken: rt1
@@ -235,9 +202,6 @@ function declareNegativeTests(lang?: string) {
 		expect(response.body.refreshToken).to.exist
 
 		const { refreshToken: rt2 } = response.body
-		if (!rt2) {
-			throw new Error('No refresh token set')
-		}
 
 		await runNegativeTest(rt1, lang)
 		await runNegativeTest(rt2, lang)
@@ -247,17 +211,14 @@ function declareNegativeTests(lang?: string) {
 		const user = getUser()
 		await loginUserAndSetTokens(app, user)
 
-		const { refreshToken } = user
-		if (!refreshToken) {
-			throw new Error('No refresh token set')
-		}
+		const { rt } = user
 
 		await userRepo.delete(user.id)
 
-		await runNegativeTest(refreshToken, lang)
+		await runNegativeTest(rt, lang)
 
 		// clean up
-		await seedUserAndSetID(user)
+		await seedUserAndSetID(userRepo, user)
 	})
 }
 
@@ -318,7 +279,7 @@ describe('Refresh Token endpoint with i18next', () => {
 		await loginUserAndSetTokens(app, user)
 
 		const response = await request(app).post('/auth/refresh-token').send({
-			refreshToken: user.refreshToken
+			refreshToken: user.rt
 		})
 
 		expect(response.statusCode).to.eq(200)
@@ -329,14 +290,14 @@ describe('Refresh Token endpoint with i18next', () => {
 
 		const { accessToken } = response.body
 
-		await testEndpoint(accessToken)
+		await testEndpoint(app, accessToken)
 	})
 
 	it('Refresh already refreshed token', async () => {
 		const user = getUser()
 		await loginUserAndSetTokens(app, user)
 		const response = await request(app).post('/auth/refresh-token').send({
-			refreshToken: user.refreshToken
+			refreshToken: user.rt
 		})
 
 		expect(response.statusCode).to.eq(200)
@@ -358,6 +319,6 @@ describe('Refresh Token endpoint with i18next', () => {
 
 		const { accessToken } = response.body
 
-		await testEndpoint(accessToken)
+		await testEndpoint(app, accessToken)
 	})
 })

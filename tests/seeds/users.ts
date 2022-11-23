@@ -18,8 +18,8 @@ export class LoginUser implements DomainSet<LoginUserProperty> {
 	email: string
 	password?: string
 	properties: LoginUserProperty[]
-	accessToken?: string
-	refreshToken?: string
+	private accessToken?: string
+	private refreshToken?: string
 	isValid: boolean
 	isPositive: boolean
 
@@ -36,11 +36,27 @@ export class LoginUser implements DomainSet<LoginUserProperty> {
 		this.refreshToken = refreshToken
 	}
 
-	setID(id: string) {
+	get at(): string {
+		if (!this.accessToken) {
+			throw new Error(`User have no accessToken set: ${this}`)
+		}
+
+		return this.accessToken
+	}
+
+	get rt(): string {
+		if (!this.refreshToken) {
+			throw new Error(`User have no refreshToken set: ${this}`)
+		}
+
+		return this.refreshToken
+	}
+
+	setID(id: string): void {
 		this.ID = id
 	}
 
-	get id() {
+	get id(): string {
 		if (!this.ID) {
 			throw new Error(`User have no id set: ${this}`)
 		}
