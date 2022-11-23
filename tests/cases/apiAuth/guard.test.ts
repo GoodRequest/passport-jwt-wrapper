@@ -3,12 +3,15 @@ import request from 'supertest'
 import passport from 'passport'
 import { expect } from 'chai'
 
-import { ApiAuth, initAuth } from '../../../src'
+import { ApiAuth, initAuth, JWT_AUDIENCE } from '../../../src'
+import { createJwt } from '../../../src/utils/jwt'
+
 import { UserRepository } from '../../mocks/userRepository'
 import { loginUsers } from '../../seeds/users'
 import { TokenRepository } from '../../mocks/tokenRepository'
 import errorMiddleware from '../../mocks/errorMiddleware'
 import loginRouter from '../../mocks/loginRouter'
+
 import { loginUserAndSetTokens } from '../../helpers'
 
 let app: Express
@@ -72,10 +75,34 @@ describe('Login Guard', () => {
 		expect(response.statusCode).to.eq(401)
 	})
 
+	it(`Forged access token`, async () => {
+		const token = await createJwt(
+			{
+				uid: 'aaaaaaaaaaa',
+				rid: 'a',
+				fid: 'a'
+			},
+			{
+				audience: JWT_AUDIENCE.API_ACCESS,
+				expiresIn: '15m'
+			},
+			'aaaaaaaaaaaaaaaaaaaaaaaaa'
+		)
+
+		const response = await request(app).get('/endpoint').set('Authorization', `Bearer ${token}`)
+
+		expect(response.statusCode).to.eq(401)
+	})
+
 	it('User login', async () => {
 		const user = loginUsers.getPositiveValue()
-		const response = await request(app).get('/endpoint').set('Authorization', `Bearer ${user?.accessToken}`)
+		if (!user) {
+			throw new Error('No positive user')
+		}
+		const response = await request(app).get('/endpoint').set('Authorization', `Bearer ${user.at}`)
 
 		expect(response.statusCode).to.eq(200)
 	})
+
+	// TODO: translations
 })
