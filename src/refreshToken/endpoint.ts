@@ -20,7 +20,7 @@ export async function endpoint(req: Request, res: Response, next: NextFunction) 
 	try {
 		const { body } = req
 
-		const tokens = await workflow(body.refreshToken, req.t)
+		const tokens = await workflow(body.refreshToken, req)
 
 		return res.json({
 			...tokens

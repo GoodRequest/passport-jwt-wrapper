@@ -25,7 +25,7 @@ let app: Express
 let userRepo: UserRepository
 
 /**
- * return error string based on language
+ * returns error string based on language
  * en is default
  * @param language
  */
@@ -47,7 +47,7 @@ function expectInvalidResponse(response: Response, lang?: string): void {
 	expect(response.statusCode).to.eq(401)
 	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	expect(response.body.messages).to.exist
-	expect(response.body.messages[0]).to.eq(incorrectPasswordErrorString(lang))
+	expect(response.body.messages[0].message).to.eq(incorrectPasswordErrorString(lang))
 }
 
 before(async () => {

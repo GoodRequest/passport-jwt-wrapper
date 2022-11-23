@@ -1,6 +1,6 @@
 import express, { Express } from 'express'
 import passport from 'passport'
-import i18next, { InitOptions as I18nextOptions, t } from 'i18next'
+import i18next, { InitOptions as I18nextOptions } from 'i18next'
 import i18nextMiddleware from 'i18next-http-middleware'
 import i18nextBackend from 'i18next-fs-backend'
 import request from 'supertest'
@@ -13,10 +13,13 @@ import { UserRepository } from '../../mocks/userRepository'
 import { LoginUser, loginUsers } from '../../seeds/users'
 import { TokenRepository } from '../../mocks/tokenRepository'
 import errorMiddleware from '../../mocks/errorMiddleware'
-import { loginUserAndSetTokens } from '../../helpers'
+import { languages, loginUserAndSetTokens } from '../../helpers'
 import LoginRouter from '../../mocks/loginRouter'
 import schemaMiddleware from '../../mocks/schemaMiddleware'
-import { createJwt, decodeRefreshJwt } from '../../../src/utils/jwt'
+import { createJwt } from '../../../src/utils/jwt'
+
+import * as enErrors from '../../../locales/en/error.json'
+import * as skErrors from '../../../locales/sk/error.json'
 
 const i18NextConfig: I18nextOptions = config.get('i18next')
 const passportConfig: IPassportConfig = config.get('passport')
@@ -27,6 +30,19 @@ function sleep(ms: number) {
 	return new Promise((resolve) => {
 		setTimeout(resolve, ms)
 	})
+}
+
+/**
+ * returns error string based on language
+ * en is default
+ * @param language
+ */
+function invalidRefreshTokenErrorString(language?: string): string {
+	if (language && language === 'sk') {
+		return skErrors['Refresh token is not valid']
+	}
+
+	return enErrors['Refresh token is not valid']
 }
 
 async function testEndpoint(accessToken: string) {
@@ -49,23 +65,107 @@ function getUser(): LoginUser {
 	return user
 }
 
-describe('Refresh Token endpoint', () => {
+before(async () => {
+	const userRepo = new UserRepository()
+
+	const promises: Promise<void>[] = []
+	// seed users
+	loginUsers.getAllPositiveValues().forEach((u) => {
+		promises.push(seedUserAndSetID(u, userRepo))
+	})
+
+	await Promise.all(promises)
+
+	// init authentication library
+	initAuth(passport, {
+		userRepository: userRepo,
+		refreshTokenRepository: TokenRepository.getInstance()
+	})
+})
+
+/**
+ * Helper function for setting up express routers for testing
+ */
+function setupRouters() {
+	const loginRouter = LoginRouter()
+
+	loginRouter.post('/refresh-token', schemaMiddleware(RefreshToken.requestSchema), RefreshToken.endpoint)
+
+	app.use('/auth', loginRouter)
+
+	app.get('/endpoint', ApiAuth.guard(), (req, res) => {
+		return res.sendStatus(200)
+	})
+
+	app.use(errorMiddleware)
+}
+
+describe('Refresh Token endpoint without i18next', () => {
 	before(async () => {
-		const userRepo = new UserRepository()
+		// init express app
+		app = express()
 
-		const promises: Promise<void>[] = []
-		// seed users
-		loginUsers.getAllPositiveValues().forEach((u) => {
-			promises.push(seedUserAndSetID(u, userRepo))
+		app.use(express.urlencoded({ extended: true }))
+		app.use(express.json())
+
+		setupRouters()
+	})
+
+	languages.forEach((lang) => {
+		it(`[${lang}] Expired refresh token`, async () => {
+			const user = getUser()
+			const token = await createJwt(
+				{
+					uid: user.id,
+					fid: 'a'
+				},
+				{
+					audience: JWT_AUDIENCE.API_REFRESH,
+					expiresIn: '1s',
+					jwtid: `a`
+				}
+			)
+
+			await sleep(100)
+			const response = await request(app).post('/auth/refresh-token').set('Accepted-language', lang).send({
+				refreshToken: token
+			})
+
+			expect(response.statusCode).to.eq(401)
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			expect(response.body.messages).to.exist
+			expect(response.body.messages[0].message).to.eq(invalidRefreshTokenErrorString('en'))
 		})
 
-		await Promise.all(promises)
+		it(`[${lang}] Forged refresh token`, async () => {
+			const user = getUser()
+			const token = await createJwt(
+				{
+					uid: user.id,
+					fid: 'a'
+				},
+				{
+					audience: JWT_AUDIENCE.API_REFRESH,
+					expiresIn: passportConfig.jwt.api.refresh.exp,
+					jwtid: `a`
+				},
+				'aaaaaaaaaaaaaaaaaaaaaaaaa'
+			)
 
-		// init authentication library
-		initAuth(passport, {
-			userRepository: userRepo,
-			refreshTokenRepository: TokenRepository.getInstance()
+			const response = await request(app).post('/auth/refresh-token').send({
+				refreshToken: token
+			})
+
+			expect(response.statusCode).to.eq(401)
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			expect(response.body.messages).to.exist
+			expect(response.body.messages[0].message).to.eq(invalidRefreshTokenErrorString('en'))
 		})
+	})
+})
+
+describe('Refresh Token endpoint with i18next', () => {
+	before(async () => {
 		// init express app
 		app = express()
 
@@ -80,17 +180,7 @@ describe('Refresh Token endpoint', () => {
 
 		app.use(i18nextMiddleware.handle(i18next))
 
-		const loginRouter = LoginRouter()
-
-		loginRouter.post('/refresh-token', schemaMiddleware(RefreshToken.requestSchema), RefreshToken.endpoint)
-
-		app.use('/auth', loginRouter)
-
-		app.get('/endpoint', ApiAuth.guard(), (req, res) => {
-			return res.sendStatus(200)
-		})
-
-		app.use(errorMiddleware)
+		setupRouters()
 	})
 
 	it('Refresh token null', async () => {
@@ -107,81 +197,56 @@ describe('Refresh Token endpoint', () => {
 		expect(response.statusCode).to.eq(400)
 	})
 
-	it('Testing mocked refresh token', async () => {
-		const user = getUser()
-		await loginUserAndSetTokens(app, user)
+	languages.forEach((lang) => {
+		it(`[${lang}] Expired refresh token`, async () => {
+			const user = getUser()
+			const token = await createJwt(
+				{
+					uid: user.id,
+					fid: 'a'
+				},
+				{
+					audience: JWT_AUDIENCE.API_REFRESH,
+					expiresIn: '1s',
+					jwtid: `a`
+				}
+			)
 
-		const { refreshToken } = user
-		if (!refreshToken) {
-			throw new Error('No refresh token')
-		}
+			await sleep(100)
+			const response = await request(app).post('/auth/refresh-token').set('accept-language', lang).send({
+				refreshToken: token
+			})
 
-		const payload = await decodeRefreshJwt(refreshToken, t)
-		const token = await createJwt(
-			{
-				uid: user.id,
-				fid: payload.fid
-			},
-			{
-				audience: JWT_AUDIENCE.API_REFRESH,
-				expiresIn: passportConfig.jwt.api.refresh.exp,
-				jwtid: `${payload.jti}`
-			}
-		)
-
-		const response = await request(app).post('/auth/refresh-token').send({
-			refreshToken: token
+			expect(response.statusCode).to.eq(401)
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			expect(response.body.messages).to.exist
+			expect(response.body.messages[0].message).to.eq(invalidRefreshTokenErrorString(lang))
 		})
 
-		expect(response.statusCode).to.eq(200)
-		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-		expect(response.body.accessToken).to.exist
-		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-		expect(response.body.refreshToken).to.exist
-	})
+		it(`[${lang}] Forged refresh token`, async () => {
+			const user = getUser()
+			const token = await createJwt(
+				{
+					uid: user.id,
+					fid: 'a'
+				},
+				{
+					audience: JWT_AUDIENCE.API_REFRESH,
+					expiresIn: passportConfig.jwt.api.refresh.exp,
+					jwtid: `a`
+				},
+				'aaaaaaaaaaaaaaaaaaaaaaaaa'
+			)
 
-	it('Expired refresh token', async () => {
-		const user = getUser()
-		const token = await createJwt(
-			{
-				uid: user.id,
-				fid: 'a'
-			},
-			{
-				audience: JWT_AUDIENCE.API_REFRESH,
-				expiresIn: '1s',
-				jwtid: `a`
-			}
-		)
+			const response = await request(app).post('/auth/refresh-token').set('accept-language', lang).send({
+				refreshToken: token
+			})
 
-		await sleep(100)
-		const response = await request(app).post('/auth/refresh-token').send({
-			refreshToken: token
+			expect(response.statusCode).to.eq(401)
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			expect(response.body.messages).to.exist
+			expect(response.body.messages[0].message).to.eq(invalidRefreshTokenErrorString(lang))
 		})
-
-		expect(response.statusCode).to.eq(401)
-	})
-
-	it('Forged refresh token', async () => {
-		const user = getUser()
-		const token = await createJwt(
-			{
-				uid: user.id,
-				fid: 'a'
-			},
-			{
-				audience: JWT_AUDIENCE.API_REFRESH,
-				expiresIn: passportConfig.jwt.api.refresh.exp,
-				jwtid: `a`
-			},
-			'aaaaaaaaaaaaaaaaaaaaaaaaa'
-		)
-
-		const response = await request(app).post('/auth/refresh-token').send({
-			refreshToken: token
-		})
-
-		expect(response.statusCode).to.eq(401)
 	})
 
 	it('Refresh token', async () => {
@@ -231,7 +296,6 @@ describe('Refresh Token endpoint', () => {
 
 		await testEndpoint(accessToken)
 	})
-	// TODO: test translations
 	// TODO: test invalidating refresh tokens
-	// TODO: test save token multiple times
+	// TODO: test refresh same token multiple times
 })
