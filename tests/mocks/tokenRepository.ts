@@ -5,9 +5,9 @@ import { IRefreshTokenRepository } from '../../src'
 const logging = false
 
 // eslint-disable-next-line import/prefer-default-export
-export class TokenRepository implements IRefreshTokenRepository<string, number> {
+export class TokenRepository implements IRefreshTokenRepository<string, string> {
 	private static instance: TokenRepository
-	private map = new Map<string, Map<string, string>>()
+	private map = new Map<string, Map<string, Map<string, string>>>()
 
 	static getInstance(): TokenRepository {
 		if (!this.instance) {
@@ -17,8 +17,10 @@ export class TokenRepository implements IRefreshTokenRepository<string, number> 
 		return this.instance
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	private constructor() {}
 
+	// eslint-disable-next-line class-methods-use-this
 	createTokenID(): Promise<string> {
 		const id = uuidv4()
 		if (logging) {
@@ -28,47 +30,77 @@ export class TokenRepository implements IRefreshTokenRepository<string, number> 
 		return Promise.resolve(id)
 	}
 
-	saveRefreshToken(id: string, familyID: string, token: string): Promise<unknown> {
+	saveRefreshToken(userID: string, familyID: string, tokenID: string, token: string): Promise<unknown> {
 		if (logging) {
-			console.log(`[TokenRepository] saving refresh token: ${id} (${familyID}): ${token}`)
+			console.log(`[TokenRepository] saving refresh token for user ${userID}: ${tokenID} (${familyID}): ${token}`)
 		}
-		let familyMap = this.map.get(familyID)
-		if (!familyMap) {
-			familyMap = new Map<string, string>()
-			this.map.set(familyID, familyMap)
+		let userMap = this.map.get(userID)
+		if (!userMap) {
+			userMap = new Map<string, Map<string, string>>()
+			this.map.set(userID, userMap)
 		}
 
-		familyMap.set(id, token)
+		let familyMap = userMap.get(familyID)
+		if (!familyMap) {
+			familyMap = new Map<string, string>()
+			userMap.set(familyID, familyMap)
+		}
+
+		familyMap.set(tokenID, token)
 
 		return Promise.resolve(token)
 	}
 
-	isRefreshTokenValid(id: string, familyID: string): Promise<boolean> {
-		const familyMap = this.map.get(familyID)
+	isRefreshTokenValid(userID: string, familyID: string, tokenID: string): Promise<boolean> {
+		const userMap = this.map.get(userID)
+		if (!userMap) {
+			return Promise.resolve(false)
+		}
 
-		const result = familyMap ? familyMap.has(id) : false
+		const familyMap = userMap.get(familyID)
+
+		const result = familyMap ? familyMap.has(tokenID) : false
 		if (logging) {
-			console.log(`[TokenRepository] isRefreshTokenValid ${id} (${familyID}): ${result}`)
+			console.log(`[TokenRepository] isRefreshTokenValid for user ${userID} ${tokenID} (${familyID}): ${result}`)
 		}
 		return Promise.resolve(result)
 	}
 
-	invalidateRefreshToken(id: string, familyID: string): Promise<void> {
+	invalidateRefreshToken(userID: string, familyID: string, tokenID: string): Promise<void> {
 		if (logging) {
-			console.log(`[TokenRepository] invalidate refresh token: ${id} (${familyID})`)
+			console.log(`[TokenRepository] invalidate refresh token for user ${userID}: ${tokenID} (${familyID})`)
 		}
-		const familyMap = this.map.get(familyID)
-		familyMap?.delete(id)
+		const userMap = this.map.get(userID)
+		if (!userMap) {
+			return Promise.resolve()
+		}
+
+		const familyMap = userMap.get(familyID)
+		familyMap?.delete(tokenID)
 
 		return Promise.resolve()
 	}
 
-	invalidateRefreshTokenFamily(familyID: string): Promise<void> {
+	invalidateRefreshTokenFamily(userID: string, familyID: string): Promise<void> {
 		if (logging) {
 			console.log(`[TokenRepository] invalidate refresh token family: ${familyID}`)
 		}
-		this.map.delete(familyID)
+		const userMap = this.map.get(userID)
+		if (!userMap) {
+			return Promise.resolve()
+		}
 
+		userMap.delete(familyID)
+
+		return Promise.resolve()
+	}
+
+	invalidateUserRefreshTokens(userID: string): Promise<void> {
+		if (logging) {
+			console.log(`[TokenRepository] invalidate user refresh tokens: ${userID}`)
+		}
+
+		this.map.delete(userID)
 		return Promise.resolve()
 	}
 }

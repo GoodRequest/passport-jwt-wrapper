@@ -147,7 +147,7 @@ function declareNegativeTests(lang?: string) {
 		const { rt } = user
 		const payload = await decodeRefreshJwt(rt, { t } as Request)
 
-		await tokenRepo.invalidateRefreshToken(`${payload.jti}`, `${payload.fid}`)
+		await tokenRepo.invalidateRefreshToken(`${payload.uid}`, `${payload.jti}`, `${payload.fid}`)
 
 		await runNegativeTest(rt, lang)
 	})
@@ -168,7 +168,7 @@ function declareNegativeTests(lang?: string) {
 		// invalidate rt1
 		const payload = await decodeRefreshJwt(rt1, { t } as Request)
 
-		await tokenRepo.invalidateRefreshTokenFamily(`${payload.fid}`)
+		await tokenRepo.invalidateRefreshTokenFamily(`${payload.uid}`, `${payload.fid}`)
 
 		await runNegativeTest(rt1, lang)
 

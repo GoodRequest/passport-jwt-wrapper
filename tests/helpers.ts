@@ -13,6 +13,12 @@ export async function loginUserAndSetTokens(app: Express, user: LoginUser): Prom
 		password: user.password
 	})
 
+	expect(response.statusCode).to.eq(200)
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+	expect(response.body.accessToken).to.exist
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+	expect(response.body.refreshToken).to.exist
+
 	const { accessToken, refreshToken } = response.body
 	user.setTokens(accessToken, refreshToken)
 }
