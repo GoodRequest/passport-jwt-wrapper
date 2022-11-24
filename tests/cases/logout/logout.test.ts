@@ -34,14 +34,6 @@ function getLogoutMessage(language?: string): string {
 	return enTranslations['You were successfully logged out']
 }
 
-function unauthorizedMessage(language?: string): string {
-	if (language && language === 'sk') {
-		return skTranslations.Unauthorized
-	}
-
-	return enTranslations.Unauthorized
-}
-
 /**
  * Helper function for setting up express routers for testing
  */
@@ -68,26 +60,24 @@ async function runNegativeRefreshTokenAttempt(refreshToken: string): Promise<Res
 	return response
 }
 
-before(async () => {
-	const userRepo = new UserRepository()
-
-	const promises: Promise<void>[] = []
-	// seed users
-	loginUsers.getAllPositiveValues().forEach((u) => {
-		promises.push(seedUserAndSetID(userRepo, u))
-	})
-
-	await Promise.all(promises)
-
-	// init authentication library
-	initAuth(passport, {
-		userRepository: userRepo,
-		refreshTokenRepository: TokenRepository.getInstance()
-	})
-})
-
-describe('Logout user with i18next', () => {
+describe('User logout', () => {
 	before(async () => {
+		const userRepo = new UserRepository()
+
+		const promises: Promise<void>[] = []
+		// seed users
+		loginUsers.getAllPositiveValues().forEach((u) => {
+			promises.push(seedUserAndSetID(userRepo, u))
+		})
+
+		await Promise.all(promises)
+
+		// init authentication library
+		initAuth(passport, {
+			userRepository: userRepo,
+			refreshTokenRepository: TokenRepository.getInstance()
+		})
+
 		// init express app
 		app = express()
 
@@ -119,6 +109,39 @@ describe('Logout user with i18next', () => {
 
 			await runNegativeRefreshTokenAttempt(user.rt)
 		})
+	})
+
+	it(`Other token is valid after successful user logout`, async () => {
+		const user = getUser()
+		await loginUserAndSetTokens(app, user)
+		const { at, rt: rt1 } = user
+
+		// login again - simulate other parallel session
+		await loginUserAndSetTokens(app, user)
+		const { rt: rt2 } = user
+
+		console.log(rt1)
+		console.log(rt2)
+
+		const response = await request(app).post('/auth/logout').set('authorization', `Bearer ${at}`)
+
+		expect(response.statusCode).to.eq(200)
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		expect(response.body.messages[0].message).to.exist
+		expect(response.body.messages[0].message).to.eq(getLogoutMessage())
+
+		await runNegativeRefreshTokenAttempt(rt1)
+
+		// other refresh token should be valid
+		const response2 = await request(app).post('/auth/refresh-token').send({
+			refreshToken: rt2
+		})
+
+		expect(response2.statusCode).to.eq(200)
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		expect(response2.body.accessToken).to.exist
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		expect(response2.body.refreshToken).to.exist
 	})
 
 	// test authorization header, since endpoint is using this header
@@ -177,20 +200,4 @@ describe('Logout user with i18next', () => {
 
 		expect(response.statusCode).to.eq(401)
 	})
-})
-
-describe('Logout user without i18next', () => {
-	before(async () => {
-		// init express app
-		app = express()
-
-		app.use(express.urlencoded({ extended: true }))
-		app.use(express.json())
-
-		setupRouters()
-	})
-
-	// TODO: logout without i18next
-	// no lang -> 'sk' is requested, 'en' is expected in response
-	// declareNegativeTests()
 })
