@@ -16,7 +16,12 @@ const passportConfig: IPassportConfig = config.get('passport')
  * @param password
  * @param done
  */
-export async function strategyVerifyFunction(req: Request, email: string, password: string, done: (error: any, userCallback?: any, options?: IVerifyOptions) => void) {
+export async function strategyVerifyFunction(
+	req: Request,
+	email: string,
+	password: string,
+	done: (error: any, userCallback?: any, options?: IVerifyOptions) => void
+) {
 	try {
 		const user = await State.getInstance().userRepository.getUserByEmail(email)
 
@@ -24,7 +29,7 @@ export async function strategyVerifyFunction(req: Request, email: string, passwo
 			return done(null, false)
 		}
 
-		if(!user.hash) {
+		if (!user.hash) {
 			return done(null, false)
 		}
 

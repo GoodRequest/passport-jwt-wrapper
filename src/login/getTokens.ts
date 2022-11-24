@@ -54,7 +54,7 @@ export async function getTokens(userID: ID, familyID?: ID): Promise<ILoginRespon
 	])
 
 	// save tokens
-	await state.refreshTokenRepository.saveRefreshToken(rid, fid, refreshToken)
+	await state.refreshTokenRepository.saveRefreshToken(userID, fid, rid, refreshToken)
 
 	return {
 		accessToken,

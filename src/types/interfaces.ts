@@ -31,10 +31,10 @@ export interface IPasswordResetTokenRepository<UserIDType extends ID> {
 
 export interface IRefreshTokenRepository<TokenIDType extends ID, UserIDType extends ID> {
 	createTokenID: () => Promise<TokenIDType>
-	saveRefreshToken: (id: TokenIDType, familyID: TokenIDType, token: string) => Promise<unknown>
-	isRefreshTokenValid: (id: TokenIDType, familyID: TokenIDType) => Promise<boolean>
-	invalidateRefreshToken: (id: TokenIDType, familyID: TokenIDType) => Promise<void>
-	invalidateRefreshTokenFamily: (familyID: TokenIDType) => Promise<void>
+	saveRefreshToken: (userID: UserIDType, familyID: TokenIDType, tokenID: TokenIDType, token: string) => Promise<unknown>
+	isRefreshTokenValid: (userID: UserIDType, familyID: TokenIDType, tokenID: TokenIDType) => Promise<boolean>
+	invalidateRefreshToken: (userID: UserIDType, familyID: TokenIDType, tokenID: TokenIDType) => Promise<void>
+	invalidateRefreshTokenFamily: (userID: UserIDType, familyID: TokenIDType) => Promise<void>
 	invalidateUserRefreshTokens?: (userID: UserIDType) => Promise<void>
 }
 
