@@ -32,12 +32,13 @@ function initAuth<TokenIDType extends ID, UserIDType extends ID>(
 		passwordResetTokenRepository?: IPasswordResetTokenRepository<UserIDType>
 	}
 ) {
-	const instance = State.getInstance()
-	instance.passport = passport
-	instance.userRepository = repositories.userRepository
-	instance.refreshTokenRepository = repositories.refreshTokenRepository
-	instance.invitationTokenRepository = repositories.invitationTokenRepository
-	instance.passwordResetTokenRepository = repositories.passwordResetTokenRepository
+	const instance = State.initialize(
+		passport,
+		repositories.userRepository,
+		repositories.refreshTokenRepository,
+		repositories.invitationTokenRepository,
+		repositories.passwordResetTokenRepository
+	)
 
 	instance.passport.use(PASSPORT_NAME.LOCAL, Login.strategy())
 	instance.passport.use(PASSPORT_NAME.JWT_API, ApiAuth.strategy())

@@ -1,60 +1,49 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import passport, { PassportStatic } from 'passport'
+import { PassportStatic } from 'passport'
 import { ID, IUserRepository, IRefreshTokenRepository, IInvitationTokenRepository, IPasswordResetTokenRepository } from './types/interfaces'
 
 // eslint-disable-next-line import/prefer-default-export
 export class State<T extends ID, U extends ID> {
 	static instance: State<any, any>
-	static getInstance<T extends ID, U extends ID>() {
+	static getInstance(): State<ID, ID> {
 		if (!this.instance) {
-			this.instance = new State<T, U>()
+			throw new Error("Authentication library ('@goodrequest/jwt-auth') is not initialized")
 		}
 
 		return this.instance
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	private constructor() {}
-	private _passport?: PassportStatic
-	private _userRepository?: IUserRepository<T>
-	private _refreshTokenRepository?: IRefreshTokenRepository<T, U>
+	static initialize<T extends ID, U extends ID>(
+		passportStatic: PassportStatic,
+		userRepository: IUserRepository<U>,
+		refreshTokenRepository: IRefreshTokenRepository<T, U>,
+		invitationTokenRepository?: IInvitationTokenRepository<U>,
+		passwordResetTokenRepository?: IPasswordResetTokenRepository<U>
+	): State<T, U> {
+		this.instance = new State<T, U>(passportStatic, userRepository, refreshTokenRepository, invitationTokenRepository, passwordResetTokenRepository)
+
+		return this.instance
+	}
+
+	readonly passport: PassportStatic
+	readonly userRepository: IUserRepository<U>
+	readonly refreshTokenRepository: IRefreshTokenRepository<T, U>
 	private _invitationTokenRepository?: IInvitationTokenRepository<U>
 	private _passwordResetTokenRepository?: IPasswordResetTokenRepository<U>
 
-	get passport(): passport.PassportStatic {
-		if (!this._passport) {
-			throw new Error("Authentication library ('@goodrequest/jwt-auth') is not initialized")
-		}
+	private constructor(
+		passportStatic: PassportStatic,
+		userRepository: IUserRepository<U>,
+		refreshTokenRepository: IRefreshTokenRepository<T, U>,
+		invitationTokenRepository?: IInvitationTokenRepository<U>,
+		passwordResetTokenRepository?: IPasswordResetTokenRepository<U>
+	) {
+		this.passport = passportStatic
+		this.userRepository = userRepository
+		this.refreshTokenRepository = refreshTokenRepository
 
-		return this._passport
-	}
-
-	set passport(value: passport.PassportStatic) {
-		this._passport = value
-	}
-
-	get userRepository(): IUserRepository<T> {
-		if (!this._userRepository) {
-			throw new Error("Authentication library ('@goodrequest/jwt-auth') is not initialized")
-		}
-
-		return this._userRepository
-	}
-
-	set userRepository(value: IUserRepository<T>) {
-		this._userRepository = value
-	}
-
-	get refreshTokenRepository(): IRefreshTokenRepository<T, U> {
-		if (!this._refreshTokenRepository) {
-			throw new Error("Authentication library ('@goodrequest/jwt-auth') is not initialized")
-		}
-
-		return this._refreshTokenRepository
-	}
-
-	set refreshTokenRepository(value: IRefreshTokenRepository<T, U>) {
-		this._refreshTokenRepository = value
+		this._invitationTokenRepository = invitationTokenRepository
+		this._passwordResetTokenRepository = passwordResetTokenRepository
 	}
 
 	get passwordResetTokenRepository(): IPasswordResetTokenRepository<U> {
