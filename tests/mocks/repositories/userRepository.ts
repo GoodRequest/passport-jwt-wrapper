@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import { createHash, IUserRepository } from '../../src'
+import { createHash, IUserRepository } from '../../../src'
 
 export interface IUser {
 	id: string
@@ -36,6 +36,20 @@ export class UserRepository implements IUserRepository<string> {
 		return Promise.resolve()
 	}
 
+	/**
+	 * return user only if he has no password set -- is not registered
+	 * @param userID
+	 */
+	getNewUserById(userID: string): Promise<IUser | undefined> {
+		const user = this.users.get(userID)
+		if (!user || user.hash) {
+			return Promise.resolve(undefined)
+		}
+
+		return Promise.resolve(user)
+	}
+
+	/// Helper methods
 	async add(email: string, password?: string): Promise<IUser> {
 		const id = uuidv4()
 		const hash = password ? await createHash(password) : undefined
@@ -54,5 +68,17 @@ export class UserRepository implements IUserRepository<string> {
 		this.users.delete(userID)
 
 		return Promise.resolve()
+	}
+
+	invite(email: string): Promise<IUser> {
+		const id = uuidv4()
+		const user = {
+			id,
+			email
+		}
+
+		this.users.set(id, user)
+
+		return Promise.resolve(user)
 	}
 }

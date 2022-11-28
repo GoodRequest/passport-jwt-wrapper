@@ -1,5 +1,6 @@
 {
   "Incorrect email or password": "Nesprávne meno alebo heslo",
+  "Invitation token is not valid": "_NOT_TRANSLATED_",
   "Refresh token is not valid": "Token pre obnovenie nie je platný",
   "User was not found": "Používateľ neexistuje"
 }

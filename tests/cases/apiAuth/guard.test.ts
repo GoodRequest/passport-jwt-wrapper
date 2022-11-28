@@ -6,13 +6,14 @@ import { expect } from 'chai'
 import { ApiAuth, initAuth, JWT_AUDIENCE } from '../../../src'
 import { createJwt } from '../../../src/utils/jwt'
 
-import { UserRepository } from '../../mocks/userRepository'
+import { UserRepository } from '../../mocks/repositories/userRepository'
 import { loginUsers } from '../../seeds/users'
-import { TokenRepository } from '../../mocks/tokenRepository'
-import errorMiddleware from '../../mocks/errorMiddleware'
+import { TokenRepository } from '../../mocks/repositories/tokenRepository'
+import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
 import loginRouter from '../../mocks/loginRouter'
 
 import { loginUserAndSetTokens } from '../../helpers'
+import TestingEndpoint from '../../mocks/testingEndpoint'
 
 let app: Express
 let userRepo: UserRepository
@@ -41,9 +42,7 @@ describe('Login Guard', () => {
 		app.use(express.json())
 
 		app.use('/auth', loginRouter())
-		app.get('/endpoint', ApiAuth.guard(), (req, res) => {
-			return res.sendStatus(200)
-		})
+		app.get('/endpoint', ApiAuth.guard(), TestingEndpoint)
 
 		app.use(errorMiddleware)
 

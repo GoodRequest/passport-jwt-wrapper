@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express'
 import util from 'util'
 
-import { ErrorBuilder } from '../../src/utils/ErrorBuilder'
-import { MESSAGE_TYPE } from '../../src/utils/enums'
-import { customTFunction } from '../../src/utils/translations'
+import { ErrorBuilder } from '../../../src/utils/ErrorBuilder'
+import { MESSAGE_TYPE } from '../../../src/utils/enums'
+import { customTFunction } from '../../../src/utils/translations'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function errorMiddleware(err: ErrorBuilder, req: Request, res: Response, _next: NextFunction) {

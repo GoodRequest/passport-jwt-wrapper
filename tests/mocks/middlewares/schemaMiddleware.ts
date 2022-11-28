@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { ErrorBuilder } from '../../src/utils/ErrorBuilder'
+import { ErrorBuilder } from '../../../src/utils/ErrorBuilder'
 
 const options = {
 	stripUnknown: true,

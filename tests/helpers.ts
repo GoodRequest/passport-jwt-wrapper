@@ -3,7 +3,7 @@ import { Express } from 'express'
 
 import { expect } from 'chai'
 import { LoginUser, loginUsers } from './seeds/users'
-import { UserRepository } from './mocks/userRepository'
+import { UserRepository } from './mocks/repositories/userRepository'
 
 export const languages = ['en', 'sk']
 

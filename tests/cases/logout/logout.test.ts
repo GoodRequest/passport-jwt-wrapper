@@ -10,12 +10,12 @@ import { expect } from 'chai'
 import { ApiAuth, initAuth, JWT_AUDIENCE, Logout, RefreshToken } from '../../../src'
 
 import { loginUsers } from '../../seeds/users'
-import { UserRepository } from '../../mocks/userRepository'
-import { TokenRepository } from '../../mocks/tokenRepository'
+import { UserRepository } from '../../mocks/repositories/userRepository'
+import { TokenRepository } from '../../mocks/repositories/tokenRepository'
 import LoginRouter from '../../mocks/loginRouter'
 import TestingEndpoint from '../../mocks/testingEndpoint'
-import errorMiddleware from '../../mocks/errorMiddleware'
-import schemaMiddleware from '../../mocks/schemaMiddleware'
+import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
+import schemaMiddleware from '../../mocks/middlewares/schemaMiddleware'
 import { getUser, languages, loginUserAndSetTokens, seedUserAndSetID } from '../../helpers'
 
 import * as enTranslations from '../../../locales/en/translation.json'
@@ -119,9 +119,6 @@ describe('User logout', () => {
 		// login again - simulate other parallel session
 		await loginUserAndSetTokens(app, user)
 		const { rt: rt2 } = user
-
-		console.log(rt1)
-		console.log(rt2)
 
 		const response = await request(app).post('/auth/logout').set('authorization', `Bearer ${at}`)
 

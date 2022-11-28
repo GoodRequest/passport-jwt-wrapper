@@ -9,17 +9,18 @@ import config from 'config'
 
 import { ApiAuth, initAuth, IPassportConfig, JWT_AUDIENCE, RefreshToken } from '../../../src'
 
-import { UserRepository } from '../../mocks/userRepository'
+import { UserRepository } from '../../mocks/repositories/userRepository'
 import { loginUsers } from '../../seeds/users'
-import { TokenRepository } from '../../mocks/tokenRepository'
-import errorMiddleware from '../../mocks/errorMiddleware'
+import { TokenRepository } from '../../mocks/repositories/tokenRepository'
+import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
 import { getUser, languages, loginUserAndSetTokens, seedUserAndSetID, testEndpoint } from '../../helpers'
 import LoginRouter from '../../mocks/loginRouter'
-import schemaMiddleware from '../../mocks/schemaMiddleware'
+import schemaMiddleware from '../../mocks/middlewares/schemaMiddleware'
 import { createJwt, decodeRefreshJwt } from '../../../src/utils/jwt'
 
 import * as enErrors from '../../../locales/en/error.json'
 import * as skErrors from '../../../locales/sk/error.json'
+import TestingEndpoint from '../../mocks/testingEndpoint'
 
 const i18NextConfig: I18nextOptions = config.get('i18next')
 const passportConfig: IPassportConfig = config.get('passport')
@@ -74,9 +75,7 @@ function setupRouters() {
 
 	app.use('/auth', loginRouter)
 
-	app.get('/endpoint', ApiAuth.guard(), (req, res) => {
-		return res.sendStatus(200)
-	})
+	app.get('/endpoint', ApiAuth.guard(), TestingEndpoint)
 
 	app.use(errorMiddleware)
 }

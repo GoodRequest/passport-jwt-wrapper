@@ -1,7 +1,7 @@
 import { Request as OriginalRequest } from 'express'
 
 interface UserModel {
-	id: number
+	id: string
 	email: string
 }
 

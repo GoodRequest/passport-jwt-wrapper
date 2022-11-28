@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import { IRefreshTokenRepository } from '../../src'
+import { IRefreshTokenRepository } from '../../../src'
 
 const logging = false
 

@@ -19,14 +19,14 @@ export type ID = string | number
 export interface IInvitationTokenRepository<UserIDType extends ID> {
 	saveInvitationToken: (userID: UserIDType, token: string) => Promise<unknown>
 	isInvitationTokenValid: (userID: UserIDType) => Promise<boolean>
-	// invalidateInvitationToken: (userID: UserIDType) => Promise<void> // not needed in the library
+	invalidateInvitationToken: (userID: UserIDType) => Promise<void>
 }
 
 export interface IPasswordResetTokenRepository<UserIDType extends ID> {
-	// password reset tokens -- are optional, needed only when password reset cancellation is required
+	// password reset tokens are saved optionally -- only when password reset cancellation is required
 	savePasswordResetToken: (userID: UserIDType, token: string) => Promise<unknown> // user can have one password reset token
 	isPasswordTokenValid: (userID: UserIDType) => Promise<boolean>
-	// invalidatePasswordResetToken?: (userID: UserIDType) => Promise<void> // not needed in the library
+	invalidatePasswordResetToken?: (userID: UserIDType) => Promise<void>
 }
 
 export interface IRefreshTokenRepository<TokenIDType extends ID, UserIDType extends ID> {

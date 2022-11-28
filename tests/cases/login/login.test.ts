@@ -8,10 +8,10 @@ import passport from 'passport'
 import { expect } from 'chai'
 
 import { initAuth } from '../../../src'
-import { UserRepository } from '../../mocks/userRepository'
-import { TokenRepository } from '../../mocks/tokenRepository'
+import { UserRepository } from '../../mocks/repositories/userRepository'
+import { TokenRepository } from '../../mocks/repositories/tokenRepository'
 import loginRouter from '../../mocks/loginRouter'
-import errorMiddleware from '../../mocks/errorMiddleware'
+import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
 import { loginUsers } from '../../seeds/users'
 import { languages } from '../../helpers'
 

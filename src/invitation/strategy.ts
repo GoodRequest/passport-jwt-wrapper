@@ -7,21 +7,29 @@ import { IJwtPayload } from '../types/interfaces'
 import { State } from '../State'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { customTFunction } from '../utils/translations'
+import { JWT_AUDIENCE } from '../utils/enums'
 
 const passportConfig: IPassportConfig = config.get('passport')
 
 export const strategyVerifyFunction = async (req: Request, payload: IJwtPayload, done: VerifiedCallback) => {
 	try {
 		const state = State.getInstance()
-		let getUser = state.userRepository.getUserById
-		if (state.userRepository.getNewUserById) {
-			getUser = state.userRepository.getNewUserById
+		const userRepo = state.userRepository
+		const getUser = userRepo.getNewUserById ?? userRepo.getUserById
+
+		const t = req.t ?? customTFunction
+		let isTokenValid = true
+		if (state.invitationTokenRepository) {
+			isTokenValid = await state.invitationTokenRepository.isInvitationTokenValid(payload.uid)
 		}
 
-		const user = await getUser(payload.uid)
+		if (!isTokenValid) {
+			throw new ErrorBuilder(401, t('error:Invitation token is not valid'))
+		}
+
+		const user = await getUser.bind(userRepo)(payload.uid)
 
 		if (!user) {
-			const t = req.t ?? customTFunction
 			throw new ErrorBuilder(401, t('error:User was not found'))
 		}
 
@@ -34,7 +42,9 @@ export const strategyVerifyFunction = async (req: Request, payload: IJwtPayload,
 export function strategy() {
 	return new JwtStrategy(
 		{
-			...passportConfig.jwt.api,
+			...passportConfig.jwt.invitation,
+			audience: JWT_AUDIENCE.INVITATION,
+			passReqToCallback: true,
 			secretOrKey: passportConfig.jwt.secretOrKey
 		},
 		strategyVerifyFunction

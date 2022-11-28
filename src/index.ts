@@ -57,6 +57,7 @@ export {
 	LogoutEverywhere,
 	PasswordReset,
 	RefreshToken,
+	Invitation,
 	// enums
 	PASSPORT_NAME,
 	JWT_AUDIENCE,
