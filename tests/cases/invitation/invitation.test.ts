@@ -73,27 +73,6 @@ function callTestEndpoint(app: Express, token: string, lang?: string): Promise<R
 }
 
 function declareTestsWithMessageResponse(app: Express, invitationTokenRepo: InvitationTokenRepository, userRepo: UserRepository, lang?: string) {
-	it(`${lang ? `[${lang}] ` : ''}Expired token`, async () => {
-		const tokenPayload = {
-			uid: 'user42'
-		}
-
-		const tokenOptions = {
-			audience: JWT_AUDIENCE.INVITATION,
-			expiresIn: '1s'
-		}
-
-		const token = await createJwt(tokenPayload, tokenOptions)
-
-		await sleep(100)
-		const response = await callTestEndpoint(app, token, lang)
-
-		expect(response.statusCode).to.eq(401)
-		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-		expect(response.body.messages).to.exist
-		expect(response.body.messages[0].message).to.eq(invalidInvitationErrorString(lang))
-	})
-
 	it(`${lang ? `[${lang}] ` : ''}Invalidated token`, async () => {
 		const user = await userRepo.invite('newUser@gmail.com')
 		const token = await Invitation.getToken(user.id)
@@ -177,6 +156,24 @@ describe('Invitation Token endpoint without i18next', () => {
 		const token = await createJwt(tokenPayload, tokenOptions, 'badsecret')
 
 		const response = await request(app).post('/user/confirm').set('authorization', `Bearer ${token}`)
+
+		expect(response.statusCode).to.eq(401)
+	})
+
+	it(`Expired token`, async () => {
+		const tokenPayload = {
+			uid: 'user42'
+		}
+
+		const tokenOptions = {
+			audience: JWT_AUDIENCE.INVITATION,
+			expiresIn: '1s'
+		}
+
+		const token = await createJwt(tokenPayload, tokenOptions)
+
+		await sleep(100)
+		const response = await callTestEndpoint(app, token)
 
 		expect(response.statusCode).to.eq(401)
 	})
