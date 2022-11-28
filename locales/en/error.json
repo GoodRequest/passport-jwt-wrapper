@@ -1,6 +1,7 @@
 {
   "Incorrect email or password": "Incorrect email or password",
   "Invitation token is not valid": "Invitation token is not valid",
+  "Password reset token is invalid": "Password reset token is invalid",
   "Refresh token is not valid": "Refresh token is not valid",
   "User was not found": "User was not found"
 }

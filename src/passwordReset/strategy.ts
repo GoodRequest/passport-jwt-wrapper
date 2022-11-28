@@ -7,6 +7,7 @@ import { IJwtPayload } from '../types/interfaces'
 import { IPassportConfig } from '../types/config'
 import { State } from '../State'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
+import { customTFunction } from '../utils/translations'
 
 const passportConfig: IPassportConfig = config.get('passport')
 
@@ -33,19 +34,22 @@ export async function secretOrKeyProvider(req: Request, rawJwtToken: string, don
 	}
 }
 
-export async function strategyVerifyFunction(payload: IJwtPayload, done: VerifiedCallback) {
+export async function strategyVerifyFunction(req: Request, payload: IJwtPayload, done: VerifiedCallback) {
 	try {
 		const state = State.getInstance()
 		const user = await state.userRepository.getUserById(payload.uid)
+
+		const t = req.t ?? customTFunction
+
 		if (state.passwordResetTokenRepository) {
 			const isTokenValid = await state.passwordResetTokenRepository.isPasswordTokenValid(payload.uid)
 			if (!isTokenValid) {
-				throw new ErrorBuilder(401, 'error:Password reset was cancelled')
+				throw new ErrorBuilder(401, t('error:Password reset token is invalid'))
 			}
 		}
 
 		if (!user) {
-			throw new ErrorBuilder(401, 'error:User was not found')
+			throw new ErrorBuilder(401, t('error:User was not found'))
 		}
 
 		return done(null, user)
