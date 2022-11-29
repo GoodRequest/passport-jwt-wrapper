@@ -62,6 +62,7 @@ export function strategy() {
 	return new JwtStrategy(
 		{
 			...passportConfig.jwt.passwordReset,
+			passReqToCallback: true,
 			secretOrKeyProvider
 		},
 		strategyVerifyFunction

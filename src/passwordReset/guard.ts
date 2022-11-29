@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import { State } from '../State'
 import { PASSPORT_NAME } from '../utils/enums'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
+import { customTFunction } from '../utils/translations'
 
 export default (req: Request, res: Response, next: NextFunction) => {
 	State.getInstance().passport.authenticate(PASSPORT_NAME.JWT_PASSWORD_RESET, (err, userData) => {
@@ -11,8 +12,8 @@ export default (req: Request, res: Response, next: NextFunction) => {
 				return next(err)
 			}
 			if (!userData) {
-				const message = 'error:Token is not valid'
-				return next(new ErrorBuilder(401, req.t ? req.t(message) : message))
+				const t = req.t ?? customTFunction
+				throw new ErrorBuilder(401, t('error:Password reset token is invalid'))
 			}
 
 			req.user = userData

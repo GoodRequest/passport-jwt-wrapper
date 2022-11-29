@@ -1,4 +1,5 @@
 import config from 'config'
+import { v4 as uuidv4 } from 'uuid'
 
 import { IPassportConfig } from '../types/config'
 import { JWT_AUDIENCE } from '../utils/enums'
@@ -7,28 +8,38 @@ import { createJwt } from '../utils/jwt'
 
 const passportConfig: IPassportConfig = config.get('passport')
 
-export default async (email: string): Promise<string | null> => {
+export default async (email: string): Promise<string | undefined> => {
 	const state = State.getInstance()
-	const user = await state.userRepository.getUserByEmail(email)
+	let user = await state.userRepository.getUserByEmail(email)
 
-	let resetPasswordToken: string | null = null
-	if (user) {
-		const tokenPayload = {
-			uid: user.id
+	let mock = false
+	if (!user) {
+		mock = true
+		user = {
+			id: uuidv4(),
+			hash: uuidv4()
 		}
+	}
 
-		const tokenOptions = {
-			audience: JWT_AUDIENCE.PASSWORD_RESET,
-			expiresIn: passportConfig.jwt.passwordReset.exp
-		}
+	const tokenPayload = {
+		uid: user.id
+	}
 
-		const tokenSecret = `${passportConfig.jwt.secretOrKey}${user.hash}`
-		resetPasswordToken = await createJwt(tokenPayload, tokenOptions, tokenSecret)
+	const tokenOptions = {
+		audience: JWT_AUDIENCE.PASSWORD_RESET,
+		expiresIn: passportConfig.jwt.passwordReset.exp
+	}
 
-		// save token when savePasswordResetToken function is provided
-		if (state.passwordResetTokenRepository) {
-			await state.passwordResetTokenRepository.savePasswordResetToken(user.id, resetPasswordToken)
-		}
+	const tokenSecret = mock ? user.hash : `${passportConfig.jwt.secretOrKey}${user.hash}`
+	const resetPasswordToken = await createJwt(tokenPayload, tokenOptions, tokenSecret)
+
+	if (mock) {
+		return undefined
+	}
+
+	// save token when savePasswordResetToken repository is provided
+	if (state.passwordResetTokenRepository) {
+		await state.passwordResetTokenRepository.savePasswordResetToken(user.id, resetPasswordToken)
 	}
 
 	return resetPasswordToken
