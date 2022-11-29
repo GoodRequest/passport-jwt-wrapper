@@ -140,6 +140,15 @@ describe('Invitation Token endpoint without i18next', () => {
 		setupRouters(app, invitationTokenRepo)
 	})
 
+	it(`Valid invitation`, async () => {
+		const user = await userRepo.invite('newUser@gmail.com')
+		const token = await Invitation.getToken(user.id)
+
+		const response = await request(app).post('/user/confirm').set('authorization', `Bearer ${token}`)
+
+		expect(response.statusCode).to.eq(200)
+	})
+
 	// no lang -> 'sk' is requested, 'en' is expected in response
 	declareTestsWithMessageResponse(app, invitationTokenRepo, userRepo)
 
