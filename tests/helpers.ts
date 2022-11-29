@@ -7,6 +7,12 @@ import { UserRepository } from './mocks/repositories/userRepository'
 
 export const languages = ['en', 'sk']
 
+export function sleep(ms: number) {
+	return new Promise((resolve) => {
+		setTimeout(resolve, ms)
+	})
+}
+
 export async function loginUserAndSetTokens(app: Express, user: LoginUser): Promise<void> {
 	const response = await request(app).post('/auth/login').send({
 		email: user.email,
@@ -29,9 +35,11 @@ export async function testEndpoint(app: Express, accessToken: string) {
 	expect(response.statusCode).to.eq(200)
 }
 
-export async function seedUserAndSetID(userRepo: UserRepository, user: LoginUser): Promise<void> {
+export async function seedUserAndSetID(userRepo: UserRepository, user: LoginUser): Promise<LoginUser> {
 	const repoUser = await userRepo.add(user.email, user.password)
 	user.setID(repoUser.id)
+
+	return user
 }
 
 export function getUser(): LoginUser {
@@ -41,4 +49,14 @@ export function getUser(): LoginUser {
 	}
 
 	return user
+}
+
+export async function seedUsers(userRepo: UserRepository): Promise<LoginUser[]> {
+	const promises: Promise<LoginUser>[] = []
+	// seed users
+	loginUsers.getAllPositiveValues().forEach((user) => {
+		promises.push(seedUserAndSetID(userRepo, user))
+	})
+
+	return Promise.all(promises)
 }

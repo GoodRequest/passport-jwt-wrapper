@@ -10,10 +10,10 @@ import config from 'config'
 import { ApiAuth, initAuth, IPassportConfig, JWT_AUDIENCE, RefreshToken } from '../../../src'
 
 import { UserRepository } from '../../mocks/repositories/userRepository'
-import { loginUsers } from '../../seeds/users'
+import { LoginUser, loginUsers } from '../../seeds/users'
 import { TokenRepository } from '../../mocks/repositories/tokenRepository'
 import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
-import { getUser, languages, loginUserAndSetTokens, seedUserAndSetID, testEndpoint } from '../../helpers'
+import { getUser, languages, loginUserAndSetTokens, seedUserAndSetID, sleep, testEndpoint } from '../../helpers'
 import LoginRouter from '../../mocks/loginRouter'
 import schemaMiddleware from '../../mocks/middlewares/schemaMiddleware'
 import { createJwt, decodeRefreshJwt } from '../../../src/utils/jwt'
@@ -27,12 +27,6 @@ const passportConfig: IPassportConfig = config.get('passport')
 
 let app: Express
 let userRepo: UserRepository
-
-function sleep(ms: number) {
-	return new Promise((resolve) => {
-		setTimeout(resolve, ms)
-	})
-}
 
 /**
  * returns error string based on language
@@ -50,7 +44,7 @@ function invalidRefreshTokenErrorString(language?: string): string {
 before(async () => {
 	userRepo = new UserRepository()
 
-	const promises: Promise<void>[] = []
+	const promises: Promise<LoginUser>[] = []
 	// seed users
 	loginUsers.getAllPositiveValues().forEach((u) => {
 		promises.push(seedUserAndSetID(userRepo, u))
@@ -116,7 +110,7 @@ function declareNegativeTests(lang?: string) {
 			}
 		)
 
-		await sleep(100)
+		await sleep(1000)
 		await runNegativeTest(token, lang)
 	})
 
