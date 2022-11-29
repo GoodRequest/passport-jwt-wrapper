@@ -28,8 +28,8 @@ export class State<T extends ID, U extends ID> {
 	readonly passport: PassportStatic
 	readonly userRepository: IUserRepository<U>
 	readonly refreshTokenRepository: IRefreshTokenRepository<T, U>
-	private _invitationTokenRepository?: IInvitationTokenRepository<U>
-	private _passwordResetTokenRepository?: IPasswordResetTokenRepository<U>
+	readonly invitationTokenRepository?: IInvitationTokenRepository<U>
+	readonly passwordResetTokenRepository?: IPasswordResetTokenRepository<U>
 
 	private constructor(
 		passportStatic: PassportStatic,
@@ -42,30 +42,7 @@ export class State<T extends ID, U extends ID> {
 		this.userRepository = userRepository
 		this.refreshTokenRepository = refreshTokenRepository
 
-		this._invitationTokenRepository = invitationTokenRepository
-		this._passwordResetTokenRepository = passwordResetTokenRepository
-	}
-
-	get passwordResetTokenRepository(): IPasswordResetTokenRepository<U> {
-		if (!this._passwordResetTokenRepository) {
-			throw new Error("Password Reset Repository was not provided to the authentication library ('@goodrequest/jwt-auth')")
-		}
-
-		return this._passwordResetTokenRepository
-	}
-
-	set passwordResetTokenRepository(value: IPasswordResetTokenRepository<U>) {
-		this._passwordResetTokenRepository = value
-	}
-	get invitationTokenRepository(): IInvitationTokenRepository<U> {
-		if (!this._invitationTokenRepository) {
-			throw new Error("Invitation Token Repository was not provided to the authentication library ('@goodrequest/jwt-auth')")
-		}
-
-		return this._invitationTokenRepository
-	}
-
-	set invitationTokenRepository(value: IInvitationTokenRepository<U>) {
-		this._invitationTokenRepository = value
+		this.invitationTokenRepository = invitationTokenRepository
+		this.passwordResetTokenRepository = passwordResetTokenRepository
 	}
 }
