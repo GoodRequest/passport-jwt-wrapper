@@ -14,7 +14,7 @@ export class PasswordResetTokenRepository implements IPasswordResetTokenReposito
 		return Promise.resolve(this.map.has(userID))
 	}
 
-	savePasswordResetToken(userID: string, token: string): Promise<unknown> {
+	async savePasswordResetToken(userID: string, token: string): Promise<unknown> {
 		this.map.set(userID, token)
 
 		return Promise.resolve()

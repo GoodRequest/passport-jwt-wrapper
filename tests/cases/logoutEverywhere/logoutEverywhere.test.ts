@@ -9,7 +9,7 @@ import request, { Response } from 'supertest'
 import { expect } from 'chai'
 import { ApiAuth, initAuth, JWT_AUDIENCE, LogoutEverywhere, RefreshToken } from '../../../src'
 
-import { loginUsers } from '../../seeds/users'
+import { LoginUser, loginUsers } from '../../seeds/users'
 import { UserRepository } from '../../mocks/repositories/userRepository'
 import { TokenRepository } from '../../mocks/repositories/tokenRepository'
 import LoginRouter from '../../mocks/loginRouter'
@@ -63,7 +63,7 @@ async function runNegativeRefreshTokenAttempt(refreshToken: string): Promise<Res
 before(async () => {
 	const userRepo = new UserRepository()
 
-	const promises: Promise<void>[] = []
+	const promises: Promise<LoginUser>[] = []
 	// seed users
 	loginUsers.getAllPositiveValues().forEach((u) => {
 		promises.push(seedUserAndSetID(userRepo, u))

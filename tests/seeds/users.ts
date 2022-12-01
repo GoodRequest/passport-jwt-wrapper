@@ -11,7 +11,11 @@ const passwords = {
 	testWrong: 'wrongPass456'
 }
 
-export enum LoginUserProperty {}
+export enum LoginUserProperty {
+	WRONG_PASS,
+	NON_EXISTING,
+	WRONG_FORMAT
+}
 
 export class LoginUser implements DomainSet<LoginUserProperty> {
 	private ID?: string
@@ -75,8 +79,8 @@ export class LoginUser implements DomainSet<LoginUserProperty> {
 
 export const loginUsers = new DomainStorage<LoginUserProperty, LoginUser>([
 	new LoginUser(emails.test, passwords.test, [], true, true),
-	new LoginUser(emails.test, passwords.testWrong, [], true, false),
-	new LoginUser(emails.nonExisting, passwords.test, undefined, true, false),
-	new LoginUser(emails.test, undefined, undefined, false),
-	new LoginUser(emails.wrongFormat, undefined, undefined, false)
+	new LoginUser(emails.test, passwords.testWrong, [LoginUserProperty.WRONG_PASS], true, false),
+	new LoginUser(emails.nonExisting, passwords.test, [LoginUserProperty.NON_EXISTING], true, false),
+	new LoginUser(emails.test, undefined, [LoginUserProperty.WRONG_PASS], false),
+	new LoginUser(emails.wrongFormat, undefined, [LoginUserProperty.WRONG_FORMAT], false)
 ])

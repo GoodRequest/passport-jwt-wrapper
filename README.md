@@ -228,7 +228,8 @@ Internal function used by endpoint.
 ### Functions
 Function used in project specific middlewares, or endpoints.
 - [`Login.getTokens(userID: string | number, familyID?: string | number)`](src/login/getTokens.ts): Used in the login endpoint and in refresh token endpoint.
-- [`PasswordReset.getToken(email: string)`](src/passwordReset/getToken.ts): Used in the reset password endpoint. Token created by this function should be sent to the user (probably by email)
+- [`PasswordReset.getToken(email: string)`](src/passwordReset/getToken.ts): Used in the reset password endpoint. Token created by this function should be sent to the user (probably by email).
+This function is accessible without authorization, so it should not leak any information about users, that's why the execution should take approximately same time for valid and invalid input. More in the [constant time chapter](#constant-time-methods)
 - [`Invitation.getToken(userID: string | number)`](src/invitation/getToken.ts): Should be user in the user invitation endpoint. Returns token with given userID.
 
 ### Schemas
@@ -237,6 +238,28 @@ Every module which exports endpoint also exports [Joi](https://joi.dev/)  `reque
 ### Other
 This library also exports helper functions, enums and types. All exports can be found in the [index.ts](src/index.ts).
 
+#### Constant time methods
+Some methods can leak information about user based on the execution time. One of these methods is `PasswordReset.getToken`.
+It is accessible without authorization, so the attacker could find out emails of the registered users, which could be a problem for some applications.
+That why execution of this method should be more, less constant.
+Execution times before triage:
+```text
+average execution time: 0.0087ms
+average invalid execution time: 0.0008ms
+average valid execution time: 0.0166ms
+```
+There is huge difference in execution time based on valid input vs. invalid input.
+
+Execution times before triage:
+```text
+average execution time: 0.0136ms
+average invalid execution time: 0.0141ms
+average valid execution time: 0.0131ms
+```
+Execution now takes more time, when the input is invalid, but that can change when passwordResetToken repository is used, since only valid tokens will be saved.
+Measurements heavily depend on the compilation and code optimization done by compiler, so in production this could vary.
+These numbers are average from 1000 iterations, after 10 000 iterations warm-up, so JIT compiler can do it's job.
+More on these tests can in the [`getToken.test.ts`](./tests/cases/passwordReset/getToken.test.ts).
 
 ## TODO:
 - `repository.getByID`: id is `string` | `number`
