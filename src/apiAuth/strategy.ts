@@ -11,6 +11,12 @@ import { customTFunction } from '../utils/translations'
 
 const passportConfig: IPassportConfig = config.get('passport')
 
+/**
+ * Internally calls `userRepository.getUserById` with userID (uid) from decoded access JWT
+ * @param req
+ * @param payload
+ * @param done
+ */
 export async function strategyVerifyFunction(req: Request, payload: IJwtPayload, done: VerifiedCallback) {
 	try {
 		const user = await State.getInstance().userRepository.getUserById(`${payload.uid}`)
@@ -26,6 +32,9 @@ export async function strategyVerifyFunction(req: Request, payload: IJwtPayload,
 	}
 }
 
+/**
+ * passport-jwt strategy for securing endpoints with access JWTs
+ */
 export function strategy() {
 	return new JwtStrategy(
 		{

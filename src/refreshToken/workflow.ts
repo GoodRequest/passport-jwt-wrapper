@@ -7,6 +7,15 @@ import { getTokens } from '../login'
 import { ILoginResponse } from '../login/getTokens'
 import { customTFunction } from '../utils/translations'
 
+/**
+ * Method used in the `RefreshToken.endpoint`
+ * Internally decodes (and validates) refresh token. If the token is not valid `refreshTokenRepository.invalidateRefreshTokenFamily` is called - which invalidates all refresh tokens ranted based on same login event
+ * When token is valid, user is fetched using `userRepository.getUserById`. Again, when no user is returned whole refresh token family is invalidated.
+ * Refresh token is then invalidated, but new access and refresh tokens are generated
+ * return new access and refresh tokens - refresh token is passed as parameter to the `refreshTokenRepository.saveRefreshToken` method
+ * @param refreshToken
+ * @param req
+ */
 export default async function workflow(refreshToken: string, req: Request): Promise<ILoginResponse> {
 	const t = req.t ?? customTFunction
 	// decode refresh token

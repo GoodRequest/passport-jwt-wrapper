@@ -17,8 +17,8 @@ export interface ILoginResponse {
  * return access and refresh tokens for given user
  * expirations are read from config
  * audience is from enum JWT_AUDIENCE
- * Refresh token id (`rid` / `jwtid`) is get from `userTokenRepository.createRefreshTokenID()`
- * calls `userTokenRepository.saveRefreshToken` and `userTokenRepository.saveAccessToken` if available
+ * New refresh token id (`rid` / `jti` / `jwtid`) is obtained calling `userTokenRepository.createRefreshTokenID()`
+ * refresh token is saved by calling `userTokenRepository.saveRefreshToken(userID, fid, rid, refreshToken)`
  * @param userID
  * @param familyID: when none is provided, refresh token id (jwtid) is used (creates new family ID)
  */

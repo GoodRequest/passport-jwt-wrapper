@@ -1,3 +1,4 @@
+// Passport is not used in this library, but have to be provided by host application
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { PassportStatic } from 'passport'
 
@@ -23,6 +24,17 @@ import { State } from './State'
 import { JWT_AUDIENCE, PASSPORT_NAME } from './utils/enums'
 import { createHash } from './utils/jwt'
 
+/**
+ * Initialization method, have to be run before using this authentication library
+ * repositories are: {
+ * @param passport: PassportStatic instance
+ * @param repositories {
+ *	 	userRepository: IUserRepository<UserIDType> // required
+ *		refreshTokenRepository: IRefreshTokenRepository<TokenIDType, UserIDType> // required
+ *		invitationTokenRepository?: IInvitationTokenRepository<UserIDType> // optional -- need only when invitation cancellation will be implemented
+ *		passwordResetTokenRepository?: IPasswordResetTokenRepository<UserIDType> // optional -- needed only when password reset tokens should be invalidated
+ * }
+ */
 function initAuth<TokenIDType extends ID, UserIDType extends ID>(
 	passport: PassportStatic,
 	repositories: {

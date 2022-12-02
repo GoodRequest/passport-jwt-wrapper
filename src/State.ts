@@ -2,6 +2,10 @@
 import { PassportStatic } from 'passport'
 import { ID, IUserRepository, IRefreshTokenRepository, IInvitationTokenRepository, IPasswordResetTokenRepository } from './types/interfaces'
 
+/**
+ * Internal class for keeping state,
+ * for now it consist of passport instance and repositories
+ */
 // eslint-disable-next-line import/prefer-default-export
 export class State<T extends ID, U extends ID> {
 	static instance: State<any, any>

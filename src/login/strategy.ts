@@ -10,7 +10,7 @@ const passportConfig: IPassportConfig = config.get('passport')
 
 /**
  * Default local verify function
- * run function getUser and checks password against DB hash using bcrypt
+ * internally calls `userRepository.getUserByEmail` and if the user is returned, their password hash is checked using bcrypt compare method
  * @param req
  * @param email
  * @param password
@@ -44,6 +44,9 @@ export async function strategyVerifyFunction(
 	}
 }
 
+/**
+ * passport-local Strategy
+ */
 export function strategy() {
 	return new Strategy(passportConfig.local, strategyVerifyFunction)
 }
