@@ -9,6 +9,9 @@ export type GetUserByIdFunction<UserIDType extends ID> = (id: UserIDType) => Pro
 
 export interface IUserRepository<UserIDType extends ID> {
 	getUserById: GetUserByIdFunction<UserIDType>
+	/**
+	 * Optional method, should be used when non-registered (invited) user is not returned by `getUserById`
+	 */
 	getNewUserById?: GetUserByIdFunction<UserIDType>
 	getUserByEmail: GetUserByEmailFunction<UserIDType>
 	updateUserPassword: (userID: UserIDType, newPassword: string) => Promise<unknown>

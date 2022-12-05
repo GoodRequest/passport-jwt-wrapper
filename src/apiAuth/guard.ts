@@ -3,7 +3,7 @@ import { PASSPORT_NAME } from '../utils/enums'
 
 /**
  * Use as middleware before authenticated endpoint
- * Need to be a function, since passport is provided after import
+ * Needs to be a function, since passport is provided after import
  * Usage: `router.use('/endpoint', ApiAuth.guard(), ..., endpoint)`
  */
 export default () => {

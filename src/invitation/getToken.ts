@@ -8,7 +8,12 @@ import { State } from '../State'
 
 const passportConfig: IPassportConfig = config.get('passport')
 
-export default async (userID: ID): Promise<string> => {
+/**
+ * returns invitation token for the user.
+ * `saveInvitationToken` is called, if `invitationTokenRepository` was provided
+ * @param userID
+ */
+export default async function getToken(userID: ID): Promise<string> {
 	const tokenPayload = {
 		uid: userID
 	}

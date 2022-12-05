@@ -37,12 +37,14 @@ This can be used to cancel password reset.
 
 ## Usage
 ### Login / Logout / Refresh Tokens / Reset Password
+
 ```typescript
-import { Login, RefreshToken, PasswordReset, Logout, ApiAuth } from '@goodrequest/jwt-auth'
+import { Login, RefreshToken, PasswordReset, Logout, LogoutEverywhere, ApiAuth } from '@goodrequest/jwt-auth'
 
 import * as postLogin from './post.login'
 import * as postResetPasswordRequest from './post.resetPasswordRequest'
 import schemaMiddleware from '../../../middlewares/schemaMiddleware'
+
 const router = Router()
 
 router.post('/login',
@@ -54,6 +56,11 @@ router.post('/logout',
 	ApiAuth.guard(),
 	schemaMiddleware(Logout.requestSchema),
 	Logout.endpoint)
+
+router.post('/logout-everywhere',
+	ApiAuth.guard(),
+	schemaMiddleware(LogoutEverywhere.requestSchema),
+	LogoutEverywhere.endpoint)
 
 router.post('/refresh-token',
 	schemaMiddleware(RefreshToken.requestSchema),
@@ -207,17 +214,17 @@ Each of the modules exports its parts:
 ## API
 ### Endpoints
 Express endpoints (`(req, res, next)`). They return object, typically JWTs.
-- [`Logout.endoint`](./src/logout/endpoint.ts): Returns just the message. Internally invalidates refresh token family.
+- [`Logout.endpoint`](./src/logout/endpoint.ts): Returns just the message. Internally invalidates refresh token family.
 - [`LogoutEverywhere.endpoint`](src/logoutEverywhere/endpoint.ts): Returns just the message. Internally invalidates all users refresh tokens.
-- [`PasswordReset.endpoint`](src/passwordReset/endpoint.ts):
-- [`RefreshToken.endpoint`](src/refreshToken/endpoint.ts):
+- [`PasswordReset.endpoint`](src/passwordReset/endpoint.ts): Returns just the message. Changes user password and invalidates all user refresh tokens, if `userRepository.invalidateUserRefreshTokens` method is provided.
+- [`RefreshToken.endpoint`](src/refreshToken/endpoint.ts): Returns new access and refresh tokens. Used refresh token is invalidated, since this library is using refresh token rotation.
 
 ### Worfklow
 Internal function used by endpoint.
-- [`Logout.workflow`](./src/logout/workflow.ts):
-- [`LogoutEverywhere.workflow`](src/logoutEverywhere/workflow.ts):
-- [`PasswordReset.workflow`](src/passwordReset/workflow.ts):
-- [`RefreshToken.workflow`](src/refreshToken/workflow.ts):
+- [`Logout.workflow`](./src/logout/workflow.ts)
+- [`LogoutEverywhere.workflow`](src/logoutEverywhere/workflow.ts)
+- [`PasswordReset.workflow`](src/passwordReset/workflow.ts)
+- [`RefreshToken.workflow`](src/refreshToken/workflow.ts)
 
 ### Guards
 [express](https://expressjs.com/) middlewares (calls `next` function):
@@ -234,7 +241,10 @@ This function is accessible without authorization, so it should not leak any inf
 
 ### Schemas
 Every module which exports endpoint also exports [Joi](https://joi.dev/)  `requestSchema` and `responseSchema`
-
+router.post('/logout',
+	ApiAuth.guard(),
+	schemaMiddleware(Logout.requestSchema),
+	Logout.endpoint)
 ### Other
 This library also exports helper functions, enums and types. All exports can be found in the [index.ts](src/index.ts).
 

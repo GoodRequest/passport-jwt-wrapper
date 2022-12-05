@@ -34,6 +34,14 @@ export async function secretOrKeyProvider(req: Request, rawJwtToken: string, don
 	}
 }
 
+/**
+ * Verify function for password reset.
+ * It's main objective is to fetch user from repository by calling `userRepository.getUserByID` and validating password reset token
+ * by calling `passwordResetTokenRepository.isPasswordTokenValid` if the repository is provided.
+ * @param req
+ * @param payload
+ * @param done
+ */
 export async function strategyVerifyFunction(req: Request, payload: IJwtPayload, done: VerifiedCallback) {
 	try {
 		const state = State.getInstance()
@@ -58,6 +66,9 @@ export async function strategyVerifyFunction(req: Request, payload: IJwtPayload,
 	}
 }
 
+/**
+ * Password reset strategy
+ */
 export function strategy() {
 	return new JwtStrategy(
 		{

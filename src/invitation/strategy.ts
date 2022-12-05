@@ -11,6 +11,14 @@ import { JWT_AUDIENCE } from '../utils/enums'
 
 const passportConfig: IPassportConfig = config.get('passport')
 
+/**
+ * Strategy verify function for invitation. Validates invitation token.
+ * Internally calls `invitationTokenRepository.isInvitationTokenValid` if `invitationTokenRepository` is provided.
+ * Also calls `userRepository.getNewUserById` (if provided) or `userRepository.getUserById` if not.
+ * @param req
+ * @param payload
+ * @param done
+ */
 export const strategyVerifyFunction = async (req: Request, payload: IJwtPayload, done: VerifiedCallback) => {
 	try {
 		const state = State.getInstance()
@@ -27,6 +35,7 @@ export const strategyVerifyFunction = async (req: Request, payload: IJwtPayload,
 			throw new ErrorBuilder(401, t('error:Invitation token is not valid'))
 		}
 
+		// without the bind, this (userRepo) is lost in the context
 		const user = await getUser.bind(userRepo)(payload.uid)
 
 		if (!user) {
@@ -39,6 +48,9 @@ export const strategyVerifyFunction = async (req: Request, payload: IJwtPayload,
 	}
 }
 
+/**
+ * User invitation strategy, needed for the guard to function.
+ */
 export function strategy() {
 	return new JwtStrategy(
 		{

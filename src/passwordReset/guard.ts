@@ -5,7 +5,14 @@ import { PASSPORT_NAME } from '../utils/enums'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { customTFunction } from '../utils/translations'
 
-export default (req: Request, res: Response, next: NextFunction) => {
+/**
+ * Guard middleware for password reset.
+ * Needs to be a function, since passport is provided after import
+ * @param req
+ * @param res
+ * @param next
+ */
+export default function guard(req: Request, res: Response, next: NextFunction) {
 	State.getInstance().passport.authenticate(PASSPORT_NAME.JWT_PASSWORD_RESET, (err, userData) => {
 		try {
 			if (err) {

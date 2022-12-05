@@ -7,14 +7,27 @@ import workflow from './workflow'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { customTFunction } from '../utils/translations'
 
+/**
+ * Logout endpoint request schema - empty
+ */
 export const requestSchema = Joi.object({
 	body: Joi.object(),
 	query: Joi.object(),
 	params: Joi.object()
 })
 
+/**
+ * Logout endpoint response schema - full message
+ */
 export const responseSchema = fullMessagesResponse
 
+/**
+ * Logout endpoint
+ * Usage: `router.post('/logout', ApiAuth.guard(), schemaMiddleware(Logout.requestSchema), Logout.endpoint)`
+ * @param req
+ * @param res
+ * @param next
+ */
 export async function endpoint(req: Request, res: Response, next: NextFunction) {
 	try {
 		const authHeader = req.headers.authorization
