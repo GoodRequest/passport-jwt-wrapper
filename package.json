@@ -1,5 +1,5 @@
 {
-	"name": "@goodrequest/jwt-auth",
+	"name": "@slonik923/jwt-auth",
 	"version": "1.0.0",
 	"description": "",
 	"main": "dist/src/index.js",
@@ -19,8 +19,15 @@
 		"start:dev": "ts-node src/index.ts --watch"
 	},
 	"keywords": [],
-	"author": "",
+	"author": "Juraj Chripko",
 	"license": "ISC",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Slonik923/jwt-auth"
+	},
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com/Slonik923"
+	},
 	"devDependencies": {
 		"@goodrequest/eslint-config-typescript": "^1.2.0",
 		"@types/bcrypt": "^5.0.0",
