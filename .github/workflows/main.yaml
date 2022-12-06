@@ -16,7 +16,6 @@ jobs:
           node-version: '16.x'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@slonik923'
-      - run: cat .npmrc
       - run: npm ci
       - run: npm publish
         env:
