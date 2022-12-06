@@ -270,6 +270,3 @@ Execution now takes more time, when the input is invalid, but that can change wh
 Measurements heavily depend on the compilation and code optimization done by compiler, so in production this could vary.
 These numbers are average from 1000 iterations, after 10 000 iterations warm-up, so JIT compiler can do it's job.
 More on these tests can in the [`getToken.test.ts`](./tests/cases/passwordReset/getToken.test.ts).
-
-## TODO:
-- `repository.getByID`: id is `string` | `number`
