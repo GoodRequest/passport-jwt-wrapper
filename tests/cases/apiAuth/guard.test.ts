@@ -2,54 +2,75 @@ import express, { Express } from 'express'
 import request from 'supertest'
 import passport from 'passport'
 import { expect } from 'chai'
+import i18next, { InitOptions as I18nextOptions } from 'i18next'
+import i18nextMiddleware from 'i18next-http-middleware'
+import i18nextBackend from 'i18next-fs-backend'
+import config from 'config'
 
 import { ApiAuth, initAuth, JWT_AUDIENCE } from '../../../src'
 import { createJwt } from '../../../src/utils/jwt'
 
+import { getUser, languages, loginUserAndSetTokens, seedUsers } from '../../helpers'
 import { UserRepository } from '../../mocks/repositories/userRepository'
-import { loginUsers } from '../../seeds/users'
 import { TokenRepository } from '../../mocks/repositories/tokenRepository'
 import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
 import loginRouter from '../../mocks/loginRouter'
-
-import { loginUserAndSetTokens } from '../../helpers'
 import TestingEndpoint from '../../mocks/testingEndpoint'
 
-let app: Express
-let userRepo: UserRepository
+import * as enErrors from '../../../locales/en/error.json'
+import * as skErrors from '../../../locales/sk/error.json'
 
-describe('Login Guard', () => {
+const i18NextConfig: I18nextOptions = config.get('i18next')
+
+function setupRouters(app: Express) {
+	app.use('/auth', loginRouter())
+	app.get('/endpoint', ApiAuth.guard(), TestingEndpoint)
+
+	app.use(errorMiddleware)
+}
+
+function declareLanguageDependentTests(app: Express, userRepo: UserRepository, language?: string) {
+	it(`${language ? `[${language}] ` : ''}Removed user`, async () => {
+		const user = getUser()
+		await userRepo.delete(user.id)
+
+		const response = await request(app)
+			.get('/endpoint')
+			.set('accept-language', language ?? 'sk')
+			.set('Authorization', `Bearer ${user.at}`)
+
+		expect(response.statusCode).to.eq(401)
+		if (language && language === 'sk') {
+			expect(response.body.messages[0].message).to.eq(skErrors['User was not found'])
+		} else {
+			expect(response.body.messages[0].message).to.eq(enErrors['User was not found'])
+		}
+	})
+}
+
+describe('Login Guard w/o i18next', () => {
+	const userRepo = new UserRepository()
+	const app = express()
+
 	before(async () => {
-		userRepo = new UserRepository()
-
-		let promises: Promise<unknown>[] = []
-		// seed users
-		loginUsers.getAllPositiveValues().forEach((user) => {
-			promises.push(userRepo.add(user.email, user.password))
-		})
-
-		await Promise.all(promises)
-
 		// init authentication library
 		initAuth(passport, {
 			userRepository: userRepo,
 			refreshTokenRepository: TokenRepository.getInstance()
 		})
-		// init express app
-		app = express()
 
 		app.use(express.urlencoded({ extended: true }))
 		app.use(express.json())
 
-		app.use('/auth', loginRouter())
-		app.get('/endpoint', ApiAuth.guard(), TestingEndpoint)
+		setupRouters(app)
+	})
 
-		app.use(errorMiddleware)
+	beforeEach(async () => {
+		const users = await seedUsers(userRepo)
 
-		// login users and set tokens
-		promises = []
-		loginUsers.getAllPositiveValues().forEach((user) => {
-			promises.push(loginUserAndSetTokens(app, user))
+		const promises: Promise<void>[] = []
+		users.forEach((u) => {
+			promises.push(loginUserAndSetTokens(app, u))
 		})
 
 		await Promise.all(promises)
@@ -94,14 +115,51 @@ describe('Login Guard', () => {
 	})
 
 	it('User login', async () => {
-		const user = loginUsers.getPositiveValue()
-		if (!user) {
-			throw new Error('No positive user')
-		}
+		const user = getUser()
 		const response = await request(app).get('/endpoint').set('Authorization', `Bearer ${user.at}`)
 
 		expect(response.statusCode).to.eq(200)
 	})
 
-	// TODO: translations
+	declareLanguageDependentTests(app, userRepo)
+})
+describe('Login Guard with i18 next', () => {
+	const userRepo = new UserRepository()
+	const app = express()
+
+	before(async () => {
+		// init authentication library
+		initAuth(passport, {
+			userRepository: userRepo,
+			refreshTokenRepository: TokenRepository.getInstance()
+		})
+
+		app.use(express.urlencoded({ extended: true }))
+		app.use(express.json())
+
+		// i18next config
+		await i18next
+			.use(i18nextMiddleware.LanguageDetector)
+			.use(i18nextBackend)
+			.init(JSON.parse(JSON.stringify(i18NextConfig))) // it has to be deep copied
+
+		app.use(i18nextMiddleware.handle(i18next))
+
+		setupRouters(app)
+	})
+
+	beforeEach(async () => {
+		const users = await seedUsers(userRepo)
+
+		const promises: Promise<void>[] = []
+		users.forEach((u) => {
+			promises.push(loginUserAndSetTokens(app, u))
+		})
+
+		await Promise.all(promises)
+	})
+
+	languages.forEach((lang) => {
+		declareLanguageDependentTests(app, userRepo, lang)
+	})
 })
