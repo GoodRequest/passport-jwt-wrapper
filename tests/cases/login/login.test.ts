@@ -13,7 +13,7 @@ import { TokenRepository } from '../../mocks/repositories/tokenRepository'
 import loginRouter from '../../mocks/loginRouter'
 import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
 import { LoginUserProperty, loginUsers } from '../../seeds/users'
-import { languages, seedUserAndSetID, seedUsers } from '../../helpers'
+import { getUser, languages, seedUserAndSetID, seedUsers } from '../../helpers'
 
 import * as enErrors from '../../../locales/en/error.json'
 import * as skErrors from '../../../locales/sk/error.json'
@@ -201,6 +201,17 @@ describe('Login without i18next', () => {
 		const response = await request(app).post('/auth/login').send({
 			email: user.email,
 			password: 'SomeRandomPassword'
+		})
+
+		expect(response.statusCode).to.eq(401)
+	})
+
+	it(`Wrong pass`, async () => {
+		const user = getUser()
+
+		const response = await request(app).post('/auth/login').send({
+			email: user.email,
+			password: 'WrongPassword'
 		})
 
 		expect(response.statusCode).to.eq(401)
