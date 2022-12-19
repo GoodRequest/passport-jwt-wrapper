@@ -27,13 +27,9 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
       - name: Download codecov uploader
-        run: curl https://uploader.codecov.io/verification.gpg | gpg --no-default-keyring --keyring trustedkeys.gpg --import # One-time step
-        run: curl -Os https://uploader.codecov.io/latest/linux/codecov
-		run: curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
-		run: curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig
-		run: gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
-		run: shasum -a 256 -c codecov.SHA256SUM
-		run: chmod +x codecov
-		run: ./codecov -t ${CODECOV_TOKEN}
+		run: curl -Os https://uploader.codecov.io/latest/linux/codecov
+	  - run: chmod +x codecov
+	  - name: Run codecov
+	    run: ./codecov
 
 
