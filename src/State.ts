@@ -8,7 +8,7 @@ import { ID, IUserRepository, IRefreshTokenRepository, IInvitationTokenRepositor
  */
 // eslint-disable-next-line import/prefer-default-export
 export class State<T extends ID, U extends ID> {
-	static instance: State<any, any>
+	static instance?: State<any, any>
 	static getInstance(): State<ID, ID> {
 		if (!this.instance) {
 			throw new Error("Authentication library ('@goodrequest/passport-jwt-wrapper') is not initialized")
