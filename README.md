@@ -1,6 +1,7 @@
 # JWT Authentication Library
 Authentication Library developed and used by the GoodRequest s.r.o.
 It is based on the [express](https://expressjs.com/) framework for Node.js runtime using JWTs.
+It is wrapper around [passportjs](https://www.passportjs.org/) library designed to minimize boilerplate.
 This library should take of the user authentication, it is divided into [modules](#modules):
 - Login
 - Securing endpoints
@@ -11,7 +12,7 @@ This library should take of the user authentication, it is divided into [modules
 - User invitation
 
 ## Installation
-`npm i --save @goodrequest/auth`
+`npm i --save @Slonik923/jwt-auth`
 
 ## Initialization:
 ```typescript
