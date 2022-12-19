@@ -1,6 +1,7 @@
 name: Build and run tests
-on:
-  push
+on: [push, pull_request]
+branches:
+  - master
 
 jobs:
   build:
@@ -9,7 +10,13 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v3
-      - run: npm ci
-      - run: npm run test
-      - run: npm run build
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run linter
+        run: npm run lint
+      - name: Run tests
+        run: npm run test
+      - name: Build
+        run: npm run build
