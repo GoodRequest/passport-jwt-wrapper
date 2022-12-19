@@ -1,11 +1,11 @@
 name: Build and run tests
 on:
   push:
-	branches:
-	  - master
+    branches:
+      - master
   pull_request:
-	branches:
-	  - master
+    branches:
+      - master
 
 jobs:
   build:
