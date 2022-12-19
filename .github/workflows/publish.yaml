@@ -10,10 +10,10 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v3
-      # Setup .npmrc file to publish to GitHub Packages
       - uses: actions/setup-node@v3
         with:
           node-version: '16.x'
+          cache: 'npm'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@slonik923'
       - run: npm ci
