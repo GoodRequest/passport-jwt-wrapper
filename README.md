@@ -1,3 +1,7 @@
+[![Build and run tests](https://github.com/Slonik923/passport-jwt-wrapper/actions/workflows/test.yaml/badge.svg)](https://github.com/Slonik923/passport-jwt-wrapper/actions/workflows/test.yaml)
+[![codecov](https://codecov.io/gh/Slonik923/passport-jwt-wrapper/branch/master/graph/badge.svg?token=5CXS6JGCQF)](https://codecov.io/gh/Slonik923/passport-jwt-wrapper)
+[![Publish package to GitHub Packages](https://github.com/Slonik923/passport-jwt-wrapper/actions/workflows/publish.yaml/badge.svg)](https://github.com/Slonik923/passport-jwt-wrapper/actions/workflows/publish.yaml)
+
 # JWT Authentication Library
 Authentication Library developed and used by the GoodRequest s.r.o.
 It is based on the [express](https://expressjs.com/) framework for Node.js runtime using JWTs.
