@@ -27,9 +27,9 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
       - name: Download codecov uploader
-		run: curl -Os https://uploader.codecov.io/latest/linux/codecov
-	  - run: chmod +x codecov
-	  - name: Run codecov
-	    run: ./codecov
+        run: curl -Os https://uploader.codecov.io/latest/linux/codecov
+      - run: chmod +x codecov
+      - name: Run codecov
+        run: ./codecov
 
 
