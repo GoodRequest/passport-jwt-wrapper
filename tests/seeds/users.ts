@@ -2,6 +2,8 @@ import { DomainSet, DomainStorage } from '../domain'
 
 const emails = {
 	test: 'test@goodrequest.com',
+	wrong: 'wrong@goodrequest.com',
+	noPass: 'noPass@goodrequest.com',
 	nonExisting: 'nonExisting@goodrequest.com',
 	wrongFormat: 'wrongFormat.com'
 }
@@ -80,8 +82,8 @@ export class LoginUser implements DomainSet<LoginUserProperty> {
 
 export const loginUsers = new DomainStorage<LoginUserProperty, LoginUser>([
 	new LoginUser(emails.test, passwords.test, [], true, true),
-	new LoginUser(emails.test, passwords.testWrong, [LoginUserProperty.WRONG_PASS], true, false),
+	new LoginUser(emails.wrong, passwords.testWrong, [LoginUserProperty.WRONG_PASS], true, false),
+	new LoginUser(emails.noPass, undefined, [LoginUserProperty.NO_PASS], true, false),
 	new LoginUser(emails.nonExisting, passwords.test, [LoginUserProperty.NON_EXISTING], true, false),
-	new LoginUser(emails.test, undefined, [LoginUserProperty.NO_PASS], false),
 	new LoginUser(emails.wrongFormat, undefined, [LoginUserProperty.WRONG_FORMAT], false)
 ])

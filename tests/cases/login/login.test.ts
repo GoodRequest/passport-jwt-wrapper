@@ -13,7 +13,7 @@ import { TokenRepository } from '../../mocks/repositories/tokenRepository'
 import loginRouter from '../../mocks/loginRouter'
 import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
 import { LoginUserProperty, loginUsers } from '../../seeds/users'
-import { languages } from '../../helpers'
+import { languages, seedUserAndSetID, seedUsers } from '../../helpers'
 
 import * as enErrors from '../../../locales/en/error.json'
 import * as skErrors from '../../../locales/sk/error.json'
@@ -53,13 +53,7 @@ function expectInvalidResponse(response: Response, lang?: string): void {
 before(async () => {
 	userRepo = new UserRepository()
 
-	const promises: Promise<unknown>[] = []
-	// seed users
-	loginUsers.getAllPositiveValues().forEach((user) => {
-		promises.push(userRepo.add(user.email, user.password))
-	})
-
-	await Promise.all(promises)
+	await seedUsers(userRepo)
 
 	// init authentication library
 	initAuth(passport, {
@@ -196,14 +190,17 @@ describe('Login without i18next', () => {
 	})
 
 	it(`User without set password`, async () => {
-		const user = loginUsers.getInvalidUser([LoginUserProperty.NO_PASS])
+		const user = loginUsers.getNegativeUser([LoginUserProperty.NO_PASS])
 		if (!user) {
 			throw new Error('Cannot get user without password')
 		}
 
+		// seed "invalid" user (without password)
+		await seedUserAndSetID(userRepo, user)
+
 		const response = await request(app).post('/auth/login').send({
 			email: user.email,
-			password: user.password
+			password: 'SomeRandomPassword'
 		})
 
 		expect(response.statusCode).to.eq(401)
