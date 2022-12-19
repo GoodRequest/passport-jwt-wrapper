@@ -12,7 +12,7 @@ This library should take of the user authentication, it is divided into [modules
 - User invitation
 
 ## Installation
-`npm i --save @Slonik923/jwt-auth`
+`npm i --save @Slonik923/passport-jwt-wrapper`
 
 ## Initialization:
 ```typescript
@@ -40,7 +40,7 @@ This can be used to cancel password reset.
 ### Login / Logout / Refresh Tokens / Reset Password
 
 ```typescript
-import { Login, RefreshToken, PasswordReset, Logout, LogoutEverywhere, ApiAuth } from '@goodrequest/jwt-auth'
+import { Login, RefreshToken, PasswordReset, Logout, LogoutEverywhere, ApiAuth } from '@slonik923/passport-jwt-wrapper'
 
 import * as postLogin from './post.login'
 import * as postResetPasswordRequest from './post.resetPasswordRequest'
