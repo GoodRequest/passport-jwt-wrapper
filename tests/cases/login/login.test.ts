@@ -12,7 +12,7 @@ import { UserRepository } from '../../mocks/repositories/userRepository'
 import { TokenRepository } from '../../mocks/repositories/tokenRepository'
 import loginRouter from '../../mocks/loginRouter'
 import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
-import { loginUsers } from '../../seeds/users'
+import { LoginUserProperty, loginUsers } from '../../seeds/users'
 import { languages } from '../../helpers'
 
 import * as enErrors from '../../../locales/en/error.json'
@@ -193,5 +193,19 @@ describe('Login without i18next', () => {
 
 		// message should be in EN
 		expectInvalidResponse(response)
+	})
+
+	it(`User without set password`, async () => {
+		const user = loginUsers.getInvalidUser([LoginUserProperty.NO_PASS])
+		if (!user) {
+			throw new Error('Cannot get user without password')
+		}
+
+		const response = await request(app).post('/auth/login').send({
+			email: user.email,
+			password: user.password
+		})
+
+		expect(response.statusCode).to.eq(401)
 	})
 })

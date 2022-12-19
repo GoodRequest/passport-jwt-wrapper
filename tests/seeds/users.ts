@@ -13,6 +13,7 @@ const passwords = {
 
 export enum LoginUserProperty {
 	WRONG_PASS,
+	NO_PASS,
 	NON_EXISTING,
 	WRONG_FORMAT
 }
@@ -81,6 +82,6 @@ export const loginUsers = new DomainStorage<LoginUserProperty, LoginUser>([
 	new LoginUser(emails.test, passwords.test, [], true, true),
 	new LoginUser(emails.test, passwords.testWrong, [LoginUserProperty.WRONG_PASS], true, false),
 	new LoginUser(emails.nonExisting, passwords.test, [LoginUserProperty.NON_EXISTING], true, false),
-	new LoginUser(emails.test, undefined, [LoginUserProperty.WRONG_PASS], false),
+	new LoginUser(emails.test, undefined, [LoginUserProperty.NO_PASS], false),
 	new LoginUser(emails.wrongFormat, undefined, [LoginUserProperty.WRONG_FORMAT], false)
 ])
