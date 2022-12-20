@@ -78,10 +78,8 @@ export default async function getToken(email: string): Promise<string | undefine
 	return resetPasswordToken
 }
 
-/**
- * Password Reset getToken method before conversion to more constant-time method to prevent timing attacks
- * @param email
- */
+/*
+// just for reference
 export async function getTokenOld(email: string): Promise<undefined | string> {
 	const state = State.getInstance()
 	const user = await state.userRepository.getUserByEmail(email)
@@ -109,3 +107,4 @@ export async function getTokenOld(email: string): Promise<undefined | string> {
 
 	return resetPasswordToken
 }
+ */
