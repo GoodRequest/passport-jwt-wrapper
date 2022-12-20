@@ -26,6 +26,7 @@ export const fullMessagesResponse = Joi.object({
 
 /**
  * Joi schema for request password (with masked password value)
+ * // TODO: better message https://github.com/Slonik923/passport-jwt-wrapper/issues/7
  */
 export const passwordSchema = Joi.string()
 	.regex(passwordRegEx)

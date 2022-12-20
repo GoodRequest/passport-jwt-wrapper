@@ -162,6 +162,16 @@ describe('Password reset endpoint w/o i18next', () => {
 		expect(response.statusCode).to.eq(401)
 	})
 
+	it('Weak password', async () => {
+		const user = getUser()
+		const token = await getPasswordToken(user.email)
+		const password = 'weak'
+
+		const response = await callEndpoint(app, password, token)
+
+		expect(response.statusCode).to.eq(400)
+	})
+
 	declareLanguageDependentTests(app, userRepo, passwordResetTokenRepo)
 })
 
