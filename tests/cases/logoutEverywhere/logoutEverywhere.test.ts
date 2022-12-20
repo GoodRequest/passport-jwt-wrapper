@@ -9,14 +9,13 @@ import request, { Response } from 'supertest'
 import { expect } from 'chai'
 import { ApiAuth, initAuth, JWT_AUDIENCE, LogoutEverywhere, RefreshToken } from '../../../src'
 
-import { LoginUser, loginUsers } from '../../seeds/users'
 import { UserRepository } from '../../mocks/repositories/userRepository'
 import { TokenRepository } from '../../mocks/repositories/tokenRepository'
 import LoginRouter from '../../mocks/loginRouter'
 import TestingEndpoint from '../../mocks/testingEndpoint'
 import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
 import schemaMiddleware from '../../mocks/middlewares/schemaMiddleware'
-import { getUser, languages, loginUserAndSetTokens, seedUserAndSetID } from '../../helpers'
+import { getUser, languages, loginUserAndSetTokens, seedUsers } from '../../helpers'
 
 import * as enTranslations from '../../../locales/en/translation.json'
 import * as skTranslations from '../../../locales/sk/translation.json'
@@ -60,26 +59,37 @@ async function runNegativeRefreshTokenAttempt(refreshToken: string): Promise<Res
 	return response
 }
 
-before(async () => {
-	const userRepo = new UserRepository()
+async function declarePositiveTests(lang?: string) {
+	it(`${lang ? `[${lang}] ` : ''}Successful user logout`, async () => {
+		const user = getUser()
+		await loginUserAndSetTokens(app, user)
 
-	const promises: Promise<LoginUser>[] = []
-	// seed users
-	loginUsers.getAllPositiveValues().forEach((u) => {
-		promises.push(seedUserAndSetID(userRepo, u))
+		const response = await request(app)
+			.post('/auth/logout-everywhere')
+			.set('accept-language', lang ?? 'sk')
+			.set('authorization', `Bearer ${user.at}`)
+
+		expect(response.statusCode).to.eq(200)
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		expect(response.body.messages[0].message).to.exist
+		expect(response.body.messages[0].message).to.eq(getLogoutMessage(lang))
+
+		await runNegativeRefreshTokenAttempt(user.rt)
 	})
+}
 
-	await Promise.all(promises)
-
-	// init authentication library
-	initAuth(passport, {
-		userRepository: userRepo,
-		refreshTokenRepository: TokenRepository.getInstance()
-	})
-})
-
-describe('Logout user from everywhere', () => {
+describe('Logout user from everywhere with i18next', () => {
 	before(async () => {
+		const userRepo = new UserRepository()
+
+		await seedUsers(userRepo)
+
+		// init authentication library
+		initAuth(passport, {
+			userRepository: userRepo,
+			refreshTokenRepository: TokenRepository.getInstance()
+		})
+
 		// init express app
 		app = express()
 
@@ -98,19 +108,7 @@ describe('Logout user from everywhere', () => {
 	})
 
 	languages.forEach((lang) => {
-		it(`[${lang}] Successful user logout`, async () => {
-			const user = getUser()
-			await loginUserAndSetTokens(app, user)
-
-			const response = await request(app).post('/auth/logout-everywhere').set('accept-language', lang).set('authorization', `Bearer ${user.at}`)
-
-			expect(response.statusCode).to.eq(200)
-			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-			expect(response.body.messages[0].message).to.exist
-			expect(response.body.messages[0].message).to.eq(getLogoutMessage(lang))
-
-			await runNegativeRefreshTokenAttempt(user.rt)
-		})
+		declarePositiveTests(lang)
 	})
 
 	it(`Other token is also not valid after successful user logout`, async () => {
@@ -193,6 +191,16 @@ describe('Logout user from everywhere', () => {
 
 describe('Logout user without i18next', () => {
 	before(async () => {
+		const userRepo = new UserRepository()
+
+		await seedUsers(userRepo)
+
+		// init authentication library
+		initAuth(passport, {
+			userRepository: userRepo,
+			refreshTokenRepository: TokenRepository.getInstance()
+		})
+
 		// init express app
 		app = express()
 
@@ -202,7 +210,47 @@ describe('Logout user without i18next', () => {
 		setupRouters()
 	})
 
-	// TODO: logout without i18next
 	// no lang -> 'sk' is requested, 'en' is expected in response
-	// declareNegativeTests()
+	declarePositiveTests()
+})
+
+describe('Logout user from everywhere without proper initialization', () => {
+	before(async () => {
+		const userRepo = new UserRepository()
+
+		await seedUsers(userRepo)
+
+		const tokenRepo = TokenRepository.getInstance()
+
+		// init authentication library
+		initAuth(passport, {
+			userRepository: userRepo,
+			refreshTokenRepository: {
+				createTokenID: tokenRepo.createTokenID.bind(tokenRepo),
+				invalidateRefreshToken: tokenRepo.invalidateRefreshToken.bind(tokenRepo),
+				invalidateRefreshTokenFamily: tokenRepo.invalidateRefreshTokenFamily.bind(tokenRepo),
+				isRefreshTokenValid: tokenRepo.isRefreshTokenValid.bind(tokenRepo),
+				saveRefreshToken: tokenRepo.saveRefreshToken.bind(tokenRepo)
+				// invalidateUserRefreshTokens is missing
+			}
+		})
+
+		// init express app
+		app = express()
+
+		app.use(express.urlencoded({ extended: true }))
+		app.use(express.json())
+
+		setupRouters()
+	})
+
+	it(`Missing "invalidateUserRefreshTokens"`, async () => {
+		const user = getUser()
+		await loginUserAndSetTokens(app, user)
+
+		const response = await request(app).post('/auth/logout-everywhere').set('authorization', `Bearer ${user.at}`)
+
+		expect(response.statusCode).to.eq(500)
+		expect(response.body.messages[0].message).to.eq('Something went wrong!')
+	})
 })

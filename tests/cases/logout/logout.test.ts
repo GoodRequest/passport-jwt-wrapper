@@ -9,22 +9,19 @@ import request, { Response } from 'supertest'
 import { expect } from 'chai'
 import { ApiAuth, initAuth, JWT_AUDIENCE, Logout, RefreshToken } from '../../../src'
 
-import { LoginUser, loginUsers } from '../../seeds/users'
 import { UserRepository } from '../../mocks/repositories/userRepository'
 import { TokenRepository } from '../../mocks/repositories/tokenRepository'
 import LoginRouter from '../../mocks/loginRouter'
 import TestingEndpoint from '../../mocks/testingEndpoint'
 import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
 import schemaMiddleware from '../../mocks/middlewares/schemaMiddleware'
-import { getUser, languages, loginUserAndSetTokens, seedUserAndSetID } from '../../helpers'
+import { getUser, languages, loginUserAndSetTokens, seedUsers } from '../../helpers'
 
 import * as enTranslations from '../../../locales/en/translation.json'
 import * as skTranslations from '../../../locales/sk/translation.json'
 import { createJwt } from '../../../src/utils/jwt'
 
 const i18NextConfig: I18nextOptions = config.get('i18next')
-
-let app: Express
 
 function getLogoutMessage(language?: string): string {
 	if (language && language === 'sk') {
@@ -37,7 +34,7 @@ function getLogoutMessage(language?: string): string {
 /**
  * Helper function for setting up express routers for testing
  */
-function setupRouters() {
+function setupRouters(app: Express) {
 	const loginRouter = LoginRouter()
 
 	loginRouter.post('/logout', ApiAuth.guard(), schemaMiddleware(Logout.requestSchema), Logout.endpoint)
@@ -50,7 +47,7 @@ function setupRouters() {
 	app.use(errorMiddleware)
 }
 
-async function runNegativeRefreshTokenAttempt(refreshToken: string): Promise<Response> {
+async function runNegativeRefreshTokenAttempt(app: Express, refreshToken: string): Promise<Response> {
 	const response = await request(app).post('/auth/refresh-token').send({
 		refreshToken
 	})
@@ -60,26 +57,19 @@ async function runNegativeRefreshTokenAttempt(refreshToken: string): Promise<Res
 	return response
 }
 
-describe('User logout', () => {
+describe('User logout with i18next', () => {
+	const app = express()
+
 	before(async () => {
 		const userRepo = new UserRepository()
 
-		const promises: Promise<LoginUser>[] = []
-		// seed users
-		loginUsers.getAllPositiveValues().forEach((u) => {
-			promises.push(seedUserAndSetID(userRepo, u))
-		})
-
-		await Promise.all(promises)
+		await seedUsers(userRepo)
 
 		// init authentication library
 		initAuth(passport, {
 			userRepository: userRepo,
 			refreshTokenRepository: TokenRepository.getInstance()
 		})
-
-		// init express app
-		app = express()
 
 		app.use(express.urlencoded({ extended: true }))
 		app.use(express.json())
@@ -92,7 +82,7 @@ describe('User logout', () => {
 
 		app.use(i18nextMiddleware.handle(i18next))
 
-		setupRouters()
+		setupRouters(app)
 	})
 
 	languages.forEach((lang) => {
@@ -107,7 +97,7 @@ describe('User logout', () => {
 			expect(response.body.messages[0].message).to.exist
 			expect(response.body.messages[0].message).to.eq(getLogoutMessage(lang))
 
-			await runNegativeRefreshTokenAttempt(user.rt)
+			await runNegativeRefreshTokenAttempt(app, user.rt)
 		})
 	})
 
@@ -127,7 +117,7 @@ describe('User logout', () => {
 		expect(response.body.messages[0].message).to.exist
 		expect(response.body.messages[0].message).to.eq(getLogoutMessage())
 
-		await runNegativeRefreshTokenAttempt(rt1)
+		await runNegativeRefreshTokenAttempt(app, rt1)
 
 		// other refresh token should be valid
 		const response2 = await request(app).post('/auth/refresh-token').send({
@@ -196,5 +186,39 @@ describe('User logout', () => {
 		const response = await request(app).post('/auth/logout').set('authorization', `Bearer ${token}`)
 
 		expect(response.statusCode).to.eq(401)
+	})
+})
+describe('User logout w/o i18next', () => {
+	const app = express()
+
+	before(async () => {
+		const userRepo = new UserRepository()
+
+		await seedUsers(userRepo)
+
+		// init authentication library
+		initAuth(passport, {
+			userRepository: userRepo,
+			refreshTokenRepository: TokenRepository.getInstance()
+		})
+
+		app.use(express.urlencoded({ extended: true }))
+		app.use(express.json())
+
+		setupRouters(app)
+	})
+
+	it(`Successful user logout`, async () => {
+		const user = getUser()
+		await loginUserAndSetTokens(app, user)
+
+		const response = await request(app).post('/auth/logout').set('authorization', `Bearer ${user.at}`)
+
+		expect(response.statusCode).to.eq(200)
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		expect(response.body.messages[0].message).to.exist
+		expect(response.body.messages[0].message).to.eq(getLogoutMessage())
+
+		await runNegativeRefreshTokenAttempt(app, user.rt)
 	})
 })

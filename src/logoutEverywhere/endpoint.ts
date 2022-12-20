@@ -43,7 +43,7 @@ export async function endpoint(req: Request, res: Response, next: NextFunction) 
 			messages: [
 				{
 					type: MESSAGE_TYPE.SUCCESS,
-					message: req.t ? req.t('You were successfully logged out') : t('You were successfully logged out')
+					message: t('You were successfully logged out')
 				}
 			]
 		})

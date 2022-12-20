@@ -19,8 +19,9 @@ export default function errorMiddleware(err: ErrorBuilder, req: Request, res: Re
 		}
 	} else {
 		const t = req.t ?? customTFunction
+		// just for debugging purposes
 		// eslint-disable-next-line no-console
-		console.error(err.message, JSON.stringify(util.inspect(err)))
+		console.error('Error middleware:', JSON.stringify(util.inspect(err)))
 		messages = [
 			{
 				message: t('error:Something went wrong!'),

@@ -17,6 +17,8 @@ export default () => {
 				}
 			})
 		} catch (e) {
+			// eslint-disable-next-line no-console
+			console.error('Mocked Login router endpoint', e)
 			return res.status(500).json({ message: e })
 		}
 	})
