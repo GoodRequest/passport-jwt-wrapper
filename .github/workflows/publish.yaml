@@ -15,7 +15,7 @@ jobs:
           node-version: '16.x'
           cache: 'npm'
           registry-url: 'https://npm.pkg.github.com'
-          scope: '@slonik923'
+          scope: '@GoodRequest'
       - run: npm ci
       - run: npm publish
         env:
