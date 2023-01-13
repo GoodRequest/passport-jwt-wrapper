@@ -19,11 +19,15 @@
 		"start:dev": "ts-node src/index.ts --watch"
 	},
 	"keywords": [],
-	"author": "Juraj Chripko",
+	"author": "Juraj Chripko <juraj.chripko@goodrequest.com>",
 	"license": "ISC",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/GoodRequest/passport-jwt-wrapper"
+	},
+	"publishConfig": {
+		"registry": "https://registry.npmjs.com",
+		"access": "public"
 	},
 	"devDependencies": {
 		"@goodrequest/eslint-config-typescript": "^1.2.0",
