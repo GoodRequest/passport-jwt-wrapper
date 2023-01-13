@@ -25,10 +25,6 @@
     "type": "git",
     "url": "git+https://github.com/GoodRequest/passport-jwt-wrapper.git"
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.com",
-    "access": "public"
-  },
   "devDependencies": {
     "@goodrequest/eslint-config-typescript": "^1.2.0",
     "@types/bcrypt": "^5.0.0",
