@@ -59,7 +59,7 @@ async function runNegativeRefreshTokenAttempt(refreshToken: string): Promise<Res
 	return response
 }
 
-async function declarePositiveTests(lang?: string) {
+function declarePositiveTests(lang?: string) {
 	it(`${lang ? `[${lang}] ` : ''}Successful user logout`, async () => {
 		const user = getUser()
 		await loginUserAndSetTokens(app, user)
