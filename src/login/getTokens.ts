@@ -21,8 +21,9 @@ export interface ILoginResponse {
  * refresh token is saved by calling `userTokenRepository.saveRefreshToken(userID, fid, rid, refreshToken)`
  * @param userID
  * @param familyID: when none is provided, refresh token id (jwtid) is used (creates new family ID)
+ * @param payload
  */
-export async function getTokens(userID: ID, familyID?: ID): Promise<ILoginResponse> {
+export async function getTokens(userID: ID, familyID?: ID, payload?: Record<string, unknown>): Promise<ILoginResponse> {
 	const state = State.getInstance()
 	// get refresh token id
 	const rid = await state.refreshTokenRepository.createTokenID()
@@ -33,7 +34,8 @@ export async function getTokens(userID: ID, familyID?: ID): Promise<ILoginRespon
 			<IJwtPayload>{
 				uid: userID,
 				rid,
-				fid
+				fid,
+				...payload
 			},
 			{
 				audience: JWT_AUDIENCE.API_ACCESS,
