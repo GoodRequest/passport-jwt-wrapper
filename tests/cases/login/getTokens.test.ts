@@ -37,14 +37,15 @@ describe('Password reset: getToken method', () => {
 		expect(result).to.exist
 		expect(result.accessToken).to.exist
 		expect(result.refreshToken).to.exist
-
 		/* eslint-enable */
 
 		const decodedAccessTokenData = <IJwtPayload & { id: number; permission: string }>jsonwebtoken.decode(result.accessToken)
 		const decodedRefreshTokenData = <IRefreshJwtPayload>jsonwebtoken.decode(result.refreshToken)
-		expect(decodedAccessTokenData.fid).to.eq(decodedAccessTokenData.rid)
-		expect(decodedAccessTokenData.fid).to.eq(decodedRefreshTokenData.fid)
-		expect(decodedAccessTokenData.fid).to.eq(decodedRefreshTokenData.jti)
+
+		const { rid } = decodedAccessTokenData
+		expect(decodedAccessTokenData.fid).to.eq(rid)
+		expect(decodedRefreshTokenData.fid).to.eq(rid)
+		expect(decodedRefreshTokenData.jti).to.eq(rid)
 	})
 
 	it('With Family ID', async () => {
@@ -56,14 +57,15 @@ describe('Password reset: getToken method', () => {
 		expect(result).to.exist
 		expect(result.accessToken).to.exist
 		expect(result.refreshToken).to.exist
-
 		/* eslint-enable */
 
 		const decodedAccessTokenData = <IJwtPayload & { id: number; permission: string }>jsonwebtoken.decode(result.accessToken)
 		const decodedRefreshTokenData = <IRefreshJwtPayload>jsonwebtoken.decode(result.refreshToken)
 		expect(decodedAccessTokenData.fid).to.eq(familyID)
 		expect(decodedRefreshTokenData.fid).to.eq(familyID)
-		expect(decodedRefreshTokenData.jti).to.eq(familyID)
+		expect(decodedRefreshTokenData.jti).to.not.eq(familyID)
+		const { rid } = decodedAccessTokenData
+		expect(decodedRefreshTokenData.jti).to.eq(rid)
 	})
 
 	it('With payload', async () => {
@@ -81,9 +83,10 @@ describe('Password reset: getToken method', () => {
 		const decodedRefreshTokenData = <IRefreshJwtPayload>jsonwebtoken.decode(result.refreshToken)
 		expect(decodedAccessTokenData.id).to.eq(5)
 		expect(decodedAccessTokenData.permission).to.eq('ADMINISTRATOR')
-		const familyID = decodedAccessTokenData.fid
+		const { fid: familyID, rid } = decodedAccessTokenData
 		expect(decodedAccessTokenData.fid).to.eq(familyID)
 		expect(decodedRefreshTokenData.fid).to.eq(familyID)
 		expect(decodedRefreshTokenData.jti).to.eq(familyID)
+		expect(decodedRefreshTokenData.jti).to.eq(rid)
 	})
 })

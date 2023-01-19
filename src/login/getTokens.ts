@@ -32,10 +32,10 @@ export async function getTokens(userID: ID, familyID?: ID, payload?: Record<stri
 	const [accessToken, refreshToken] = await Promise.all([
 		createJwt(
 			<IJwtPayload>{
+				...payload,
 				uid: userID,
 				rid,
-				fid,
-				...payload
+				fid
 			},
 			{
 				audience: JWT_AUDIENCE.API_ACCESS,
