@@ -17,7 +17,7 @@ jobs:
       - run: |
           git config --global user.name 'Juraj Chripko'
           git config --global user.email 'juraj.chripko@goodrequest.com'
-          git push
+          git push origin HEAD:master
       - run: npm i
       - run: npm run build
       - run: npm publish --access public
