@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      	with:
+    	fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
           node-version: '16.x'
@@ -17,9 +19,7 @@ jobs:
       - run: git status
       - run: git config --global user.name 'Juraj Chripko'
       - run: git config --global user.email 'juraj.chripko@goodrequest.com'
-      - run: git add package.json package-lock.json
-      - run: git status
-      - run: git push origin HEAD:master
+      - run: git push origin
       - run: git status
       - run: npm i
       - run: npm run build
