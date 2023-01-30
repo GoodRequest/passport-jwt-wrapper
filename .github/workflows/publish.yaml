@@ -19,9 +19,8 @@ jobs:
       - run: git status
       - run: git config --global user.name 'Juraj Chripko'
       - run: git config --global user.email 'juraj.chripko@goodrequest.com'
-      - run: git add package.json package-lock.json
       - run: git status
-      - run: git commit
+      - run: git commit -am "release ${{ github.action_ref }}"
       - run: git push origin HEAD:master
       - run: git status
       - run: npm i
