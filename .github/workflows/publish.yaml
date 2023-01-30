@@ -13,7 +13,13 @@ jobs:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
-      - run: npm version from-git --no-git-tag-version
+      - name: Bump package version
+      - run: npm version from-git --no-git-tag-version -m "release v%s"
+      - name: Commit package bump
+        run: |
+          git config --global user.name 'Juraj Chripko'
+          git config --global user.email 'juraj.chripko@goodrequest.com'
+          git push
       - run: npm i
       - run: npm run build
       - run: npm publish --access public
