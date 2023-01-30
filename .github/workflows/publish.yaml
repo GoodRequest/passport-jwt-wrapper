@@ -16,7 +16,7 @@ jobs:
       - run: npm version from-git --no-git-tag-version -m "release v%s"
       - run: git config --global user.name 'Juraj Chripko'
       - run: git config --global user.email 'juraj.chripko@goodrequest.com'
-      - run: git status
+      - run: git add package.json package-lock.json
       - run: git push origin HEAD:master
       - run: npm i
       - run: npm run build
