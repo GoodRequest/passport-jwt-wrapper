@@ -1,6 +1,7 @@
 // Passport is not used in this library, but have to be provided by host application
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { PassportStatic } from 'passport'
+import { ExtractJwt } from 'passport-jwt'
 
 import * as ApiAuth from './apiAuth'
 import * as Login from './login'
@@ -84,5 +85,6 @@ export {
 	IPasswordResetTokenRepository,
 	ID,
 	IJwtPayload,
-	IRefreshJwtPayload
+	IRefreshJwtPayload,
+	ExtractJwt
 }
