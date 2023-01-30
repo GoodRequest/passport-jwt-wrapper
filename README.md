@@ -16,7 +16,7 @@ This library should take of the user authentication, it is divided into [modules
 - User invitation
 
 ## Installation
-`npm i --save @Slonik923/passport-jwt-wrapper`
+`npm i --save @goodrequest/passport-jwt-wrapper`
 
 ## Initialization:
 ```typescript
