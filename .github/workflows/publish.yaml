@@ -8,24 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
-      - run: npm version from-git --no-git-tag-version -m "release v%s"
-      - run: git status
-      - run: git config --global user.name 'Juraj Chripko'
-      - run: git config --global user.email 'juraj.chripko@goodrequest.com'
-      - run: git status
-      - run: git commit -am "release ${{ github.action_ref }}"
-      - run: git push origin HEAD:master
-      - run: git status
-      - run: npm i
+      - run: npm ci
       - run: npm run build
-      - run: exit 1
       - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
