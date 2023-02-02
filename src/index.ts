@@ -2,6 +2,14 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { PassportStatic } from 'passport'
 import { ExtractJwt } from 'passport-jwt'
+import config from 'config'
+
+// eslint-disable-next-line import/no-cycle
+import configs from '../config/default'
+/* eslint-disable import/first */
+
+config.util.setModuleDefaults('i18next', configs.i18next)
+config.util.setModuleDefaults('passport', configs.passport)
 
 import * as ApiAuth from './apiAuth'
 import * as Login from './login'
