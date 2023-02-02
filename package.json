@@ -13,10 +13,7 @@
 		"lint:watch": "npm run lint -- --watch  --ext .js --ext .ts",
 		"translate:scan": "i18next-scanner 'src/**/*.ts'",
 		"prebuild": "rm -rf dist",
-		"build": "tsc",
-		"start:prod": "node dist/index.js",
-		"start": "ts-node src/index.ts",
-		"start:dev": "ts-node src/index.ts --watch"
+		"build": "tsc"
 	},
 	"keywords": [],
 	"author": "Juraj Chripko <juraj.chripko@goodrequest.com>",
