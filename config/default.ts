@@ -29,17 +29,14 @@ export default {
 			secretOrKey: process.env.JWT_SECRET,
 			api: {
 				exp: '15m',
-				jwtFromRequest: ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken(), ExtractJwt.fromUrlQueryParameter('t')]),
 				refresh: {
 					exp: '4h'
 				}
 			},
 			passwordReset: {
 				exp: '4h',
-				jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
 			},
 			invitation: {
-				jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 				exp: '30d'
 			}
 		}

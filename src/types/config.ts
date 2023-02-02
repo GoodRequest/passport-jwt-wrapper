@@ -1,9 +1,7 @@
-import { JwtFromRequestFunction } from 'passport-jwt'
 import { IStrategyOptionsWithRequest } from 'passport-local'
 
 interface JWTConfig {
 	exp: string
-	jwtFromRequest: JwtFromRequestFunction
 }
 
 interface IJWTPassportConfig {
