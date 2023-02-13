@@ -1,5 +1,6 @@
 import { JwtFromRequestFunction } from 'passport-jwt'
 import { IStrategyOptionsWithRequest } from 'passport-local'
+import { InitOptions } from 'i18next'
 
 interface JWTConfig {
 	exp: string
@@ -20,4 +21,9 @@ interface IJWTPassportConfig {
 export interface IPassportConfig {
 	local: IStrategyOptionsWithRequest
 	jwt: IJWTPassportConfig
+}
+
+export interface LibConfig {
+	passport?: IPassportConfig
+	i18next?: InitOptions
 }
