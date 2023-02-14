@@ -20,8 +20,9 @@ import { getUser, languages, loginUserAndSetTokens, seedUsers } from '../../help
 import * as enTranslations from '../../../locales/en/translation.json'
 import * as skTranslations from '../../../locales/sk/translation.json'
 import { createJwt } from '../../../src/utils/jwt'
+import { LibConfig } from '../../../src/types/config'
 
-const i18NextConfig: I18nextOptions = config.get('i18next')
+const i18NextConfig: I18nextOptions = (<LibConfig>config.get('passportJwtWrapper')).i18next
 
 let app: Express
 

@@ -19,8 +19,9 @@ import TestingEndpoint from '../../mocks/testingEndpoint'
 
 import * as enErrors from '../../../locales/en/error.json'
 import * as skErrors from '../../../locales/sk/error.json'
+import { LibConfig } from '../../../src/types/config'
 
-const i18NextConfig: I18nextOptions = config.get('i18next')
+const i18NextConfig: I18nextOptions = (<LibConfig>config.get('passportJwtWrapper')).i18next
 
 function setupRouters(app: Express) {
 	app.use('/auth', loginRouter())

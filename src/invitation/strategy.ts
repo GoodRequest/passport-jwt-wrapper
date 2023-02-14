@@ -2,14 +2,14 @@ import { Strategy as JwtStrategy, VerifiedCallback } from 'passport-jwt'
 import config from 'config'
 
 import { Request } from 'express'
-import { IPassportConfig } from '../types/config'
+import { IPassportConfig, LibConfig } from '../types/config'
 import { IJwtPayload } from '../types/interfaces'
 import { State } from '../State'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { customTFunction } from '../utils/translations'
 import { JWT_AUDIENCE } from '../utils/enums'
 
-const passportConfig: IPassportConfig = config.get('passport')
+const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
 
 /**
  * Strategy verify function for invitation. Validates invitation token.

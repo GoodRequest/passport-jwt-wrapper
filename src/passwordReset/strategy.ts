@@ -4,12 +4,12 @@ import { Request } from 'express'
 import jsonwebtoken from 'jsonwebtoken'
 
 import { IJwtPayload } from '../types/interfaces'
-import { IPassportConfig } from '../types/config'
+import { IPassportConfig, LibConfig } from '../types/config'
 import { State } from '../State'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { customTFunction } from '../utils/translations'
 
-const passportConfig: IPassportConfig = config.get('passport')
+const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
 
 /**
  * get custom secret (hash + secret) for forgot-password token

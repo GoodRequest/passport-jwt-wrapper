@@ -1,11 +1,11 @@
 import config from 'config'
 
-import { IPassportConfig } from '../types/config'
+import { IPassportConfig, LibConfig } from '../types/config'
 import { JWT_AUDIENCE } from '../utils/enums'
 import { State } from '../State'
 import { createJwt } from '../utils/jwt'
 
-const passportConfig: IPassportConfig = config.get('passport')
+const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
 
 /**
  * return 10 "random" characters

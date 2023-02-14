@@ -3,13 +3,13 @@ import config from 'config'
 import bcrypt from 'bcrypt'
 import { Request } from 'express'
 
-import { IPassportConfig } from '../types/config'
+import { IPassportConfig, LibConfig } from '../types/config'
 import { IRefreshJwtPayload } from '../types/interfaces'
 import { JWT_AUDIENCE } from './enums'
 import { ErrorBuilder } from './ErrorBuilder'
 import { customTFunction } from './translations'
 
-const passportConfig: IPassportConfig = config.get('passport')
+const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
 
 /**
  * Creates JWT token

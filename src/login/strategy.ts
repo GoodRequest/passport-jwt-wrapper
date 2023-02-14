@@ -3,10 +3,10 @@ import bcrypt from 'bcrypt'
 import config from 'config'
 import { Request } from 'express'
 
-import { IPassportConfig } from '../types/config'
+import { IPassportConfig, LibConfig } from '../types/config'
 import { State } from '../State'
 
-const passportConfig: IPassportConfig = config.get('passport')
+const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
 
 /**
  * Default local verify function

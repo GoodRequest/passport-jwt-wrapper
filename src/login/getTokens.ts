@@ -2,11 +2,11 @@ import config from 'config'
 
 import { createJwt } from '../utils/jwt'
 import { JWT_AUDIENCE } from '../utils/enums'
-import { IPassportConfig } from '../types/config'
+import { IPassportConfig, LibConfig } from '../types/config'
 import { State } from '../State'
 import { ID, IJwtPayload, IRefreshJwtPayload } from '../types/interfaces'
 
-const passportConfig: IPassportConfig = config.get('passport')
+const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
 
 export interface ILoginResponse {
 	accessToken: string

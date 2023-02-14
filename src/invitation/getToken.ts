@@ -2,11 +2,11 @@ import config from 'config'
 
 import { createJwt } from '../utils/jwt'
 import { ID } from '../types/interfaces'
-import { IPassportConfig } from '../types/config'
+import { IPassportConfig, LibConfig } from '../types/config'
 import { JWT_AUDIENCE } from '../utils/enums'
 import { State } from '../State'
 
-const passportConfig: IPassportConfig = config.get('passport')
+const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
 
 /**
  * returns invitation token for the user.

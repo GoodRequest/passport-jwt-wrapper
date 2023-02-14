@@ -24,6 +24,6 @@ export interface IPassportConfig {
 }
 
 export interface LibConfig {
-	passport?: IPassportConfig
-	i18next?: InitOptions
+	passport: IPassportConfig
+	i18next: InitOptions
 }
