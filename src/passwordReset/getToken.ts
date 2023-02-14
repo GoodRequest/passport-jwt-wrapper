@@ -5,8 +5,6 @@ import { JWT_AUDIENCE } from '../utils/enums'
 import { State } from '../State'
 import { createJwt } from '../utils/jwt'
 
-const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
-
 /**
  * return 10 "random" characters
  */
@@ -38,6 +36,8 @@ function getRandomString(length: number): string {
 export default async function getToken(email: string): Promise<string | undefined> {
 	const state = State.getInstance()
 	let user = await state.userRepository.getUserByEmail(email)
+
+	const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
 
 	let passportSecret = passportConfig.jwt.secretOrKey
 

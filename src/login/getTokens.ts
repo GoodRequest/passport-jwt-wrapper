@@ -6,8 +6,6 @@ import { IPassportConfig, LibConfig } from '../types/config'
 import { State } from '../State'
 import { ID, IJwtPayload, IRefreshJwtPayload } from '../types/interfaces'
 
-const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
-
 export interface ILoginResponse {
 	accessToken: string
 	refreshToken: string
@@ -28,6 +26,8 @@ export async function getTokens(userID: ID, familyID?: ID, payload?: Record<stri
 	// get refresh token id
 	const rid = await state.refreshTokenRepository.createTokenID()
 	const fid = familyID ?? rid
+
+	const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
 
 	const [accessToken, refreshToken] = await Promise.all([
 		createJwt(

@@ -6,8 +6,6 @@ import { Request } from 'express'
 import { IPassportConfig, LibConfig } from '../types/config'
 import { State } from '../State'
 
-const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
-
 /**
  * Default local verify function
  * internally calls `userRepository.getUserByEmail` and if the user is returned, their password hash is checked using bcrypt compare method
@@ -48,5 +46,7 @@ export async function strategyVerifyFunction(
  * passport-local Strategy
  */
 export function strategy() {
+	const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
+
 	return new Strategy(passportConfig.local, strategyVerifyFunction)
 }
