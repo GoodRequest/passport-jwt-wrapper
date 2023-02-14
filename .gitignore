@@ -1,2 +1,9 @@
 # Project exclude paths
 /node_modules/
+.idea
+dist
+coverage
+temp
+.npmrc
+codecov
+/.npmrc
