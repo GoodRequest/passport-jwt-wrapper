@@ -9,8 +9,6 @@ import { State } from '../State'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { customTFunction } from '../utils/translations'
 
-const passportConfig: IPassportConfig = config.get('passport')
-
 /**
  * get custom secret (hash + secret) for forgot-password token
  * @param req
@@ -26,6 +24,8 @@ export async function secretOrKeyProvider(req: Request, rawJwtToken: string, don
 		if (!user) {
 			return done(null)
 		}
+
+		const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
 
 		const userSecret = `${passportConfig.jwt.secretOrKey}${user.hash}`
 		return done(null, userSecret)
@@ -70,6 +70,8 @@ export async function strategyVerifyFunction(req: Request, payload: IJwtPayload,
  * Password reset strategy
  */
 export function strategy() {
+	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+
 	return new JwtStrategy(
 		{
 			...passportConfig.jwt.passwordReset,

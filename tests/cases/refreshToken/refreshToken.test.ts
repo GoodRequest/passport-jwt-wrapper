@@ -22,8 +22,8 @@ import * as enErrors from '../../../locales/en/error.json'
 import * as skErrors from '../../../locales/sk/error.json'
 import TestingEndpoint from '../../mocks/testingEndpoint'
 
-const i18NextConfig: I18nextOptions = config.get('i18next')
-const passportConfig: IPassportConfig = config.get('passport')
+const i18NextConfig: I18nextOptions = config.get('passportJwtWrapper.i18next')
+const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
 
 let app: Express
 let userRepo: UserRepository

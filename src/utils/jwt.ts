@@ -9,8 +9,6 @@ import { JWT_AUDIENCE } from './enums'
 import { ErrorBuilder } from './ErrorBuilder'
 import { customTFunction } from './translations'
 
-const passportConfig: IPassportConfig = config.get('passport')
-
 /**
  * Creates JWT token
  * @param {Object} payload Payload of JWT token
@@ -19,6 +17,8 @@ const passportConfig: IPassportConfig = config.get('passport')
  * @returns {Promise<string>} JWT token
  */
 export function createJwt(payload: any, options: SignOptions, secret?: string): Promise<string> {
+	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+
 	return new Promise((resolve, reject) => {
 		sign(payload, secret || passportConfig.jwt.secretOrKey, options, (err, token) => {
 			if (err || !token) {
@@ -47,6 +47,8 @@ export const createHash = async (password: string): Promise<string> => {
  * @param req
  */
 export function decodeRefreshJwt(token: string, req: Request): Promise<IRefreshJwtPayload> {
+	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+
 	return new Promise((resolve, reject) => {
 		jsonwebtoken.verify(
 			token,

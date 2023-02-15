@@ -18,7 +18,7 @@ import { getUser, languages, seedUserAndSetID, seedUsers } from '../../helpers'
 import * as enErrors from '../../../locales/en/error.json'
 import * as skErrors from '../../../locales/sk/error.json'
 
-const i18NextConfig: I18nextOptions = config.get('i18next')
+const i18NextConfig: I18nextOptions = config.get('passportJwtWrapper.i18next')
 
 let app: Express
 

@@ -2,61 +2,10 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { PassportStatic } from 'passport'
 import { ExtractJwt } from 'passport-jwt'
-import { InitOptions } from 'i18next'
 /* eslint-disable import/first */
 process.env.SUPPRESS_NO_CONFIG_WARNING = 'y'
 import config from 'config'
-
-const i18nextConfig = <InitOptions>{
-	preload: ['en', 'sk'],
-	fallbackLng: 'en',
-	ns: ['error', 'translation'],
-	defaultNS: 'translation',
-	detection: {
-		order: ['header']
-	},
-	backend: {
-		loadPath: 'locales/{{lng}}/{{ns}}.json',
-		jsonIndent: 2
-	},
-	nsSeparator: ':',
-	keySeparator: false
-}
-
-const passportConfig = <IPassportConfig>{
-	local: {
-		usernameField: 'email',
-		passwordField: 'password',
-		session: false,
-		passReqToCallback: true
-	},
-	jwt: {
-		secretOrKey: process.env.JWT_SECRET,
-		api: {
-			exp: '15m',
-			jwtFromRequest: ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken(), ExtractJwt.fromUrlQueryParameter('t')]),
-			refresh: {
-				exp: '4h'
-			}
-		},
-		passwordReset: {
-			exp: '4h',
-			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
-		},
-		invitation: {
-			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-			exp: '30d'
-		}
-	}
-}
-
-const defaultConfigs: LibConfig = {
-	i18next: i18nextConfig,
-	passport: passportConfig
-}
-
-config.util.setModuleDefaults('i18next', defaultConfigs.i18next)
-config.util.setModuleDefaults('passport', defaultConfigs.passport)
+import { InitOptions } from 'i18next'
 
 import * as ApiAuth from './apiAuth'
 import * as Login from './login'
@@ -98,8 +47,65 @@ function initAuth<TokenIDType extends ID, UserIDType extends ID>(
 		refreshTokenRepository: IRefreshTokenRepository<TokenIDType, UserIDType>
 		invitationTokenRepository?: IInvitationTokenRepository<UserIDType>
 		passwordResetTokenRepository?: IPasswordResetTokenRepository<UserIDType>
-	}
+	},
+	configs?: LibConfig
 ) {
+	const i18nextConfig = <InitOptions>{
+		preload: ['en', 'sk'],
+		fallbackLng: 'en',
+		ns: ['error', 'translation'],
+		defaultNS: 'translation',
+		detection: {
+			order: ['header']
+		},
+		backend: {
+			loadPath: 'locales/{{lng}}/{{ns}}.json',
+			jsonIndent: 2
+		},
+		nsSeparator: ':',
+		keySeparator: false
+	}
+
+	const passportConfig = <IPassportConfig>{
+		local: {
+			usernameField: 'email',
+			passwordField: 'password',
+			session: false,
+			passReqToCallback: true
+		},
+		jwt: {
+			secretOrKey: process.env.JWT_SECRET,
+			api: {
+				exp: '15m',
+				jwtFromRequest: ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken(), ExtractJwt.fromUrlQueryParameter('t')]),
+				refresh: {
+					exp: '4h'
+				}
+			},
+			passwordReset: {
+				exp: '4h',
+				jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
+			},
+			invitation: {
+				jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+				exp: '30d'
+			}
+		}
+	}
+
+	const defaultConfigs: LibConfig = {
+		i18next: i18nextConfig,
+		passport: passportConfig
+	}
+
+	if (!config.has('passportJwtWrapper')) {
+		if (configs) {
+			config.util.extendDeep(defaultConfigs, configs)
+		}
+
+		config.util.setModuleDefaults('passportJwtWrapper', defaultConfigs)
+	}
+
 	const instance = State.initialize(
 		passport,
 		repositories.userRepository,

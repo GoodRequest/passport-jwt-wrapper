@@ -9,8 +9,6 @@ import { JWT_AUDIENCE } from '../utils/enums'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { customTFunction } from '../utils/translations'
 
-const passportConfig: IPassportConfig = config.get('passport')
-
 /**
  * Internally calls `userRepository.getUserById` with userID (uid) from decoded access JWT
  * @param req
@@ -36,6 +34,8 @@ export async function strategyVerifyFunction(req: Request, payload: IJwtPayload,
  * passport-jwt strategy for securing endpoints with access JWTs
  */
 export function strategy() {
+	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+
 	return new JwtStrategy(
 		{
 			...passportConfig.jwt.api,

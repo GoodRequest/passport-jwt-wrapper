@@ -19,8 +19,8 @@ import * as skErrors from '../../../locales/sk/error.json'
 import { InvitationTokenRepository } from '../../mocks/repositories/invitationTokenRepository'
 import { languages } from '../../helpers'
 
-const i18NextConfig: I18nextOptions = config.get('i18next')
-const passportConfig: IPassportConfig = config.get('passport')
+const i18NextConfig: I18nextOptions = config.get('passportJwtWrapper.i18next')
+const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
 
 function sleep(ms: number) {
 	return new Promise((resolve) => {

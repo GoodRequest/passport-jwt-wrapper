@@ -21,7 +21,7 @@ import * as enTranslations from '../../../locales/en/translation.json'
 import * as skTranslations from '../../../locales/sk/translation.json'
 import { createJwt } from '../../../src/utils/jwt'
 
-const i18NextConfig: I18nextOptions = config.get('i18next')
+const i18NextConfig: I18nextOptions = config.get('passportJwtWrapper.i18next')
 
 let app: Express
 

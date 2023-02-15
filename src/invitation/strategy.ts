@@ -9,8 +9,6 @@ import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { customTFunction } from '../utils/translations'
 import { JWT_AUDIENCE } from '../utils/enums'
 
-const passportConfig: IPassportConfig = config.get('passport')
-
 /**
  * Strategy verify function for invitation. Validates invitation token.
  * Internally calls `invitationTokenRepository.isInvitationTokenValid` if `invitationTokenRepository` is provided.
@@ -52,6 +50,8 @@ export const strategyVerifyFunction = async (req: Request, payload: IJwtPayload,
  * User invitation strategy, needed for the guard to function.
  */
 export function strategy() {
+	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+
 	return new JwtStrategy(
 		{
 			...passportConfig.jwt.invitation,
