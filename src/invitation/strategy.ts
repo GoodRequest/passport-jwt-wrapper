@@ -2,7 +2,7 @@ import { Strategy as JwtStrategy, VerifiedCallback } from 'passport-jwt'
 import config from 'config'
 
 import { Request } from 'express'
-import { IPassportConfig, LibConfig } from '../types/config'
+import { IPassportConfig } from '../types/config'
 import { IJwtPayload } from '../types/interfaces'
 import { State } from '../State'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
@@ -50,7 +50,7 @@ export const strategyVerifyFunction = async (req: Request, payload: IJwtPayload,
  * User invitation strategy, needed for the guard to function.
  */
 export function strategy() {
-	const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
+	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
 
 	return new JwtStrategy(
 		{

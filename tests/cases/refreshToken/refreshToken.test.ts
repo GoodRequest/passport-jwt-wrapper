@@ -21,10 +21,9 @@ import { createJwt, decodeRefreshJwt } from '../../../src/utils/jwt'
 import * as enErrors from '../../../locales/en/error.json'
 import * as skErrors from '../../../locales/sk/error.json'
 import TestingEndpoint from '../../mocks/testingEndpoint'
-import { LibConfig } from '../../../src/types/config'
 
-const i18NextConfig: I18nextOptions = (<LibConfig>config.get('passportJwtWrapper')).i18next
-const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
+const i18NextConfig: I18nextOptions = config.get('passportJwtWrapper.i18next')
+const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
 
 let app: Express
 let userRepo: UserRepository

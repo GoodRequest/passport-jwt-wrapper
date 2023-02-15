@@ -4,7 +4,7 @@ import { Request } from 'express'
 import jsonwebtoken from 'jsonwebtoken'
 
 import { IJwtPayload } from '../types/interfaces'
-import { IPassportConfig, LibConfig } from '../types/config'
+import { IPassportConfig } from '../types/config'
 import { State } from '../State'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { customTFunction } from '../utils/translations'
@@ -25,7 +25,7 @@ export async function secretOrKeyProvider(req: Request, rawJwtToken: string, don
 			return done(null)
 		}
 
-		const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
+		const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
 
 		const userSecret = `${passportConfig.jwt.secretOrKey}${user.hash}`
 		return done(null, userSecret)
@@ -70,7 +70,7 @@ export async function strategyVerifyFunction(req: Request, payload: IJwtPayload,
  * Password reset strategy
  */
 export function strategy() {
-	const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
+	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
 
 	return new JwtStrategy(
 		{

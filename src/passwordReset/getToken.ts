@@ -1,6 +1,6 @@
 import config from 'config'
 
-import { IPassportConfig, LibConfig } from '../types/config'
+import { IPassportConfig } from '../types/config'
 import { JWT_AUDIENCE } from '../utils/enums'
 import { State } from '../State'
 import { createJwt } from '../utils/jwt'
@@ -37,7 +37,7 @@ export default async function getToken(email: string): Promise<string | undefine
 	const state = State.getInstance()
 	let user = await state.userRepository.getUserByEmail(email)
 
-	const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
+	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
 
 	let passportSecret = passportConfig.jwt.secretOrKey
 

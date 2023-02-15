@@ -2,7 +2,7 @@ import config from 'config'
 
 import { createJwt } from '../utils/jwt'
 import { ID } from '../types/interfaces'
-import { IPassportConfig, LibConfig } from '../types/config'
+import { IPassportConfig } from '../types/config'
 import { JWT_AUDIENCE } from '../utils/enums'
 import { State } from '../State'
 
@@ -16,7 +16,7 @@ export default async function getToken(userID: ID): Promise<string> {
 		uid: userID
 	}
 
-	const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
+	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
 	const tokenOptions = {
 		audience: JWT_AUDIENCE.INVITATION,
 		expiresIn: passportConfig.jwt.invitation.exp

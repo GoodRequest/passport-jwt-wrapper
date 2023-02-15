@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt'
 import config from 'config'
 import { Request } from 'express'
 
-import { IPassportConfig, LibConfig } from '../types/config'
+import { IPassportConfig } from '../types/config'
 import { State } from '../State'
 
 /**
@@ -46,7 +46,7 @@ export async function strategyVerifyFunction(
  * passport-local Strategy
  */
 export function strategy() {
-	const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
+	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
 
 	return new Strategy(passportConfig.local, strategyVerifyFunction)
 }

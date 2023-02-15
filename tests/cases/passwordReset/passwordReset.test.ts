@@ -17,10 +17,9 @@ import { getUser, languages, seedUserAndSetID, seedUsers, sleep } from '../../he
 
 import { PasswordResetTokenRepository } from '../../mocks/repositories/passwordResetTokenRepository'
 import { callEndpoint, getPasswordToken, invalidPasswordResetTokenErrorString, passwordChangeString, setupRouters } from './helpers'
-import { LibConfig } from '../../../src/types/config'
 
-const i18NextConfig: I18nextOptions = (<LibConfig>config.get('passportJwtWrapper')).i18next
-const passportConfig: IPassportConfig = (<LibConfig>config.get('passportJwtWrapper')).passport
+const i18NextConfig: I18nextOptions = config.get('passportJwtWrapper.i18next')
+const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
 
 function declareLanguageDependentTests(app: Express, userRepo: UserRepository, passwordResetTokenRepo: PasswordResetTokenRepository, language?: string) {
 	it(`${language ? `[${language}] ` : ''}Removed user`, async () => {
