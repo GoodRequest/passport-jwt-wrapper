@@ -11,7 +11,7 @@
 		"lint": "eslint src tests --color --ext .js --ext .ts",
 		"lint:fix": "eslint src tests --color --ext .js --ext .ts --fix",
 		"lint:watch": "npm run lint -- --watch  --ext .js --ext .ts",
-		"translate:scan": "i18next-scanner 'src/**/*.ts'",
+		"translate:scan": "NODE_ENV=test i18next-scanner 'src/**/*.ts'",
 		"prebuild": "rm -rf dist",
 		"build": "tsc"
 	},

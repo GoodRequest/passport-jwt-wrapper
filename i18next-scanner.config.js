@@ -1,6 +1,6 @@
 const config = require('config')
 
-const i18nextConfig = config.get('i18next')
+const i18nextConfig = config.get('passportJwtWrapper.i18next')
 
 module.exports = {
 	input: [
