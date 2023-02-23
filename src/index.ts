@@ -63,7 +63,8 @@ function initAuth<TokenIDType extends ID, UserIDType extends ID>(
 			jsonIndent: 2
 		},
 		nsSeparator: ':',
-		keySeparator: false
+		keySeparator: false,
+		returnNull: false
 	}
 
 	const passportConfig = <IPassportConfig>{
