@@ -13,6 +13,9 @@ export interface IUserRepository<UserIDType extends ID> {
 	 * Optional method, should be used when non-registered (invited) user is not returned by `getUserById`
 	 */
 	getNewUserById?: GetUserByIdFunction<UserIDType>
+	/**
+	 * Method return user, if one with given email exists. User needs to contain `hash`, so the password comparison can be made
+	 */
 	getUserByEmail: GetUserByEmailFunction<UserIDType>
 	updateUserPassword: (userID: UserIDType, newPassword: string) => Promise<unknown>
 }
@@ -35,7 +38,7 @@ export interface IPasswordResetTokenRepository<UserIDType extends ID> {
 
 export interface IRefreshTokenRepository<TokenIDType extends ID, UserIDType extends ID> {
 	createTokenID: () => Promise<TokenIDType>
-	saveRefreshToken: (userID: UserIDType, familyID: TokenIDType, tokenID: TokenIDType, token: string) => Promise<unknown>
+	saveRefreshToken: (userID: UserIDType, familyID: TokenIDType, tokenID: TokenIDType, token: string, expiration?: number) => Promise<unknown>
 	isRefreshTokenValid: (userID: UserIDType, familyID: TokenIDType, tokenID: TokenIDType) => Promise<boolean>
 	invalidateRefreshToken: (userID: UserIDType, familyID: TokenIDType, tokenID: TokenIDType) => Promise<void>
 	invalidateRefreshTokenFamily: (userID: UserIDType, familyID: TokenIDType) => Promise<void>
