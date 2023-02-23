@@ -1,6 +1,7 @@
 import config from 'config'
 
-import { createJwt, decodeRefreshJWT } from '../utils/jwt'
+import jsonwebtoken from 'jsonwebtoken'
+import { createJwt } from '../utils/jwt'
 import { JWT_AUDIENCE } from '../utils/enums'
 import { IPassportConfig } from '../types/config'
 import { State } from '../State'
@@ -55,13 +56,8 @@ export async function getTokens(userID: ID, familyID?: ID, payload?: Record<stri
 		)
 	])
 
-	let expiration
-	try {
-		const decoded = await decodeRefreshJWT(refreshToken)
-		expiration = decoded.exp
-	} catch (e) {
-		console.error(`[passport-jwt-wrapper]: Cannot decode JWT`, e)
-	}
+	const decoded = <IJwtPayload>jsonwebtoken.decode(accessToken)
+	const expiration = decoded.exp
 
 	// save tokens
 	await state.refreshTokenRepository.saveRefreshToken(userID, fid, rid, refreshToken, expiration)

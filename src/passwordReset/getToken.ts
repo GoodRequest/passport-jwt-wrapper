@@ -1,9 +1,11 @@
 import config from 'config'
 
+import jsonwebtoken from 'jsonwebtoken'
 import { IPassportConfig } from '../types/config'
 import { JWT_AUDIENCE } from '../utils/enums'
 import { State } from '../State'
 import { createJwt } from '../utils/jwt'
+import { IJwtPayload } from '../types/interfaces'
 
 /**
  * return 10 "random" characters
@@ -43,6 +45,7 @@ export default async function getToken(email: string): Promise<string | undefine
 
 	const randomString = getRandomString(60 + passportSecret.length)
 
+	// for preventing timing attacks
 	let mock = false
 	if (!user) {
 		mock = true
@@ -72,7 +75,9 @@ export default async function getToken(email: string): Promise<string | undefine
 
 	// save token when savePasswordResetToken repository is provided
 	if (state.passwordResetTokenRepository) {
-		await state.passwordResetTokenRepository.savePasswordResetToken(user.id, resetPasswordToken)
+		const decoded = <IJwtPayload>jsonwebtoken.decode(resetPasswordToken)
+
+		await state.passwordResetTokenRepository.savePasswordResetToken(user.id, resetPasswordToken, decoded.exp)
 	}
 
 	return resetPasswordToken

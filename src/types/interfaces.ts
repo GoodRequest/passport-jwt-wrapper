@@ -23,14 +23,14 @@ export interface IUserRepository<UserIDType extends ID> {
 export type ID = string | number
 
 export interface IInvitationTokenRepository<UserIDType extends ID> {
-	saveInvitationToken: (userID: UserIDType, token: string) => Promise<unknown>
+	saveInvitationToken: (userID: UserIDType, token: string, expiresIn: number) => Promise<unknown>
 	isInvitationTokenValid: (userID: UserIDType) => Promise<boolean>
 	/// not needed by this library, but should be implemented
 	invalidateInvitationToken?: (userID: UserIDType) => Promise<void>
 }
 
 export interface IPasswordResetTokenRepository<UserIDType extends ID> {
-	savePasswordResetToken: (userID: UserIDType, token: string) => Promise<unknown> // user can have one password reset token
+	savePasswordResetToken: (userID: UserIDType, token: string, expiresIn: number) => Promise<unknown> // user can have one password reset token
 	isPasswordTokenValid: (userID: UserIDType) => Promise<boolean>
 	/// not needed by this library, but should be implemented
 	invalidatePasswordResetToken?: (userID: UserIDType) => Promise<void> // not needed by this library
@@ -38,7 +38,7 @@ export interface IPasswordResetTokenRepository<UserIDType extends ID> {
 
 export interface IRefreshTokenRepository<TokenIDType extends ID, UserIDType extends ID> {
 	createTokenID: () => Promise<TokenIDType>
-	saveRefreshToken: (userID: UserIDType, familyID: TokenIDType, tokenID: TokenIDType, token: string, expiration?: number) => Promise<unknown>
+	saveRefreshToken: (userID: UserIDType, familyID: TokenIDType, tokenID: TokenIDType, token: string, expiresIn: number) => Promise<unknown>
 	isRefreshTokenValid: (userID: UserIDType, familyID: TokenIDType, tokenID: TokenIDType) => Promise<boolean>
 	invalidateRefreshToken: (userID: UserIDType, familyID: TokenIDType, tokenID: TokenIDType) => Promise<void>
 	invalidateRefreshTokenFamily: (userID: UserIDType, familyID: TokenIDType) => Promise<void>

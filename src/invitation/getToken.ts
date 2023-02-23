@@ -1,7 +1,8 @@
 import config from 'config'
 
+import jsonwebtoken from 'jsonwebtoken'
 import { createJwt } from '../utils/jwt'
-import { ID } from '../types/interfaces'
+import { ID, IJwtPayload } from '../types/interfaces'
 import { IPassportConfig } from '../types/config'
 import { JWT_AUDIENCE } from '../utils/enums'
 import { State } from '../State'
@@ -23,7 +24,10 @@ export default async function getToken(userID: ID): Promise<string> {
 	}
 
 	const token = await createJwt(tokenPayload, tokenOptions)
-	await State.getInstance().invitationTokenRepository?.saveInvitationToken(userID, token)
+
+	const decoded = <IJwtPayload>jsonwebtoken.decode(token)
+
+	await State.getInstance().invitationTokenRepository?.saveInvitationToken(userID, token, decoded.exp)
 
 	return token
 }
