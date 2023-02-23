@@ -1,0 +1,11 @@
+# Project exclude paths
+node_modules/*
+.idea
+dist
+coverage
+temp
+.npmrc
+codecov
+/.npmrc
+i18next-scanner.config.js
+
