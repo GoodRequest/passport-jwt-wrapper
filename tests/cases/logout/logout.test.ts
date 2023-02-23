@@ -10,7 +10,7 @@ import { expect } from 'chai'
 import { ApiAuth, initAuth, JWT_AUDIENCE, Logout, RefreshToken } from '../../../src'
 
 import { UserRepository } from '../../mocks/repositories/userRepository'
-import { TokenRepository } from '../../mocks/repositories/tokenRepository'
+import { RefreshTokenRepository } from '../../mocks/repositories/refreshTokenRepository'
 import LoginRouter from '../../mocks/loginRouter'
 import TestingEndpoint from '../../mocks/testingEndpoint'
 import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
@@ -68,7 +68,7 @@ describe('User logout with i18next', () => {
 		// init authentication library
 		initAuth(passport, {
 			userRepository: userRepo,
-			refreshTokenRepository: TokenRepository.getInstance()
+			refreshTokenRepository: RefreshTokenRepository.getInstance()
 		})
 
 		app.use(express.urlencoded({ extended: true }))
@@ -188,6 +188,7 @@ describe('User logout with i18next', () => {
 		expect(response.statusCode).to.eq(401)
 	})
 })
+
 describe('User logout w/o i18next', () => {
 	const app = express()
 
@@ -199,7 +200,7 @@ describe('User logout w/o i18next', () => {
 		// init authentication library
 		initAuth(passport, {
 			userRepository: userRepo,
-			refreshTokenRepository: TokenRepository.getInstance()
+			refreshTokenRepository: RefreshTokenRepository.getInstance()
 		})
 
 		app.use(express.urlencoded({ extended: true }))

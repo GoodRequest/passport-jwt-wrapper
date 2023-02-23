@@ -9,7 +9,7 @@ import { expect } from 'chai'
 
 import { initAuth } from '../../../src'
 import { UserRepository } from '../../mocks/repositories/userRepository'
-import { TokenRepository } from '../../mocks/repositories/tokenRepository'
+import { RefreshTokenRepository } from '../../mocks/repositories/refreshTokenRepository'
 import loginRouter from '../../mocks/loginRouter'
 import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
 import { LoginUserProperty, loginUsers } from '../../seeds/users'
@@ -58,7 +58,7 @@ before(async () => {
 	// init authentication library
 	initAuth(passport, {
 		userRepository: userRepo,
-		refreshTokenRepository: TokenRepository.getInstance()
+		refreshTokenRepository: RefreshTokenRepository.getInstance()
 	})
 })
 

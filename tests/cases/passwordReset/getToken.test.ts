@@ -7,7 +7,7 @@ import { initAuth, PasswordReset } from '../../../src'
 
 import { UserRepository } from '../../mocks/repositories/userRepository'
 import { PasswordResetTokenRepository } from '../../mocks/repositories/passwordResetTokenRepository'
-import { TokenRepository } from '../../mocks/repositories/tokenRepository'
+import { RefreshTokenRepository } from '../../mocks/repositories/refreshTokenRepository'
 // import { LoginUser, LoginUserProperty, loginUsers } from '../../seeds/users'
 
 /*
@@ -53,7 +53,7 @@ describe('Password reset: getToken method', () => {
 		// init authentication library
 		initAuth(passport, {
 			userRepository: userRepo,
-			refreshTokenRepository: TokenRepository.getInstance(),
+			refreshTokenRepository: RefreshTokenRepository.getInstance(),
 			passwordResetTokenRepository: passwordResetTokenRepo
 		})
 
@@ -74,7 +74,7 @@ describe('Password reset: getToken method without password reset token repositor
 		// init authentication library
 		initAuth(passport, {
 			userRepository: userRepo,
-			refreshTokenRepository: TokenRepository.getInstance()
+			refreshTokenRepository: RefreshTokenRepository.getInstance()
 		})
 
 		app.use(express.urlencoded({ extended: true }))

@@ -1,4 +1,4 @@
-import express, { Express, Request } from 'express'
+import express, { Express } from 'express'
 import passport from 'passport'
 import i18next, { InitOptions as I18nextOptions, t } from 'i18next'
 import i18nextMiddleware from 'i18next-http-middleware'
@@ -11,12 +11,12 @@ import { ApiAuth, initAuth, IPassportConfig, JWT_AUDIENCE, RefreshToken } from '
 
 import { UserRepository } from '../../mocks/repositories/userRepository'
 import { LoginUser, loginUsers } from '../../seeds/users'
-import { TokenRepository } from '../../mocks/repositories/tokenRepository'
+import { RefreshTokenRepository } from '../../mocks/repositories/refreshTokenRepository'
 import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
 import { getUser, languages, loginUserAndSetTokens, seedUserAndSetID, sleep, testEndpoint } from '../../helpers'
 import LoginRouter from '../../mocks/loginRouter'
 import schemaMiddleware from '../../mocks/middlewares/schemaMiddleware'
-import { createJwt, decodeRefreshJwt } from '../../../src/utils/jwt'
+import { createJwt, decodeRefreshJWT } from '../../../src/utils/jwt'
 
 import * as enErrors from '../../../locales/en/error.json'
 import * as skErrors from '../../../locales/sk/error.json'
@@ -55,7 +55,7 @@ before(async () => {
 	// init authentication library
 	initAuth(passport, {
 		userRepository: userRepo,
-		refreshTokenRepository: TokenRepository.getInstance()
+		refreshTokenRepository: RefreshTokenRepository.getInstance()
 	})
 })
 
@@ -135,10 +135,10 @@ function declareNegativeTests(lang?: string) {
 	it(`${lang ? `[${lang}] ` : ''}Refresh invalidated token`, async () => {
 		const user = getUser()
 		await loginUserAndSetTokens(app, user)
-		const tokenRepo = TokenRepository.getInstance()
+		const tokenRepo = RefreshTokenRepository.getInstance()
 
 		const { rt } = user
-		const payload = await decodeRefreshJwt(rt, { t } as Request)
+		const payload = await decodeRefreshJWT(rt, t)
 
 		await tokenRepo.invalidateRefreshToken(`${payload.uid}`, `${payload.jti}`, `${payload.fid}`)
 
@@ -146,7 +146,7 @@ function declareNegativeTests(lang?: string) {
 	})
 
 	it(`${lang ? `[${lang}] ` : ''}Refresh invalidated family token`, async () => {
-		const tokenRepo = TokenRepository.getInstance()
+		const tokenRepo = RefreshTokenRepository.getInstance()
 		const user = getUser()
 
 		await loginUserAndSetTokens(app, user)
@@ -159,7 +159,7 @@ function declareNegativeTests(lang?: string) {
 		const { rt: rt2 } = user
 
 		// invalidate rt1
-		const payload = await decodeRefreshJwt(rt1, { t } as Request)
+		const payload = await decodeRefreshJWT(rt1, t)
 
 		await tokenRepo.invalidateRefreshTokenFamily(`${payload.uid}`, `${payload.fid}`)
 
@@ -310,7 +310,7 @@ describe('Refresh Token endpoint with i18next', () => {
 		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		expect(response2.body.refreshToken).to.exist
 
-		const { accessToken } = response.body
+		const { accessToken } = response2.body
 
 		await testEndpoint(app, accessToken)
 	})
