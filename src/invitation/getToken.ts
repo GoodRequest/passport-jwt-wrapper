@@ -1,8 +1,8 @@
 import config from 'config'
+import ms from 'ms'
 
-import jsonwebtoken from 'jsonwebtoken'
 import { createJwt } from '../utils/jwt'
-import { ID, IJwtPayload } from '../types/interfaces'
+import { ID } from '../types/interfaces'
 import { IPassportConfig } from '../types/config'
 import { JWT_AUDIENCE } from '../utils/enums'
 import { State } from '../State'
@@ -18,16 +18,15 @@ export default async function getToken(userID: ID): Promise<string> {
 	}
 
 	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+	const expiresIn = passportConfig.jwt.invitation.exp
 	const tokenOptions = {
 		audience: JWT_AUDIENCE.INVITATION,
-		expiresIn: passportConfig.jwt.invitation.exp
+		expiresIn
 	}
 
 	const token = await createJwt(tokenPayload, tokenOptions)
 
-	const decoded = <IJwtPayload>jsonwebtoken.decode(token)
-
-	await State.getInstance().invitationTokenRepository?.saveInvitationToken(userID, token, decoded.exp)
+	await State.getInstance().invitationTokenRepository?.saveInvitationToken(userID, token, ms(expiresIn))
 
 	return token
 }

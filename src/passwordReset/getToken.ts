@@ -1,11 +1,10 @@
 import config from 'config'
+import ms from 'ms'
 
-import jsonwebtoken from 'jsonwebtoken'
 import { IPassportConfig } from '../types/config'
 import { JWT_AUDIENCE } from '../utils/enums'
 import { State } from '../State'
 import { createJwt } from '../utils/jwt'
-import { IJwtPayload } from '../types/interfaces'
 
 /**
  * return 10 "random" characters
@@ -61,9 +60,10 @@ export default async function getToken(email: string): Promise<string | undefine
 		uid: user.id
 	}
 
+	const expiresIn = passportConfig.jwt.passwordReset.exp
 	const tokenOptions = {
 		audience: JWT_AUDIENCE.PASSWORD_RESET,
-		expiresIn: passportConfig.jwt.passwordReset.exp
+		expiresIn
 	}
 
 	const tokenSecret = `${passportSecret}${user.hash}`
@@ -75,9 +75,7 @@ export default async function getToken(email: string): Promise<string | undefine
 
 	// save token when savePasswordResetToken repository is provided
 	if (state.passwordResetTokenRepository) {
-		const decoded = <IJwtPayload>jsonwebtoken.decode(resetPasswordToken)
-
-		await state.passwordResetTokenRepository.savePasswordResetToken(user.id, resetPasswordToken, decoded.exp)
+		await state.passwordResetTokenRepository.savePasswordResetToken(user.id, resetPasswordToken, ms(expiresIn))
 	}
 
 	return resetPasswordToken

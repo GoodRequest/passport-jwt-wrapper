@@ -1,6 +1,6 @@
 import config from 'config'
+import ms from 'ms'
 
-import jsonwebtoken from 'jsonwebtoken'
 import { createJwt } from '../utils/jwt'
 import { JWT_AUDIENCE } from '../utils/enums'
 import { IPassportConfig } from '../types/config'
@@ -56,11 +56,8 @@ export async function getTokens(userID: ID, familyID?: ID, payload?: Record<stri
 		)
 	])
 
-	const decoded = <IJwtPayload>jsonwebtoken.decode(accessToken)
-	const expiration = decoded.exp
-
 	// save tokens
-	await state.refreshTokenRepository.saveRefreshToken(userID, fid, rid, refreshToken, expiration)
+	await state.refreshTokenRepository.saveRefreshToken(userID, fid, rid, refreshToken, ms(passportConfig.jwt.api.refresh.exp))
 
 	return {
 		accessToken,
