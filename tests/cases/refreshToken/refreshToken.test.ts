@@ -16,7 +16,7 @@ import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
 import { getUser, languages, loginUserAndSetTokens, seedUserAndSetID, sleep, testEndpoint } from '../../helpers'
 import LoginRouter from '../../mocks/loginRouter'
 import schemaMiddleware from '../../mocks/middlewares/schemaMiddleware'
-import { createJwt, decodeRefreshJWT } from '../../../src/utils/jwt'
+import { createJwt, verifyRefreshJWT } from '../../../src/utils/jwt'
 
 import * as enErrors from '../../../locales/en/error.json'
 import * as skErrors from '../../../locales/sk/error.json'
@@ -138,7 +138,7 @@ function declareNegativeTests(lang?: string) {
 		const tokenRepo = RefreshTokenRepository.getInstance()
 
 		const { rt } = user
-		const payload = await decodeRefreshJWT(rt, t)
+		const payload = await verifyRefreshJWT(rt, t)
 
 		await tokenRepo.invalidateRefreshToken(`${payload.uid}`, `${payload.jti}`, `${payload.fid}`)
 
@@ -159,7 +159,7 @@ function declareNegativeTests(lang?: string) {
 		const { rt: rt2 } = user
 
 		// invalidate rt1
-		const payload = await decodeRefreshJWT(rt1, t)
+		const payload = await verifyRefreshJWT(rt1, t)
 
 		await tokenRepo.invalidateRefreshTokenFamily(`${payload.uid}`, `${payload.fid}`)
 

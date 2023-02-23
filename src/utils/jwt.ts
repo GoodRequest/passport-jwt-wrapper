@@ -43,11 +43,11 @@ export const createHash = async (password: string): Promise<string> => {
 }
 
 /**
- * Decode jwt with secret from config and 'API_REFRESH' audience
+ * Decodes and verifies jwt with secret from config and 'API_REFRESH' audience
  * @param token
  * @param tFunction
  */
-export function decodeRefreshJWT(token: string, tFunction?: TFunction): Promise<IRefreshJwtPayload> {
+export function verifyRefreshJWT(token: string, tFunction?: TFunction): Promise<IRefreshJwtPayload> {
 	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
 
 	return new Promise((resolve, reject) => {

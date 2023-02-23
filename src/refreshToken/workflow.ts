@@ -1,6 +1,6 @@
 import { Request } from 'express'
 
-import { decodeRefreshJWT } from '../utils/jwt'
+import { verifyRefreshJWT } from '../utils/jwt'
 import { State } from '../State'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { getTokens } from '../login'
@@ -19,7 +19,7 @@ import { customTFunction } from '../utils/translations'
 export default async function workflow(refreshToken: string, req: Request): Promise<ILoginResponse> {
 	const t = req.t ?? customTFunction
 	// decode refresh token
-	const decodedRefreshTokenData = await decodeRefreshJWT(refreshToken, t)
+	const decodedRefreshTokenData = await verifyRefreshJWT(refreshToken, t)
 
 	const state = State.getInstance()
 	const { refreshTokenRepository, userRepository } = state
