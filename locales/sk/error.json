@@ -1,7 +1,8 @@
 {
-  "Incorrect email or password": "Nesprávne meno alebo heslo",
-  "Invitation token is not valid": "Token pre pozvanie používateľa nie je platný",
-  "Password reset token is invalid": "Token pre zmenu hesla je neplatný",
-  "Refresh token is not valid": "Token pre obnovenie nie je platný",
-  "User was not found": "Používateľ neexistuje"
+	"Access token is not valid": "Autorizačný token nie je platný",
+	"Incorrect email or password": "Nesprávne meno alebo heslo",
+	"Invitation token is not valid": "Token pre pozvanie používateľa nie je platný",
+	"Password reset token is invalid": "Token pre zmenu hesla je neplatný",
+	"Refresh token is not valid": "Token pre obnovenie nie je platný",
+	"User was not found": "Používateľ neexistuje"
 }

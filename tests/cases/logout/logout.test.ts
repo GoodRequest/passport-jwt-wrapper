@@ -1,62 +1,26 @@
 import passport from 'passport'
-import express, { Express } from 'express'
+import express from 'express'
 import i18next, { InitOptions as I18nextOptions } from 'i18next'
 import i18nextMiddleware from 'i18next-http-middleware'
 import i18nextBackend from 'i18next-fs-backend'
 import config from 'config'
-import request, { Response } from 'supertest'
+import request from 'supertest'
 
 import { expect } from 'chai'
-import { ApiAuth, initAuth, JWT_AUDIENCE, Logout, RefreshToken } from '../../../src'
+import { initAuth, JWT_AUDIENCE } from '../../../src'
 
 import { UserRepository } from '../../mocks/repositories/userRepository'
 import { RefreshTokenRepository } from '../../mocks/repositories/refreshTokenRepository'
-import LoginRouter from '../../mocks/loginRouter'
-import TestingEndpoint from '../../mocks/testingEndpoint'
-import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
-import schemaMiddleware from '../../mocks/middlewares/schemaMiddleware'
-import { getUser, languages, loginUserAndSetTokens, seedUsers } from '../../helpers'
+import { getUser, languages, loginUserAndSetTokens, seedUsers, testEndpoint } from '../../helpers'
 
-import * as enTranslations from '../../../locales/en/translation.json'
-import * as skTranslations from '../../../locales/sk/translation.json'
 import { createJwt } from '../../../src/utils/jwt'
+import { getLogoutMessage, runNegativeRefreshTokenAttempt, setupRouters } from './helpers'
 
 const i18NextConfig: I18nextOptions = config.get('passportJwtWrapper.i18next')
-
-function getLogoutMessage(language?: string): string {
-	if (language && language === 'sk') {
-		return skTranslations['You were successfully logged out']
-	}
-
-	return enTranslations['You were successfully logged out']
-}
 
 /**
  * Helper function for setting up express routers for testing
  */
-function setupRouters(app: Express) {
-	const loginRouter = LoginRouter()
-
-	loginRouter.post('/logout', ApiAuth.guard(), schemaMiddleware(Logout.requestSchema), Logout.endpoint)
-	loginRouter.post('/refresh-token', schemaMiddleware(RefreshToken.requestSchema), RefreshToken.endpoint)
-
-	app.use('/auth', loginRouter)
-
-	app.get('/endpoint', ApiAuth.guard(), TestingEndpoint)
-
-	app.use(errorMiddleware)
-}
-
-async function runNegativeRefreshTokenAttempt(app: Express, refreshToken: string): Promise<Response> {
-	const response = await request(app).post('/auth/refresh-token').send({
-		refreshToken
-	})
-
-	expect(response.statusCode).to.eq(401)
-
-	return response
-}
-
 describe('User logout with i18next', () => {
 	const app = express()
 
@@ -98,6 +62,8 @@ describe('User logout with i18next', () => {
 			expect(response.body.messages[0].message).to.eq(getLogoutMessage(lang))
 
 			await runNegativeRefreshTokenAttempt(app, user.rt)
+
+			await testEndpoint(app, user.at)
 		})
 	})
 
