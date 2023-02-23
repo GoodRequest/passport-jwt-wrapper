@@ -46,15 +46,22 @@ export interface IRefreshTokenRepository<TokenIDType extends ID, UserIDType exte
 }
 
 export interface IBaseJwtPayload {
-	uid: ID // userID
-	fid: ID // token family ID
-	exp: number // expiration
-	iat: number // issued at
-	aud: string // audience
+	// userID
+	uid: ID
+	// token family ID
+	fid: ID
+	// expiration
+	exp: number
+	// issued at
+	iat: number
+	// audience
+	aud: string
 }
 export interface IJwtPayload extends IBaseJwtPayload {
-	rid: ID // refresh token ID
+	// refresh token ID
+	rid: ID
 }
 export interface IRefreshJwtPayload extends IBaseJwtPayload {
-	jti: ID // jwt ID
+	// jwt ID
+	jti: ID
 }
