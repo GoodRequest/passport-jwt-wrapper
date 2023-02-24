@@ -5,6 +5,7 @@ import { IPassportConfig } from '../types/config'
 import { JWT_AUDIENCE } from '../utils/enums'
 import { State } from '../State'
 import { createJwt } from '../utils/jwt'
+import { ID, IUser } from '../types/interfaces'
 
 /**
  * return 10 "random" characters
@@ -34,7 +35,7 @@ function getRandomString(length: number): string {
  * Returns reset password token encrypted with concatenation of server jwt secret and user password, which makes this token usable just once.
  * @param email
  */
-export default async function getToken(email: string): Promise<string | undefined> {
+export default async function getToken(email: string): Promise<[string, IUser<ID>] | undefined> {
 	const state = State.getInstance()
 	let user = await state.userRepository.getUserByEmail(email)
 
@@ -78,7 +79,7 @@ export default async function getToken(email: string): Promise<string | undefine
 		await state.passwordResetTokenRepository.savePasswordResetToken(user.id, resetPasswordToken, ms(expiresIn))
 	}
 
-	return resetPasswordToken
+	return [resetPasswordToken, user]
 }
 
 /*
