@@ -28,7 +28,7 @@ function getErrorMessage(language?: string): string {
 	return enErrors['Access token is not valid']
 }
 
-describe('User logout control access token with i18next', () => {
+describe('User logout check access token with i18next', () => {
 	const app = express()
 
 	before(async () => {
@@ -44,7 +44,7 @@ describe('User logout control access token with i18next', () => {
 				refreshTokenRepository: RefreshTokenRepository.getInstance()
 			},
 			{
-				controlAccessToken: true
+				checkAccessToken: true
 			}
 		)
 

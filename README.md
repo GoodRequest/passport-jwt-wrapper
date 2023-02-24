@@ -94,7 +94,7 @@ router.post('/reset-password',
 extractor specified in the config.
 It needs to be used as function call: `AuthGuard()`, since it uses passport which is provided after this guard is
 imported to your project.
-Internally calls `userRepository.getUserById` to retrieve the user and when `controlAccessToken` is set to
+Internally calls `userRepository.getUserById` to retrieve the user and when `checkAccessToken` is set to
 true, `refreshTokenRepository.isRefreshTokenValid` is caleed to find out if the access token is valid.
 Access token is not only valid, when refresh token issued with given access token was invalidated.
 
@@ -106,7 +106,7 @@ Access token is not only valid, when refresh token issued with given access toke
 
 ```
 {
-	controlAccessToken: boolean
+	checkAccessToken: boolean
 	passport: IPassportConfig
 	i18next: i18next.InitOptions
 }

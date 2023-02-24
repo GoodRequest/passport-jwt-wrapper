@@ -26,7 +26,7 @@ export async function strategyVerifyFunction(req: Request, payload: IJwtPayload,
 			throw new ErrorBuilder(401, t('error:User was not found'))
 		}
 
-		if (libConfig.controlAccessToken) {
+		if (libConfig.checkAccessToken) {
 			const isTokenValid = await State.getInstance().refreshTokenRepository.isRefreshTokenValid(payload.uid, payload.fid, payload.rid)
 			if (!isTokenValid) {
 				// User is not logged in

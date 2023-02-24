@@ -24,7 +24,7 @@ export interface IPassportConfig {
 }
 
 export interface LibConfig {
-	controlAccessToken: boolean
+	checkAccessToken: boolean
 	passport: IPassportConfig
 	i18next: InitOptions
 }

@@ -95,7 +95,7 @@ function initAuth<TokenIDType extends ID, UserIDType extends ID>(
 	}
 
 	const defaultConfigs: LibConfig = {
-		controlAccessToken: false,
+		checkAccessToken: false,
 		i18next: i18nextConfig,
 		passport: passportConfig
 	}
