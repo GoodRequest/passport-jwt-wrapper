@@ -5,9 +5,10 @@
 	"main": "dist/src/index.js",
 	"types": "dist/src/index.d.ts",
 	"scripts": {
-		"test": "ALLOW_CONFIG_MUTATIONS=true NODE_ENV=test JWT_SECRET=somerandomsecret ts-mocha --config \"./.mocharc.js\"",
-		"test:debug": "ALLOW_CONFIG_MUTATIONS=true NODE_ENV=test JWT_SECRET=somerandomsecret ts-mocha --config \"./.mocharc.js\" --inspect",
-		"test:coverage": "ALLOW_CONFIG_MUTATIONS=true NODE_ENV=test JWT_SECRET=somerandomsecret nyc --reporter=lcov --temp-dir=\"./temp/.nyc_output\" ts-mocha --config \"./.mocharc.js\" --timeout=100000",
+		"test": "NODE_ENV=test JWT_SECRET=somerandomsecret ts-mocha --exclude ./tests/cases/logout/logoutWControl.test.ts --config \"./.mocharc.js\" && npm run test:accessToken",
+		"test:debug": "NODE_ENV=test JWT_SECRET=somerandomsecret ts-mocha --exclude ./tests/cases/logout/logoutWControl.test.ts --config \"./.mocharc.js\" --inspect",
+		"test:coverage": "NODE_ENV=test JWT_SECRET=somerandomsecret nyc --reporter=lcov --temp-dir=\"./temp/.nyc_output\" ts-mocha --exclude ./tests/cases/logout/logoutWControl.test.ts --config \"./.mocharc.js\" --timeout=100000",
+		"test:accessToken": "CHECK_ACCESS_TOKEN=true NODE_ENV=test JWT_SECRET=somerandomsecret ts-mocha -f \"User logout check\" --config \"./.mocharc.js\"",
 		"lint": "eslint src tests --color --ext .js --ext .ts",
 		"lint:fix": "eslint src tests --color --ext .js --ext .ts --fix",
 		"lint:watch": "npm run lint -- --watch  --ext .js --ext .ts",

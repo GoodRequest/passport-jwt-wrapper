@@ -47,8 +47,7 @@ function initAuth<TokenIDType extends ID, UserIDType extends ID>(
 		refreshTokenRepository: IRefreshTokenRepository<TokenIDType, UserIDType>
 		invitationTokenRepository?: IInvitationTokenRepository<UserIDType>
 		passwordResetTokenRepository?: IPasswordResetTokenRepository<UserIDType>
-	},
-	configs?: Partial<LibConfig>
+	}
 ) {
 	const i18nextConfig = <InitOptions>{
 		preload: ['en', 'sk'],
@@ -100,16 +99,7 @@ function initAuth<TokenIDType extends ID, UserIDType extends ID>(
 		passport: passportConfig
 	}
 
-	const allowMutations = !!config.util.getEnv('ALLOW_CONFIG_MUTATIONS')
-	if (!allowMutations && config.has('passportJwtWrapper') && configs) {
-		throw new Error(
-			'Cannot redefine configuration defined in your config files. Use just the config file (loaded by `node-config`) or `initAuth` variable, not both.'
-		)
-	}
-
-	if (allowMutations || !config.has('passportJwtWrapper')) {
-		config.util.extendDeep(defaultConfigs, configs)
-
+	if (!config.has('passportJwtWrapper')) {
 		config.util.setModuleDefaults('passportJwtWrapper', defaultConfigs)
 	}
 

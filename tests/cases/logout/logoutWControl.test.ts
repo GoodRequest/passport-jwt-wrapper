@@ -37,16 +37,10 @@ describe('User logout check access token with i18next', () => {
 		await seedUsers(userRepo)
 
 		// init authentication library
-		initAuth(
-			passport,
-			{
-				userRepository: userRepo,
-				refreshTokenRepository: RefreshTokenRepository.getInstance()
-			},
-			{
-				checkAccessToken: true
-			}
-		)
+		initAuth(passport, {
+			userRepository: userRepo,
+			refreshTokenRepository: RefreshTokenRepository.getInstance()
+		})
 
 		app.use(express.urlencoded({ extended: true }))
 		app.use(express.json())
