@@ -5,7 +5,7 @@ import { LibConfig } from '../src/types/config'
 
 export default {
 	passportJwtWrapper: <Partial<LibConfig>>{
-		checkAccessToken: process.env.CHECK_ACCESS_TOKEN ?? false,
+		checkAccessToken: false,
 		i18next: {
 			preload: ['en', 'sk'],
 			fallbackLng: 'en',

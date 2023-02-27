@@ -1,9 +1,15 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import rewiremock from 'rewiremock'
+// eslint-disable-next-line import/no-extraneous-dependencies
+import importFresh from 'import-fresh'
+/* eslint-disable import/first */
+import config from 'config'
+
 import passport from 'passport'
 import express from 'express'
 import i18next, { InitOptions as I18nextOptions } from 'i18next'
 import i18nextMiddleware from 'i18next-http-middleware'
 import i18nextBackend from 'i18next-fs-backend'
-import config from 'config'
 import request from 'supertest'
 import { expect } from 'chai'
 
@@ -17,6 +23,19 @@ import { getLogoutMessage, setupRouters } from './helpers'
 
 import * as skErrors from '../../../locales/sk/error.json'
 import * as enErrors from '../../../locales/en/error.json'
+
+process.env.NODE_CONFIG = JSON.stringify({
+	passportJwtWrapper: {
+		checkAccessToken: true
+	}
+})
+
+rewiremock.overrideEntryPoint(module)
+
+const testConfig: string = importFresh('config')
+rewiremock('config').with(testConfig)
+
+rewiremock.enable()
 
 const i18NextConfig: I18nextOptions = config.get('passportJwtWrapper.i18next')
 
@@ -54,6 +73,10 @@ describe('User logout check access token with i18next', () => {
 		app.use(i18nextMiddleware.handle(i18next))
 
 		setupRouters(app)
+	})
+
+	after(() => {
+		rewiremock.disable()
 	})
 
 	languages.forEach((lang) => {
