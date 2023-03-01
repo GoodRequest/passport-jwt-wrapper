@@ -4,6 +4,7 @@ import { State } from '../State'
 import { PASSPORT_NAME } from '../utils/enums'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { customTFunction } from '../utils/translations'
+import { IUser } from '../../tests/mocks/repositories/userRepository'
 
 /**
  * Guard middleware for password reset.
@@ -13,7 +14,7 @@ import { customTFunction } from '../utils/translations'
  * @param next
  */
 export default function guard(req: Request, res: Response, next: NextFunction) {
-	State.getInstance().passport.authenticate(PASSPORT_NAME.JWT_PASSWORD_RESET, (err, userData) => {
+	State.getInstance().passport.authenticate(PASSPORT_NAME.JWT_PASSWORD_RESET, (err: any, userData: IUser) => {
 		try {
 			if (err) {
 				return next(err)
