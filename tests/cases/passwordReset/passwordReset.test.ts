@@ -10,7 +10,7 @@ import config from 'config'
 import { initAuth, IPassportConfig, JWT_AUDIENCE } from '../../../src'
 
 import { UserRepository } from '../../mocks/repositories/userRepository'
-import { TokenRepository } from '../../mocks/repositories/tokenRepository'
+import { RefreshTokenRepository } from '../../mocks/repositories/refreshTokenRepository'
 import { createJwt } from '../../../src/utils/jwt'
 
 import { getUser, languages, seedUserAndSetID, seedUsers, sleep } from '../../helpers'
@@ -91,7 +91,7 @@ describe('Password reset endpoint w/o i18next', () => {
 		// init authentication library
 		initAuth(passport, {
 			userRepository: userRepo,
-			refreshTokenRepository: TokenRepository.getInstance(),
+			refreshTokenRepository: RefreshTokenRepository.getInstance(),
 			passwordResetTokenRepository: passwordResetTokenRepo
 		})
 
@@ -194,7 +194,7 @@ describe('Password reset endpoint with i18next', () => {
 		// init authentication library
 		initAuth(passport, {
 			userRepository: userRepo,
-			refreshTokenRepository: TokenRepository.getInstance(),
+			refreshTokenRepository: RefreshTokenRepository.getInstance(),
 			passwordResetTokenRepository: passwordResetTokenRepo
 		})
 
@@ -219,7 +219,7 @@ describe('Password reset endpoint w/o passwordResetTokenRepository', () => {
 		// init authentication library
 		initAuth(passport, {
 			userRepository: userRepo,
-			refreshTokenRepository: TokenRepository.getInstance()
+			refreshTokenRepository: RefreshTokenRepository.getInstance()
 		})
 
 		app.use(express.urlencoded({ extended: true }))

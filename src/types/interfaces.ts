@@ -13,6 +13,9 @@ export interface IUserRepository<UserIDType extends ID> {
 	 * Optional method, should be used when non-registered (invited) user is not returned by `getUserById`
 	 */
 	getNewUserById?: GetUserByIdFunction<UserIDType>
+	/**
+	 * Method return user, if one with given email exists. User needs to contain `hash`, so the password comparison can be made
+	 */
 	getUserByEmail: GetUserByEmailFunction<UserIDType>
 	updateUserPassword: (userID: UserIDType, newPassword: string) => Promise<unknown>
 }
@@ -20,14 +23,14 @@ export interface IUserRepository<UserIDType extends ID> {
 export type ID = string | number
 
 export interface IInvitationTokenRepository<UserIDType extends ID> {
-	saveInvitationToken: (userID: UserIDType, token: string) => Promise<unknown>
+	saveInvitationToken: (userID: UserIDType, token: string, expiresIn: number) => Promise<unknown>
 	isInvitationTokenValid: (userID: UserIDType) => Promise<boolean>
 	/// not needed by this library, but should be implemented
 	invalidateInvitationToken?: (userID: UserIDType) => Promise<void>
 }
 
 export interface IPasswordResetTokenRepository<UserIDType extends ID> {
-	savePasswordResetToken: (userID: UserIDType, token: string) => Promise<unknown> // user can have one password reset token
+	savePasswordResetToken: (userID: UserIDType, token: string, expiresIn: number) => Promise<unknown> // user can have one password reset token
 	isPasswordTokenValid: (userID: UserIDType) => Promise<boolean>
 	/// not needed by this library, but should be implemented
 	invalidatePasswordResetToken?: (userID: UserIDType) => Promise<void> // not needed by this library
@@ -35,7 +38,7 @@ export interface IPasswordResetTokenRepository<UserIDType extends ID> {
 
 export interface IRefreshTokenRepository<TokenIDType extends ID, UserIDType extends ID> {
 	createTokenID: () => Promise<TokenIDType>
-	saveRefreshToken: (userID: UserIDType, familyID: TokenIDType, tokenID: TokenIDType, token: string) => Promise<unknown>
+	saveRefreshToken: (userID: UserIDType, familyID: TokenIDType, tokenID: TokenIDType, token: string, expiresIn: number) => Promise<unknown>
 	isRefreshTokenValid: (userID: UserIDType, familyID: TokenIDType, tokenID: TokenIDType) => Promise<boolean>
 	invalidateRefreshToken: (userID: UserIDType, familyID: TokenIDType, tokenID: TokenIDType) => Promise<void>
 	invalidateRefreshTokenFamily: (userID: UserIDType, familyID: TokenIDType) => Promise<void>
@@ -43,15 +46,22 @@ export interface IRefreshTokenRepository<TokenIDType extends ID, UserIDType exte
 }
 
 export interface IBaseJwtPayload {
-	uid: ID // userID
-	fid: ID // token family ID
-	exp: number // expiration
-	iat: number // issued at
-	aud: string // audience
+	// userID
+	uid: ID
+	// token family ID
+	fid: ID
+	// expiration
+	exp: number
+	// issued at
+	iat: number
+	// audience
+	aud: string
 }
 export interface IJwtPayload extends IBaseJwtPayload {
-	rid: ID // refresh token ID
+	// refresh token ID
+	rid: ID
 }
 export interface IRefreshJwtPayload extends IBaseJwtPayload {
-	jti: ID // jwt ID
+	// jwt ID
+	jti: ID
 }

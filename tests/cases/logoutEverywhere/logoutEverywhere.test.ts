@@ -10,7 +10,7 @@ import { expect } from 'chai'
 import { ApiAuth, initAuth, JWT_AUDIENCE, LogoutEverywhere, RefreshToken } from '../../../src'
 
 import { UserRepository } from '../../mocks/repositories/userRepository'
-import { TokenRepository } from '../../mocks/repositories/tokenRepository'
+import { RefreshTokenRepository } from '../../mocks/repositories/refreshTokenRepository'
 import LoginRouter from '../../mocks/loginRouter'
 import TestingEndpoint from '../../mocks/testingEndpoint'
 import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
@@ -87,7 +87,7 @@ describe('Logout user from everywhere with i18next', () => {
 		// init authentication library
 		initAuth(passport, {
 			userRepository: userRepo,
-			refreshTokenRepository: TokenRepository.getInstance()
+			refreshTokenRepository: RefreshTokenRepository.getInstance()
 		})
 
 		// init express app
@@ -198,7 +198,7 @@ describe('Logout user without i18next', () => {
 		// init authentication library
 		initAuth(passport, {
 			userRepository: userRepo,
-			refreshTokenRepository: TokenRepository.getInstance()
+			refreshTokenRepository: RefreshTokenRepository.getInstance()
 		})
 
 		// init express app
@@ -220,7 +220,7 @@ describe('Logout user from everywhere without proper initialization', () => {
 
 		await seedUsers(userRepo)
 
-		const tokenRepo = TokenRepository.getInstance()
+		const tokenRepo = RefreshTokenRepository.getInstance()
 
 		// init authentication library
 		initAuth(passport, {

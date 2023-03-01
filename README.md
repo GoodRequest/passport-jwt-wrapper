@@ -82,17 +82,39 @@ router.post('/reset-password',
 ```
 
 #### Methods that needs to be implemented separately
-- `postlogin.workflow` (and `postLogin.requestSchema`): user creation is not in the scope of this library
-- `postResetPasswordRequest.workflow` (and `postResetPasswordRequest.requestSchema`): Reset password email should be sent from this endpoint
 
+- `postlogin.workflow` (and `postLogin.requestSchema`): user creation is not in the scope of this library
+- `postResetPasswordRequest.workflow` (and `postResetPasswordRequest.requestSchema`): Reset password email should be
+  sent from this endpoint
 
 ### Authentication Guard
-[`AuthGuard`](src/apiAuth/guard.ts) is middleware which checks if the request includes valid `access_token` based on jwt extractor specified in the config.
-It needs to be used as function call: `AuthGuard()`, since it uses passport which is provided after this guard is imported to your project.
 
-### Config
-[Config interface](src/types/config.ts) (`IPassportConfig`) is also exported from this library and needs to be present in your project config.
+[`AuthGuard`](src/apiAuth/guard.ts) is middleware which checks if the request includes valid `access_token` based on jwt
+extractor specified in the config.
+It needs to be used as function call: `AuthGuard()`, since it uses passport which is provided after this guard is
+imported to your project.
+Internally calls `userRepository.getUserById` to retrieve the user and when `checkAccessToken` is set to
+true, `refreshTokenRepository.isRefreshTokenValid` is caleed to find out if the access token is valid.
+Access token is not only valid, when refresh token issued with given access token was invalidated.
+
+### Configs
+
+[Config interfaces](src/types/config.ts)
+
+`LibConfig`:
+
+```
+{
+	checkAccessToken: boolean
+	passport: IPassportConfig
+	i18next: i18next.InitOptions
+}
+```
+
+#### `IPassportConfig`
+
 Example:
+
 ```
 passport: {
 	local: {
@@ -122,14 +144,37 @@ passport: {
 },
 ```
 
+#### `i18next.InitOptions`
+
+Example:
+
+```
+{
+	preload: ['en', 'sk'],
+	fallbackLng: 'en',
+	ns: ['error', 'translation'],
+	defaultNS: 'translation',
+	detection: {
+		order: ['header']
+	},
+	backend: {
+		loadPath: 'locales/{{lng}}/{{ns}}.json',
+	jsonIndent: 2
+	},
+	nsSeparator: ':',
+	keySeparator: false,
+	returnNull: false
+}
+```
+
 #### ENV variables
+
 Library read from config using [config package](https://www.npmjs.com/package/config).
 Config needs to have properties specified in [IPassportConfig interface](./src/types/config.ts).
 
 | ENV variable | Development | Production | Note																					                  |
 |--------------|-------------|------------|--------------------------------------------|
 | JWT_SECRET   | required    | required   | development/test/production															 |
-
 
 ## Modules
 This library is divided into modules:
@@ -224,7 +269,7 @@ Express endpoints (`(req, res, next)`). They return object, typically JWTs.
 - [`PasswordReset.endpoint`](src/passwordReset/endpoint.ts): Returns just the message. Changes user password and invalidates all user refresh tokens, if `userRepository.invalidateUserRefreshTokens` method is provided.
 - [`RefreshToken.endpoint`](src/refreshToken/endpoint.ts): Returns new access and refresh tokens. Used refresh token is invalidated, since this library is using refresh token rotation.
 
-### Worfklow
+### Workflow
 Internal function used by endpoint.
 - [`Logout.workflow`](./src/logout/workflow.ts)
 - [`LogoutEverywhere.workflow`](src/logoutEverywhere/workflow.ts)
@@ -233,8 +278,10 @@ Internal function used by endpoint.
 
 ### Guards
 [express](https://expressjs.com/) middlewares (calls `next` function):
-- [`Login.guard`](src/login/guard.ts): helper function calling `passport.authenticate`. Should be used before used specified login endpoint
-- [`ResetPassword.guard`](src/passwordReset/guard.ts): just a helper middleware for the
+
+- [`Login.guard`](src/login/guard.ts): helper function calling `passport.authenticate`. Should be used before used
+  specified login endpoint
+- [`ResetPassword.guard`](src/passwordReset/guard.ts): just a helper middleware for the password reset
 - [`ApiAuth.guard`](src/apiAuth/guard.ts): see [Authentication Guard](#Authentication-Guard)
 
 ### Functions

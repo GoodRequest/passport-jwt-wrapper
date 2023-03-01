@@ -1,13 +1,14 @@
 import jsonwebtoken, { sign, SignOptions } from 'jsonwebtoken'
 import config from 'config'
 import bcrypt from 'bcrypt'
-import { Request } from 'express'
 
+import { TFunction } from 'i18next'
 import { IPassportConfig } from '../types/config'
 import { IRefreshJwtPayload } from '../types/interfaces'
 import { JWT_AUDIENCE } from './enums'
 import { ErrorBuilder } from './ErrorBuilder'
 import { customTFunction } from './translations'
+import { Flow } from './Flow'
 
 /**
  * Creates JWT token
@@ -42,11 +43,11 @@ export const createHash = async (password: string): Promise<string> => {
 }
 
 /**
- * Decode jwt with secret from config and 'API_REFRESH' audience
+ * Decodes and verifies jwt with secret from config and 'API_REFRESH' audience
  * @param token
- * @param req
+ * @param tFunction
  */
-export function decodeRefreshJwt(token: string, req: Request): Promise<IRefreshJwtPayload> {
+export function verifyRefreshJWT(token: string, tFunction?: TFunction): Promise<IRefreshJwtPayload> {
 	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
 
 	return new Promise((resolve, reject) => {
@@ -58,7 +59,13 @@ export function decodeRefreshJwt(token: string, req: Request): Promise<IRefreshJ
 			},
 			(err, decoded: any) => {
 				if (err) {
-					const t = req.t ?? customTFunction
+					let t: TFunction
+					if (tFunction) {
+						t = tFunction
+					} else {
+						const flowData = Flow.get()
+						t = flowData.t ?? (customTFunction as TFunction)
+					}
 					return reject(new ErrorBuilder(401, t('error:Refresh token is not valid')))
 				}
 

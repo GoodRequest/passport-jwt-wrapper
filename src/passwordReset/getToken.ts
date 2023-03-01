@@ -1,9 +1,11 @@
 import config from 'config'
+import ms from 'ms'
 
 import { IPassportConfig } from '../types/config'
 import { JWT_AUDIENCE } from '../utils/enums'
 import { State } from '../State'
 import { createJwt } from '../utils/jwt'
+import { ID, IUser } from '../types/interfaces'
 
 /**
  * return 10 "random" characters
@@ -33,7 +35,7 @@ function getRandomString(length: number): string {
  * Returns reset password token encrypted with concatenation of server jwt secret and user password, which makes this token usable just once.
  * @param email
  */
-export default async function getToken(email: string): Promise<string | undefined> {
+export default async function getToken(email: string): Promise<[string, IUser<ID>] | undefined> {
 	const state = State.getInstance()
 	let user = await state.userRepository.getUserByEmail(email)
 
@@ -43,6 +45,7 @@ export default async function getToken(email: string): Promise<string | undefine
 
 	const randomString = getRandomString(60 + passportSecret.length)
 
+	// for preventing timing attacks
 	let mock = false
 	if (!user) {
 		mock = true
@@ -58,9 +61,10 @@ export default async function getToken(email: string): Promise<string | undefine
 		uid: user.id
 	}
 
+	const expiresIn = passportConfig.jwt.passwordReset.exp
 	const tokenOptions = {
 		audience: JWT_AUDIENCE.PASSWORD_RESET,
-		expiresIn: passportConfig.jwt.passwordReset.exp
+		expiresIn
 	}
 
 	const tokenSecret = `${passportSecret}${user.hash}`
@@ -72,10 +76,10 @@ export default async function getToken(email: string): Promise<string | undefine
 
 	// save token when savePasswordResetToken repository is provided
 	if (state.passwordResetTokenRepository) {
-		await state.passwordResetTokenRepository.savePasswordResetToken(user.id, resetPasswordToken)
+		await state.passwordResetTokenRepository.savePasswordResetToken(user.id, resetPasswordToken, ms(expiresIn))
 	}
 
-	return resetPasswordToken
+	return [resetPasswordToken, user]
 }
 
 /*

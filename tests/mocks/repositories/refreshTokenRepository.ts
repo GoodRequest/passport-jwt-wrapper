@@ -5,13 +5,13 @@ import { IRefreshTokenRepository } from '../../../src'
 const logging = false
 
 // eslint-disable-next-line import/prefer-default-export
-export class TokenRepository implements IRefreshTokenRepository<string, string> {
-	private static instance: TokenRepository
+export class RefreshTokenRepository implements IRefreshTokenRepository<string, string> {
+	private static instance: RefreshTokenRepository
 	private map = new Map<string, Map<string, Map<string, string>>>()
 
-	static getInstance(): TokenRepository {
+	static getInstance(): RefreshTokenRepository {
 		if (!this.instance) {
-			this.instance = new TokenRepository()
+			this.instance = new RefreshTokenRepository()
 		}
 
 		return this.instance
@@ -24,7 +24,7 @@ export class TokenRepository implements IRefreshTokenRepository<string, string> 
 	createTokenID(): Promise<string> {
 		const id = uuidv4()
 		if (logging) {
-			console.log(`[TokenRepository] new id: ${id}`)
+			console.log(`[RefreshTokenRepository] new id: ${id}`)
 		}
 
 		return Promise.resolve(id)
@@ -32,7 +32,7 @@ export class TokenRepository implements IRefreshTokenRepository<string, string> 
 
 	saveRefreshToken(userID: string, familyID: string, tokenID: string, token: string): Promise<unknown> {
 		if (logging) {
-			console.log(`[TokenRepository] saving refresh token for user ${userID}: ${tokenID} (${familyID}): ${token}`)
+			console.log(`[RefreshTokenRepository] saving refresh token for user ${userID}: ${tokenID} (${familyID}): ${token}`)
 		}
 		let userMap = this.map.get(userID)
 		if (!userMap) {
@@ -61,14 +61,14 @@ export class TokenRepository implements IRefreshTokenRepository<string, string> 
 
 		const result = familyMap ? familyMap.has(tokenID) : false
 		if (logging) {
-			console.log(`[TokenRepository] isRefreshTokenValid for user ${userID} ${tokenID} (${familyID}): ${result}`)
+			console.log(`[RefreshTokenRepository] isRefreshTokenValid for user ${userID} ${tokenID} (${familyID}): ${result}`)
 		}
 		return Promise.resolve(result)
 	}
 
 	invalidateRefreshToken(userID: string, familyID: string, tokenID: string): Promise<void> {
 		if (logging) {
-			console.log(`[TokenRepository] invalidate refresh token for user ${userID}: ${tokenID} (${familyID})`)
+			console.log(`[RefreshTokenRepository] invalidate refresh token for user ${userID}: ${tokenID} (${familyID})`)
 		}
 		const userMap = this.map.get(userID)
 		if (!userMap) {
@@ -83,7 +83,7 @@ export class TokenRepository implements IRefreshTokenRepository<string, string> 
 
 	invalidateRefreshTokenFamily(userID: string, familyID: string): Promise<void> {
 		if (logging) {
-			console.log(`[TokenRepository] invalidate refresh token family: ${familyID}`)
+			console.log(`[RefreshTokenRepository] invalidate refresh token family: ${familyID}`)
 		}
 		const userMap = this.map.get(userID)
 		if (!userMap) {
@@ -97,7 +97,7 @@ export class TokenRepository implements IRefreshTokenRepository<string, string> 
 
 	invalidateUserRefreshTokens(userID: string): Promise<void> {
 		if (logging) {
-			console.log(`[TokenRepository] invalidate user refresh tokens: ${userID}`)
+			console.log(`[RefreshTokenRepository] invalidate user refresh tokens: ${userID}`)
 		}
 
 		this.map.delete(userID)

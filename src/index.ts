@@ -2,8 +2,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { PassportStatic } from 'passport'
 import { ExtractJwt } from 'passport-jwt'
-/* eslint-disable import/first */
-process.env.SUPPRESS_NO_CONFIG_WARNING = 'y'
 import config from 'config'
 import { InitOptions } from 'i18next'
 
@@ -17,17 +15,19 @@ import * as Invitation from './invitation'
 
 import {
 	ID,
-	IJwtPayload,
-	IRefreshJwtPayload,
-	IUserRepository,
-	IRefreshTokenRepository,
 	IInvitationTokenRepository,
-	IPasswordResetTokenRepository
+	IJwtPayload,
+	IPasswordResetTokenRepository,
+	IRefreshJwtPayload,
+	IRefreshTokenRepository,
+	IUserRepository
 } from './types/interfaces'
 import { IPassportConfig, LibConfig } from './types/config'
 import { State } from './State'
 import { JWT_AUDIENCE, PASSPORT_NAME } from './utils/enums'
 import { createHash } from './utils/jwt'
+/* eslint-disable import/first */
+process.env.SUPPRESS_NO_CONFIG_WARNING = 'y'
 
 /**
  * Initialization method, have to be run before using this authentication library
@@ -47,8 +47,7 @@ function initAuth<TokenIDType extends ID, UserIDType extends ID>(
 		refreshTokenRepository: IRefreshTokenRepository<TokenIDType, UserIDType>
 		invitationTokenRepository?: IInvitationTokenRepository<UserIDType>
 		passwordResetTokenRepository?: IPasswordResetTokenRepository<UserIDType>
-	},
-	configs?: LibConfig
+	}
 ) {
 	const i18nextConfig = <InitOptions>{
 		preload: ['en', 'sk'],
@@ -63,7 +62,8 @@ function initAuth<TokenIDType extends ID, UserIDType extends ID>(
 			jsonIndent: 2
 		},
 		nsSeparator: ':',
-		keySeparator: false
+		keySeparator: false,
+		returnNull: false
 	}
 
 	const passportConfig = <IPassportConfig>{
@@ -94,15 +94,12 @@ function initAuth<TokenIDType extends ID, UserIDType extends ID>(
 	}
 
 	const defaultConfigs: LibConfig = {
+		checkAccessToken: false,
 		i18next: i18nextConfig,
 		passport: passportConfig
 	}
 
 	if (!config.has('passportJwtWrapper')) {
-		if (configs) {
-			config.util.extendDeep(defaultConfigs, configs)
-		}
-
 		config.util.setModuleDefaults('passportJwtWrapper', defaultConfigs)
 	}
 

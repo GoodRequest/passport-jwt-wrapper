@@ -8,7 +8,7 @@ import { IJwtPayload, initAuth, IRefreshJwtPayload, Login } from '../../../src'
 
 import { UserRepository } from '../../mocks/repositories/userRepository'
 import { PasswordResetTokenRepository } from '../../mocks/repositories/passwordResetTokenRepository'
-import { TokenRepository } from '../../mocks/repositories/tokenRepository'
+import { RefreshTokenRepository } from '../../mocks/repositories/refreshTokenRepository'
 
 describe('Password reset: getToken method', () => {
 	const userRepo = new UserRepository()
@@ -21,7 +21,7 @@ describe('Password reset: getToken method', () => {
 		// init authentication library
 		initAuth(passport, {
 			userRepository: userRepo,
-			refreshTokenRepository: TokenRepository.getInstance(),
+			refreshTokenRepository: RefreshTokenRepository.getInstance(),
 			passwordResetTokenRepository: passwordResetTokenRepo
 		})
 

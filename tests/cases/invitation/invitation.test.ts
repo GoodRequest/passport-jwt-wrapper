@@ -10,7 +10,7 @@ import config from 'config'
 import { initAuth, Invitation, IPassportConfig, JWT_AUDIENCE } from '../../../src'
 
 import { UserRepository } from '../../mocks/repositories/userRepository'
-import { TokenRepository } from '../../mocks/repositories/tokenRepository'
+import { RefreshTokenRepository } from '../../mocks/repositories/refreshTokenRepository'
 import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
 import { createJwt } from '../../../src/utils/jwt'
 
@@ -130,7 +130,7 @@ describe('Invitation Token endpoint without i18next', () => {
 		// init authentication library
 		initAuth(passport, {
 			userRepository: userRepo,
-			refreshTokenRepository: TokenRepository.getInstance(),
+			refreshTokenRepository: RefreshTokenRepository.getInstance(),
 			invitationTokenRepository: invitationTokenRepo
 		})
 
@@ -197,7 +197,7 @@ describe('Invitation Token endpoint with i18next', () => {
 		// init authentication library
 		initAuth(passport, {
 			userRepository: userRepo,
-			refreshTokenRepository: TokenRepository.getInstance(),
+			refreshTokenRepository: RefreshTokenRepository.getInstance(),
 			invitationTokenRepository: invitationTokenRepo
 		})
 

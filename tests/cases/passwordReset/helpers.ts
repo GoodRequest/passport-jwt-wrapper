@@ -38,7 +38,7 @@ export async function getPasswordToken(email: string): Promise<string> {
 		throw new Error(`No password reset token for ${email}`)
 	}
 
-	return token
+	return token[0]
 }
 
 export function setupRouters(app: Express) {

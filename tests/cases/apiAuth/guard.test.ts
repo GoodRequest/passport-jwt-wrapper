@@ -12,7 +12,7 @@ import { createJwt } from '../../../src/utils/jwt'
 
 import { getUser, languages, loginUserAndSetTokens, seedUsers } from '../../helpers'
 import { UserRepository } from '../../mocks/repositories/userRepository'
-import { TokenRepository } from '../../mocks/repositories/tokenRepository'
+import { RefreshTokenRepository } from '../../mocks/repositories/refreshTokenRepository'
 import errorMiddleware from '../../mocks/middlewares/errorMiddleware'
 import loginRouter from '../../mocks/loginRouter'
 import TestingEndpoint from '../../mocks/testingEndpoint'
@@ -56,7 +56,7 @@ describe('Login Guard w/o i18next', () => {
 		// init authentication library
 		initAuth(passport, {
 			userRepository: userRepo,
-			refreshTokenRepository: TokenRepository.getInstance()
+			refreshTokenRepository: RefreshTokenRepository.getInstance()
 		})
 
 		app.use(express.urlencoded({ extended: true }))
@@ -123,6 +123,7 @@ describe('Login Guard w/o i18next', () => {
 
 	declareLanguageDependentTests(app, userRepo)
 })
+
 describe('Login Guard with i18 next', () => {
 	const userRepo = new UserRepository()
 	const app = express()
@@ -131,7 +132,7 @@ describe('Login Guard with i18 next', () => {
 		// init authentication library
 		initAuth(passport, {
 			userRepository: userRepo,
-			refreshTokenRepository: TokenRepository.getInstance()
+			refreshTokenRepository: RefreshTokenRepository.getInstance()
 		})
 
 		app.use(express.urlencoded({ extended: true }))

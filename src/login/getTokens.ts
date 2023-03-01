@@ -1,4 +1,5 @@
 import config from 'config'
+import ms from 'ms'
 
 import { createJwt } from '../utils/jwt'
 import { JWT_AUDIENCE } from '../utils/enums'
@@ -56,7 +57,7 @@ export async function getTokens(userID: ID, familyID?: ID, payload?: Record<stri
 	])
 
 	// save tokens
-	await state.refreshTokenRepository.saveRefreshToken(userID, fid, rid, refreshToken)
+	await state.refreshTokenRepository.saveRefreshToken(userID, fid, rid, refreshToken, ms(passportConfig.jwt.api.refresh.exp))
 
 	return {
 		accessToken,
