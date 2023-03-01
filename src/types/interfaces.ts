@@ -1,4 +1,4 @@
-interface IUser<UserIDType extends ID> {
+export interface IUser<UserIDType extends ID> {
 	id: UserIDType
 	hash?: string
 }
