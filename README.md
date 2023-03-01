@@ -28,8 +28,7 @@ initAuth(passport, {
 		refreshTokenRepository,
 		invitationTokenRepository?,
 		passwordResetTokenRepository?
-	},
-	configs ? : LibConfig
+	}
 )
 ```
 
@@ -270,7 +269,7 @@ Express endpoints (`(req, res, next)`). They return object, typically JWTs.
 - [`PasswordReset.endpoint`](src/passwordReset/endpoint.ts): Returns just the message. Changes user password and invalidates all user refresh tokens, if `userRepository.invalidateUserRefreshTokens` method is provided.
 - [`RefreshToken.endpoint`](src/refreshToken/endpoint.ts): Returns new access and refresh tokens. Used refresh token is invalidated, since this library is using refresh token rotation.
 
-### Worfklow
+### Workflow
 Internal function used by endpoint.
 - [`Logout.workflow`](./src/logout/workflow.ts)
 - [`LogoutEverywhere.workflow`](src/logoutEverywhere/workflow.ts)
