@@ -4,7 +4,7 @@ import { State } from '../State'
 import { PASSPORT_NAME } from '../utils/enums'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { customTFunction } from '../utils/translations'
-import { IUser } from '../../tests/mocks/repositories/userRepository'
+import { IUser } from '../types/interfaces'
 
 /**
  * Guard middleware for password reset.
