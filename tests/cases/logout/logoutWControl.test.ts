@@ -3,6 +3,19 @@ import rewiremock from 'rewiremock'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import importFresh from 'import-fresh'
 /* eslint-disable import/first */
+process.env.NODE_CONFIG = JSON.stringify({
+	passportJwtWrapper: {
+		checkAccessToken: true
+	}
+})
+
+rewiremock.overrideEntryPoint(module)
+
+const testConfig: string = importFresh('config')
+rewiremock('config').with(testConfig)
+
+rewiremock.enable()
+
 import config from 'config'
 import passport from 'passport'
 import express from 'express'
@@ -22,19 +35,6 @@ import { getLogoutMessage, setupRouters } from './helpers'
 
 import * as skErrors from '../../../locales/sk/error.json'
 import * as enErrors from '../../../locales/en/error.json'
-
-process.env.NODE_CONFIG = JSON.stringify({
-	passportJwtWrapper: {
-		checkAccessToken: true
-	}
-})
-
-rewiremock.overrideEntryPoint(module)
-
-const testConfig: string = importFresh('config')
-rewiremock('config').with(testConfig)
-
-rewiremock.enable()
 
 const i18NextConfig: I18nextOptions = config.get('passportJwtWrapper.i18next')
 
