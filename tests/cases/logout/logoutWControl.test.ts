@@ -4,7 +4,6 @@ import rewiremock from 'rewiremock'
 import importFresh from 'import-fresh'
 /* eslint-disable import/first */
 import config from 'config'
-
 import passport from 'passport'
 import express from 'express'
 import i18next, { InitOptions as I18nextOptions } from 'i18next'
