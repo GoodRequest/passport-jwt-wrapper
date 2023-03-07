@@ -93,15 +93,37 @@ function initAuth<TokenIDType extends ID, UserIDType extends ID>(
 		}
 	}
 
-	const defaultConfigs: LibConfig = {
-		checkAccessToken: false,
-		i18next: i18nextConfig,
-		passport: passportConfig
+	const defaultConfigs: Partial<LibConfig> = {}
+
+	if (config.has('passportJwtWrapper')) {
+		if (!config.has('passportJwtWrapper.checkAccessToken')) {
+			defaultConfigs.checkAccessToken = false
+		}
+
+		if (!config.has('passportJwtWrapper.i18next')) {
+			defaultConfigs.i18next = i18nextConfig
+		}
+
+		if (!config.has('passportJwtWrapper.passport')) {
+			defaultConfigs.passport = passportConfig
+		}
+	} else {
+		defaultConfigs.checkAccessToken = false
+
+		if (config.has('i18next')) {
+			defaultConfigs.i18next = config.get('i18next')
+		} else {
+			defaultConfigs.i18next = i18nextConfig
+		}
+
+		if (config.has('passport')) {
+			defaultConfigs.passport = config.get('passport')
+		} else {
+			defaultConfigs.passport = passportConfig
+		}
 	}
 
-	if (!config.has('passportJwtWrapper')) {
-		config.util.setModuleDefaults('passportJwtWrapper', defaultConfigs)
-	}
+	config.util.setModuleDefaults('passportJwtWrapper', defaultConfigs)
 
 	const instance = State.initialize(
 		passport,
