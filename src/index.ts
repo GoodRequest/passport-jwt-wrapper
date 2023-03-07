@@ -93,22 +93,22 @@ function initAuth<TokenIDType extends ID, UserIDType extends ID>(
 		}
 	}
 
-	const defaultConfigs: Partial<LibConfig> = {}
-
 	if (config.has('passportJwtWrapper')) {
 		if (!config.has('passportJwtWrapper.checkAccessToken')) {
-			defaultConfigs.checkAccessToken = false
+			config.util.setModuleDefaults('passportJwtWrapper.checkAccessToken', false)
 		}
 
 		if (!config.has('passportJwtWrapper.i18next')) {
-			defaultConfigs.i18next = i18nextConfig
+			config.util.setModuleDefaults('passportJwtWrapper.i18next', i18nextConfig)
 		}
 
 		if (!config.has('passportJwtWrapper.passport')) {
-			defaultConfigs.passport = passportConfig
+			config.util.setModuleDefaults('passportJwtWrapper.passport', passportConfig)
 		}
 	} else {
-		defaultConfigs.checkAccessToken = false
+		const defaultConfigs: Partial<LibConfig> = {
+			checkAccessToken: false
+		}
 
 		if (config.has('i18next')) {
 			defaultConfigs.i18next = config.get('i18next')
@@ -121,9 +121,9 @@ function initAuth<TokenIDType extends ID, UserIDType extends ID>(
 		} else {
 			defaultConfigs.passport = passportConfig
 		}
-	}
 
-	config.util.setModuleDefaults('passportJwtWrapper', defaultConfigs)
+		config.util.setModuleDefaults('passportJwtWrapper', defaultConfigs)
+	}
 
 	const instance = State.initialize(
 		passport,
