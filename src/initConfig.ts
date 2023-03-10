@@ -78,5 +78,3 @@ if (config.has('passportJwtWrapper')) {
 
 	config.util.setModuleDefaults('passportJwtWrapper', defaultConfigs)
 }
-
-console.log('initialized config')
