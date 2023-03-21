@@ -9,14 +9,18 @@ export interface IUser {
 	hash?: string
 }
 
+interface IConfirmedUser extends IUser {
+	hash: string
+}
+
 export class UserRepository implements IUserRepository<string> {
 	private users = new Map<string, IUser>()
 
-	getUserByEmail(email: string): Promise<IUser | undefined> {
-		let result: IUser | undefined
+	getUserByEmail(email: string): Promise<IConfirmedUser | undefined> {
+		let result: IConfirmedUser | undefined
 		Array.from(this.users.values()).forEach((user) => {
-			if (user.email === email) {
-				result = user
+			if (user.email === email && user.hash) {
+				result = user as IConfirmedUser
 			}
 		})
 

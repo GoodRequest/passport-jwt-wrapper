@@ -3,7 +3,11 @@ export interface IUser<UserIDType extends ID> {
 	hash?: string
 }
 
-export type GetUserByEmailFunction<UserIDType extends ID> = (email: string) => Promise<IUser<UserIDType> | undefined>
+export interface IConfirmedUser<UserIDType extends ID> extends IUser<UserIDType> {
+	hash: string
+}
+
+export type GetUserByEmailFunction<UserIDType extends ID> = (email: string) => Promise<IConfirmedUser<UserIDType> | undefined>
 
 export type GetUserByIdFunction<UserIDType extends ID> = (id: UserIDType) => Promise<IUser<UserIDType> | undefined>
 
