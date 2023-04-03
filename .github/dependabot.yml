@@ -3,6 +3,6 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"
-	ignore:
+      interval: "monthly"
+    ignore:
       - dependency-name: "config"
