@@ -24,9 +24,13 @@ import {
 import { IPassportConfig, IPassportJwtWrapperConfig } from './types/config'
 import { State } from './State'
 import { JWT_AUDIENCE, PASSPORT_NAME } from './utils/enums'
-import { createHash } from './utils/jwt'
+import { createHash, createJwt } from './utils/jwt'
 /* eslint-disable import/first */
+import defaultConfigs from '../config/default'
+
 process.env.SUPPRESS_NO_CONFIG_WARNING = 'y'
+
+config.util.setModuleDefaults('passportJwtWrapper', defaultConfigs.passportJwtWrapper)
 
 /**
  * Initialization method, have to be run before using this authentication library
@@ -48,60 +52,6 @@ function initAuth<TokenIDType extends ID, UserIDType extends ID>(
 		passwordResetTokenRepository?: IPasswordResetTokenRepository<UserIDType>
 	}
 ) {
-	const i18nextConfig = <InitOptions>{
-		preload: ['en', 'sk'],
-		fallbackLng: 'en',
-		ns: ['error', 'translation'],
-		defaultNS: 'translation',
-		detection: {
-			order: ['header']
-		},
-		backend: {
-			loadPath: 'locales/{{lng}}/{{ns}}.json',
-			jsonIndent: 2
-		},
-		nsSeparator: ':',
-		keySeparator: false,
-		returnNull: false
-	}
-
-	const passportConfig = <IPassportConfig>{
-		local: {
-			usernameField: 'email',
-			passwordField: 'password',
-			session: false,
-			passReqToCallback: true
-		},
-		jwt: {
-			secretOrKey: process.env.JWT_SECRET,
-			api: {
-				exp: '15m',
-				jwtFromRequest: ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken(), ExtractJwt.fromUrlQueryParameter('t')]),
-				refresh: {
-					exp: '4h'
-				}
-			},
-			passwordReset: {
-				exp: '4h',
-				jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
-			},
-			invitation: {
-				jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-				exp: '30d'
-			}
-		}
-	}
-
-	const defaultConfigs: LibConfig = {
-		checkAccessToken: false,
-		i18next: i18nextConfig,
-		passport: passportConfig
-	}
-
-	if (!config.has('passportJwtWrapper')) {
-		config.util.setModuleDefaults('passportJwtWrapper', defaultConfigs)
-	}
-
 	const instance = State.initialize(
 		passport,
 		repositories.userRepository,
@@ -134,6 +84,7 @@ export {
 	JWT_AUDIENCE,
 	// helper functions
 	createHash,
+	createJwt,
 	// types
 	IPassportJwtWrapperConfig,
 	IPassportConfig,
