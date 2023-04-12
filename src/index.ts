@@ -3,7 +3,6 @@
 import { PassportStatic } from 'passport'
 import { ExtractJwt } from 'passport-jwt'
 import config from 'config'
-import { InitOptions } from 'i18next'
 
 import * as ApiAuth from './apiAuth'
 import * as Login from './login'
@@ -22,7 +21,7 @@ import {
 	IRefreshTokenRepository,
 	IUserRepository
 } from './types/interfaces'
-import { IPassportConfig, LibConfig } from './types/config'
+import { IPassportConfig, IPassportJwtWrapperConfig } from './types/config'
 import { State } from './State'
 import { JWT_AUDIENCE, PASSPORT_NAME } from './utils/enums'
 import { createHash } from './utils/jwt'
@@ -136,6 +135,7 @@ export {
 	// helper functions
 	createHash,
 	// types
+	IPassportJwtWrapperConfig,
 	IPassportConfig,
 	IRefreshTokenRepository,
 	IUserRepository,

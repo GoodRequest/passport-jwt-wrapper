@@ -23,7 +23,7 @@ export interface IPassportConfig {
 	jwt: IJWTPassportConfig
 }
 
-export interface LibConfig {
+export interface IPassportJwtWrapperConfig {
 	checkAccessToken: boolean
 	passport: IPassportConfig
 	i18next: InitOptions

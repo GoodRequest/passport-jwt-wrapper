@@ -1,10 +1,9 @@
 import { ExtractJwt } from 'passport-jwt'
 
-import { IPassportConfig } from '../src'
-import { LibConfig } from '../src/types/config'
+import { IPassportConfig, IPassportJwtWrapperConfig } from '../src'
 
 export default {
-	passportJwtWrapper: <Partial<LibConfig>>{
+	passportJwtWrapper: <Partial<IPassportJwtWrapperConfig>>{
 		checkAccessToken: false,
 		i18next: {
 			preload: ['en', 'sk'],
