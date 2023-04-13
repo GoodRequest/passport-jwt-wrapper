@@ -39,7 +39,7 @@ export default async function getToken(email: string): Promise<[string, IUser<ID
 	const state = State.getInstance()
 	let user = await state.userRepository.getUserByEmail(email)
 
-	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+	const passportConfig = State.getInstance().config.passport
 
 	let passportSecret = passportConfig.jwt.secretOrKey
 

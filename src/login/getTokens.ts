@@ -28,7 +28,7 @@ export async function getTokens(userID: ID, familyID?: ID, payload?: Record<stri
 	const rid = await state.refreshTokenRepository.createTokenID()
 	const fid = familyID ?? rid
 
-	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+	const passportConfig = State.getInstance().config.passport
 
 	const [accessToken, refreshToken] = await Promise.all([
 		createJwt(

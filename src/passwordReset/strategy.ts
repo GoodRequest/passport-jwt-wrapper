@@ -25,7 +25,7 @@ export async function secretOrKeyProvider(req: Request, rawJwtToken: string, don
 			return done(null)
 		}
 
-		const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+		const passportConfig = State.getInstance().config.passport
 
 		const userSecret = `${passportConfig.jwt.secretOrKey}${user.hash}`
 		return done(null, userSecret)
@@ -70,7 +70,7 @@ export async function strategyVerifyFunction(req: Request, payload: IJwtPayload,
  * Password reset strategy
  */
 export function strategy() {
-	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+	const passportConfig = State.getInstance().config.passport
 
 	return new JwtStrategy(
 		{

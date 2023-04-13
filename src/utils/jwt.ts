@@ -9,6 +9,7 @@ import { JWT_AUDIENCE } from './enums'
 import { ErrorBuilder } from './ErrorBuilder'
 import { customTFunction } from './translations'
 import { Flow } from './Flow'
+import { State } from '../State'
 
 /**
  * Creates JWT token
@@ -18,7 +19,7 @@ import { Flow } from './Flow'
  * @returns {Promise<string>} JWT token
  */
 export function createJwt(payload: any, options: SignOptions, secret?: string): Promise<string> {
-	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+	const passportConfig = State.getInstance().config.passport
 
 	return new Promise((resolve, reject) => {
 		sign(payload, secret || passportConfig.jwt.secretOrKey, options, (err, token) => {
@@ -48,7 +49,7 @@ export const createHash = async (password: string): Promise<string> => {
  * @param tFunction
  */
 export function verifyRefreshJWT(token: string, tFunction?: TFunction): Promise<IRefreshJwtPayload> {
-	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+	const passportConfig = State.getInstance().config.passport
 
 	return new Promise((resolve, reject) => {
 		jsonwebtoken.verify(

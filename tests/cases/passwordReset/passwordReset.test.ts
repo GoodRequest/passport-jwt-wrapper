@@ -1,13 +1,12 @@
 import express, { Express } from 'express'
 import passport from 'passport'
-import i18next, { InitOptions as I18nextOptions } from 'i18next'
+import i18next from 'i18next'
 import i18nextMiddleware from 'i18next-http-middleware'
 import i18nextBackend from 'i18next-fs-backend'
 import request from 'supertest'
 import { expect } from 'chai'
-import config from 'config'
 
-import { initAuth, IPassportConfig, JWT_AUDIENCE } from '../../../src'
+import { initAuth, JWT_AUDIENCE } from '../../../src'
 
 import { UserRepository } from '../../mocks/repositories/userRepository'
 import { RefreshTokenRepository } from '../../mocks/repositories/refreshTokenRepository'
@@ -17,9 +16,10 @@ import { getUser, languages, seedUserAndSetID, seedUsers, sleep } from '../../he
 
 import { PasswordResetTokenRepository } from '../../mocks/repositories/passwordResetTokenRepository'
 import { callEndpoint, getPasswordToken, invalidPasswordResetTokenErrorString, passwordChangeString, setupRouters } from './helpers'
+import { State } from '../../../src/State'
 
-const i18NextConfig: I18nextOptions = config.get('passportJwtWrapper.i18next')
-const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+const i18NextConfig = State.getInstance().config.i18next
+const passportConfig = State.getInstance().config.passport
 
 function declareLanguageDependentTests(app: Express, userRepo: UserRepository, passwordResetTokenRepo: PasswordResetTokenRepository, language?: string) {
 	it(`${language ? `[${language}] ` : ''}Removed user`, async () => {

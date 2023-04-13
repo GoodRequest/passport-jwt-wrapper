@@ -1,13 +1,12 @@
 import express, { AuthRequest, Express, Router } from 'express'
 import passport from 'passport'
-import i18next, { InitOptions as I18nextOptions } from 'i18next'
+import i18next from 'i18next'
 import i18nextMiddleware from 'i18next-http-middleware'
 import i18nextBackend from 'i18next-fs-backend'
 import request, { Response } from 'supertest'
 import { expect } from 'chai'
-import config from 'config'
 
-import { initAuth, Invitation, IPassportConfig, JWT_AUDIENCE } from '../../../src'
+import { initAuth, Invitation, JWT_AUDIENCE } from '../../../src'
 
 import { UserRepository } from '../../mocks/repositories/userRepository'
 import { RefreshTokenRepository } from '../../mocks/repositories/refreshTokenRepository'
@@ -18,9 +17,7 @@ import * as enErrors from '../../../locales/en/error.json'
 import * as skErrors from '../../../locales/sk/error.json'
 import { InvitationTokenRepository } from '../../mocks/repositories/invitationTokenRepository'
 import { languages } from '../../helpers'
-
-const i18NextConfig: I18nextOptions = config.get('passportJwtWrapper.i18next')
-const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+import { State } from '../../../src/State'
 
 function sleep(ms: number) {
 	return new Promise((resolve) => {
@@ -157,6 +154,8 @@ describe('Invitation Token endpoint without i18next', () => {
 			uid: 'user42'
 		}
 
+		const passportConfig = State.getInstance().config.passport
+
 		const tokenOptions = {
 			audience: JWT_AUDIENCE.INVITATION,
 			expiresIn: passportConfig.jwt.invitation.exp
@@ -203,6 +202,8 @@ describe('Invitation Token endpoint with i18next', () => {
 
 		app.use(express.urlencoded({ extended: true }))
 		app.use(express.json())
+
+		const i18NextConfig = State.getInstance().config.i18next
 
 		// i18next config
 		await i18next

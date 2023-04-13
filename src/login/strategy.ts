@@ -46,7 +46,7 @@ export async function strategyVerifyFunction(
  * passport-local Strategy
  */
 export function strategy() {
-	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+	const passportConfig = State.getInstance().config.passport
 
 	return new Strategy(passportConfig.local, strategyVerifyFunction)
 }

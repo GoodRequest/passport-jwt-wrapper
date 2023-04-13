@@ -50,7 +50,7 @@ export const strategyVerifyFunction = async (req: Request, payload: IJwtPayload,
  * User invitation strategy, needed for the guard to function.
  */
 export function strategy() {
-	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+	const passportConfig = State.getInstance().config.passport
 
 	return new JwtStrategy(
 		{
