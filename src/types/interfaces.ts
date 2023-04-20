@@ -21,7 +21,7 @@ export interface IUserRepository<UserIDType extends ID> {
 	 * Method return user, if one with given email exists. User needs to contain `hash`, so the password comparison can be made
 	 */
 	getUserByEmail: GetUserByEmailFunction<UserIDType>
-	updateUserPassword: (userID: UserIDType, newPassword: string) => Promise<unknown>
+	updateUserPassword: (userID: UserIDType, newPasswordHash: string) => Promise<unknown>
 }
 
 export type ID = string | number
