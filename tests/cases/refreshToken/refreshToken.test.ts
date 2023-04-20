@@ -1,13 +1,12 @@
 import express, { Express } from 'express'
 import passport from 'passport'
-import i18next, { InitOptions as I18nextOptions, t } from 'i18next'
+import i18next, { t } from 'i18next'
 import i18nextMiddleware from 'i18next-http-middleware'
 import i18nextBackend from 'i18next-fs-backend'
 import request, { Response } from 'supertest'
 import { expect } from 'chai'
-import config from 'config'
 
-import { ApiAuth, initAuth, IPassportConfig, JWT_AUDIENCE, RefreshToken } from '../../../src'
+import { ApiAuth, initAuth, JWT_AUDIENCE, RefreshToken } from '../../../src'
 
 import { UserRepository } from '../../mocks/repositories/userRepository'
 import { LoginUser, loginUsers } from '../../seeds/users'
@@ -21,9 +20,10 @@ import { createJwt, verifyRefreshJWT } from '../../../src/utils/jwt'
 import * as enErrors from '../../../locales/en/error.json'
 import * as skErrors from '../../../locales/sk/error.json'
 import TestingEndpoint from '../../mocks/testingEndpoint'
+import { State } from '../../../src/State'
 
-const i18NextConfig: I18nextOptions = config.get('passportJwtWrapper.i18next')
-const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+const i18NextConfig = State.getInstance().config.i18next
+const passportConfig = State.getInstance().config.passport
 
 let app: Express
 let userRepo: UserRepository

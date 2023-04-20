@@ -1,8 +1,7 @@
 import express, { Express } from 'express'
-import i18next, { InitOptions as I18nextOptions } from 'i18next'
+import i18next from 'i18next'
 import i18nextMiddleware from 'i18next-http-middleware'
 import i18nextBackend from 'i18next-fs-backend'
-import config from 'config'
 import request, { Response } from 'supertest'
 import passport from 'passport'
 import { expect } from 'chai'
@@ -17,8 +16,9 @@ import { getUser, languages, seedUserAndSetID, seedUsers } from '../../helpers'
 
 import * as enErrors from '../../../locales/en/error.json'
 import * as skErrors from '../../../locales/sk/error.json'
+import { State } from '../../../src/State'
 
-const i18NextConfig: I18nextOptions = config.get('passportJwtWrapper.i18next')
+const i18NextConfig = State.getInstance().config.i18next
 
 let app: Express
 

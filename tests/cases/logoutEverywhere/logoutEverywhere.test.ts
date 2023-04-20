@@ -1,9 +1,8 @@
 import passport from 'passport'
 import express, { Express } from 'express'
-import i18next, { InitOptions as I18nextOptions } from 'i18next'
+import i18next from 'i18next'
 import i18nextMiddleware from 'i18next-http-middleware'
 import i18nextBackend from 'i18next-fs-backend'
-import config from 'config'
 import request, { Response } from 'supertest'
 
 import { expect } from 'chai'
@@ -20,8 +19,9 @@ import { getUser, languages, loginUserAndSetTokens, seedUsers } from '../../help
 import * as enTranslations from '../../../locales/en/translation.json'
 import * as skTranslations from '../../../locales/sk/translation.json'
 import { createJwt } from '../../../src/utils/jwt'
+import { State } from '../../../src/State'
 
-const i18NextConfig: I18nextOptions = config.get('passportJwtWrapper.i18next')
+const i18NextConfig = State.getInstance().config.i18next
 
 let app: Express
 

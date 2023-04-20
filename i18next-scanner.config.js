@@ -1,6 +1,7 @@
 const config = require('config')
+const defaultConfigs = require('./config/default')
 
-const i18nextConfig = config.get('passportJwtWrapper.i18next')
+const i18nextConfig = config.has('i18next') ? config.get('i18next') : defaultConfigs.i18next
 
 module.exports = {
 	input: [

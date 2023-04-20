@@ -2,7 +2,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { PassportStatic } from 'passport'
 import { ExtractJwt } from 'passport-jwt'
-import config from 'config'
+import deepExtend from 'deep-extend'
 
 import * as ApiAuth from './apiAuth'
 import * as Login from './login'
@@ -25,12 +25,7 @@ import { IPassportConfig, IPassportJwtWrapperConfig } from './types/config'
 import { State } from './State'
 import { JWT_AUDIENCE, PASSPORT_NAME } from './utils/enums'
 import { createHash, createJwt } from './utils/jwt'
-/* eslint-disable import/first */
 import defaultConfigs from '../config/default'
-
-process.env.SUPPRESS_NO_CONFIG_WARNING = 'y'
-
-config.util.setModuleDefaults('passportJwtWrapper', defaultConfigs.passportJwtWrapper)
 
 /**
  * Initialization method, have to be run before using this authentication library
@@ -42,6 +37,7 @@ config.util.setModuleDefaults('passportJwtWrapper', defaultConfigs.passportJwtWr
  *		invitationTokenRepository?: IInvitationTokenRepository<UserIDType> // optional -- need only when invitation cancellation will be implemented
  *		passwordResetTokenRepository?: IPasswordResetTokenRepository<UserIDType> // optional -- needed only when password reset tokens should be invalidated
  * }
+ * @param config
  */
 function initAuth<TokenIDType extends ID, UserIDType extends ID>(
 	passport: PassportStatic,
@@ -50,9 +46,11 @@ function initAuth<TokenIDType extends ID, UserIDType extends ID>(
 		refreshTokenRepository: IRefreshTokenRepository<TokenIDType, UserIDType>
 		invitationTokenRepository?: IInvitationTokenRepository<UserIDType>
 		passwordResetTokenRepository?: IPasswordResetTokenRepository<UserIDType>
-	}
+	},
+	config?: Partial<IPassportJwtWrapperConfig>
 ) {
 	const instance = State.initialize(
+		config ? deepExtend(defaultConfigs, config) : defaultConfigs,
 		passport,
 		repositories.userRepository,
 		repositories.refreshTokenRepository,

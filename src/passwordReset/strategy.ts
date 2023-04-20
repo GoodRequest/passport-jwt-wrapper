@@ -1,10 +1,8 @@
 import { Strategy as JwtStrategy, VerifiedCallback } from 'passport-jwt'
-import config from 'config'
 import { Request } from 'express'
 import jsonwebtoken from 'jsonwebtoken'
 
 import { IJwtPayload } from '../types/interfaces'
-import { IPassportConfig } from '../types/config'
 import { State } from '../State'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { customTFunction } from '../utils/translations'
@@ -25,7 +23,7 @@ export async function secretOrKeyProvider(req: Request, rawJwtToken: string, don
 			return done(null)
 		}
 
-		const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+		const passportConfig = State.getInstance().config.passport
 
 		const userSecret = `${passportConfig.jwt.secretOrKey}${user.hash}`
 		return done(null, userSecret)
@@ -70,7 +68,7 @@ export async function strategyVerifyFunction(req: Request, payload: IJwtPayload,
  * Password reset strategy
  */
 export function strategy() {
-	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+	const passportConfig = State.getInstance().config.passport
 
 	return new JwtStrategy(
 		{

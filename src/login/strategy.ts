@@ -1,9 +1,7 @@
 import { IVerifyOptions, Strategy } from 'passport-local'
 import bcrypt from 'bcrypt'
-import config from 'config'
 import { Request } from 'express'
 
-import { IPassportConfig } from '../types/config'
 import { State } from '../State'
 
 /**
@@ -46,7 +44,7 @@ export async function strategyVerifyFunction(
  * passport-local Strategy
  */
 export function strategy() {
-	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+	const passportConfig = State.getInstance().config.passport
 
 	return new Strategy(passportConfig.local, strategyVerifyFunction)
 }

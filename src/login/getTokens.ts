@@ -1,9 +1,7 @@
-import config from 'config'
 import ms from 'ms'
 
 import { createJwt } from '../utils/jwt'
 import { JWT_AUDIENCE } from '../utils/enums'
-import { IPassportConfig } from '../types/config'
 import { State } from '../State'
 import { ID, IJwtPayload, IRefreshJwtPayload } from '../types/interfaces'
 
@@ -28,7 +26,7 @@ export async function getTokens(userID: ID, familyID?: ID, payload?: Record<stri
 	const rid = await state.refreshTokenRepository.createTokenID()
 	const fid = familyID ?? rid
 
-	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+	const passportConfig = State.getInstance().config.passport
 
 	const [accessToken, refreshToken] = await Promise.all([
 		createJwt(

@@ -1,8 +1,6 @@
 import { Strategy as JwtStrategy, VerifiedCallback } from 'passport-jwt'
-import config from 'config'
 import { Request } from 'express'
 
-import { IPassportConfig, IPassportJwtWrapperConfig } from '../types/config'
 import { IJwtPayload } from '../types/interfaces'
 import { State } from '../State'
 import { JWT_AUDIENCE } from '../utils/enums'
@@ -16,7 +14,7 @@ import { customTFunction } from '../utils/translations'
  * @param done
  */
 export async function strategyVerifyFunction(req: Request, payload: IJwtPayload, done: VerifiedCallback) {
-	const libConfig: IPassportJwtWrapperConfig = config.get('passportJwtWrapper')
+	const libConfig = State.getInstance().config
 
 	try {
 		const user = await State.getInstance().userRepository.getUserById(payload.uid)
@@ -44,7 +42,7 @@ export async function strategyVerifyFunction(req: Request, payload: IJwtPayload,
  * passport-jwt strategy for securing endpoints with access JWTs
  */
 export function strategy() {
-	const passportConfig: IPassportConfig = config.get('passportJwtWrapper.passport')
+	const passportConfig = State.getInstance().config.passport
 
 	return new JwtStrategy(
 		{

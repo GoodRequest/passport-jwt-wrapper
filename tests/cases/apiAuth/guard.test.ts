@@ -2,10 +2,9 @@ import express, { Express } from 'express'
 import request from 'supertest'
 import passport from 'passport'
 import { expect } from 'chai'
-import i18next, { InitOptions as I18nextOptions } from 'i18next'
+import i18next from 'i18next'
 import i18nextMiddleware from 'i18next-http-middleware'
 import i18nextBackend from 'i18next-fs-backend'
-import config from 'config'
 
 import { ApiAuth, initAuth, JWT_AUDIENCE } from '../../../src'
 import { createJwt } from '../../../src/utils/jwt'
@@ -19,8 +18,7 @@ import TestingEndpoint from '../../mocks/testingEndpoint'
 
 import * as enErrors from '../../../locales/en/error.json'
 import * as skErrors from '../../../locales/sk/error.json'
-
-const i18NextConfig: I18nextOptions = config.get('passportJwtWrapper.i18next')
+import { State } from '../../../src/State'
 
 function setupRouters(app: Express) {
 	app.use('/auth', loginRouter())
@@ -137,6 +135,8 @@ describe('Login Guard with i18 next', () => {
 
 		app.use(express.urlencoded({ extended: true }))
 		app.use(express.json())
+
+		const i18NextConfig = State.getInstance().config.i18next
 
 		// i18next config
 		await i18next
