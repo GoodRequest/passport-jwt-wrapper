@@ -1,7 +1,5 @@
-import config from 'config'
 import ms from 'ms'
 
-import { IPassportConfig } from '../types/config'
 import { JWT_AUDIENCE } from '../utils/enums'
 import { State } from '../State'
 import { createJwt } from '../utils/jwt'

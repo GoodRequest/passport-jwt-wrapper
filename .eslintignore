@@ -6,6 +6,5 @@ coverage
 temp
 .npmrc
 codecov
-/.npmrc
 i18next-scanner.config.js
 

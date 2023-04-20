@@ -1,10 +1,8 @@
 import { Strategy as JwtStrategy, VerifiedCallback } from 'passport-jwt'
-import config from 'config'
 import { Request } from 'express'
 import jsonwebtoken from 'jsonwebtoken'
 
 import { IJwtPayload } from '../types/interfaces'
-import { IPassportConfig } from '../types/config'
 import { State } from '../State'
 import { ErrorBuilder } from '../utils/ErrorBuilder'
 import { customTFunction } from '../utils/translations'

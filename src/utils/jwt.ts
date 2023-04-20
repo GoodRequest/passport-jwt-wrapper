@@ -1,9 +1,7 @@
 import jsonwebtoken, { sign, SignOptions } from 'jsonwebtoken'
-import config from 'config'
 import bcrypt from 'bcrypt'
 
 import { TFunction } from 'i18next'
-import { IPassportConfig } from '../types/config'
 import { IRefreshJwtPayload } from '../types/interfaces'
 import { JWT_AUDIENCE } from './enums'
 import { ErrorBuilder } from './ErrorBuilder'

@@ -1,9 +1,7 @@
 import { IVerifyOptions, Strategy } from 'passport-local'
 import bcrypt from 'bcrypt'
-import config from 'config'
 import { Request } from 'express'
 
-import { IPassportConfig } from '../types/config'
 import { State } from '../State'
 
 /**
