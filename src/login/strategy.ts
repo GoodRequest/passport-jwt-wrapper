@@ -1,8 +1,8 @@
 import { IVerifyOptions, Strategy } from 'passport-local'
-import bcrypt from 'bcrypt'
 import { Request } from 'express'
 
 import { State } from '../State'
+import { checkPassword } from '../utils/helpers'
 
 /**
  * Default local verify function
@@ -29,7 +29,7 @@ export async function strategyVerifyFunction(
 			return done(null, false)
 		}
 
-		const passComp = await bcrypt.compare(password, user?.hash)
+		const passComp = await checkPassword(password, user.hash)
 		if (!passComp) {
 			return done(null, false)
 		}

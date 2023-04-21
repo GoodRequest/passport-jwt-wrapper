@@ -26,6 +26,7 @@ import { State } from './State'
 import { JWT_AUDIENCE, PASSPORT_NAME } from './utils/enums'
 import { createHash, createJwt } from './utils/jwt'
 import defaultConfigs from '../config/default'
+import { checkPassword, checkUserPassword } from './utils/helpers'
 
 /**
  * Initialization method, have to be run before using this authentication library
@@ -83,6 +84,8 @@ export {
 	// helper functions
 	createHash,
 	createJwt,
+	checkPassword,
+	checkUserPassword,
 	// types
 	IPassportJwtWrapperConfig,
 	IPassportConfig,
