@@ -1,24 +1,53 @@
-import jsonwebtoken from 'jsonwebtoken'
+import { Request, Response, NextFunction } from 'express'
+import Joi from 'joi'
 
-import { IJwtPayload } from '../types/interfaces'
-import { State } from '../State'
+import { fullMessagesResponse } from '../utils/joiSchemas'
+import { MESSAGE_TYPE } from '../utils/enums'
+import runner from './runner'
+import { ErrorBuilder } from '../utils/ErrorBuilder'
+import { customTFunction } from '../utils/translations'
 
 /**
- * Logout from everywhere wokflow method, used in the `Logout.endpoint`
- * Invalidates all user refresh tokens by calling `refreshTokenRepository.invalidateUserRefreshTokens`. If this method is not provided and this endpoint is used, library throws exception.
- * All users access token are still valid after calling this endpoint.
- * @param authHeader
+ * Logout from everywhere endpoint request schema - empty
  */
-export default async function workflow(authHeader: string) {
-	const [, accessToken] = authHeader.split(' ')
+export const requestSchema = Joi.object({
+	body: Joi.object(),
+	query: Joi.object(),
+	params: Joi.object()
+})
 
-	// NOTE: token is valid, cause it already passed through verification (by passport)
-	const decodedAccessTokenData = <IJwtPayload>jsonwebtoken.decode(accessToken)
+/**
+ * Logout from everywhere endpoint response schema - full message
+ */
+export const responseSchema = fullMessagesResponse
 
-	const state = State.getInstance()
-	if (!state.refreshTokenRepository.invalidateUserRefreshTokens) {
-		throw new Error("'invalidateUserRefreshTokens' is not implemented on UserTokenRepository")
+/**
+ * Logout from everywhere endpoint
+ * Usage: `router.post('/logout-everywhere', ApiAuth.guard(), schemaMiddleware(LogoutEverywhere.requestSchema), LogoutEverywhere.endpoint)`
+ * @param req
+ * @param res
+ * @param next
+ */
+export async function workflow(req: Request, res: Response, next: NextFunction) {
+	try {
+		const authHeader = req.headers.authorization
+
+		const t = req.t ?? customTFunction
+		if (!authHeader) {
+			throw new ErrorBuilder(401, t('Unauthorized'))
+		}
+
+		await runner(authHeader)
+
+		return res.json({
+			messages: [
+				{
+					type: MESSAGE_TYPE.SUCCESS,
+					message: t('You were successfully logged out')
+				}
+			]
+		})
+	} catch (err) {
+		return next(err)
 	}
-
-	await state.refreshTokenRepository.invalidateUserRefreshTokens(decodedAccessTokenData.uid)
 }

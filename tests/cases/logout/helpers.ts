@@ -15,8 +15,8 @@ import * as enTranslations from '../../../locales/en/translation.json'
 export function setupRouters(app: Express) {
 	const loginRouter = LoginRouter()
 
-	loginRouter.post('/logout', ApiAuth.guard(), schemaMiddleware(Logout.requestSchema), Logout.endpoint)
-	loginRouter.post('/refresh-token', schemaMiddleware(RefreshToken.requestSchema), RefreshToken.endpoint)
+	loginRouter.post('/logout', ApiAuth.guard(), schemaMiddleware(Logout.requestSchema), Logout.workflow)
+	loginRouter.post('/refresh-token', schemaMiddleware(RefreshToken.requestSchema), RefreshToken.workflow)
 
 	app.use('/auth', loginRouter)
 

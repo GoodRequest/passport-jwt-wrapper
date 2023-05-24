@@ -43,7 +43,7 @@ export async function getPasswordToken(email: string): Promise<string> {
 
 export function setupRouters(app: Express) {
 	const userRouter = Router()
-	userRouter.post('/password-reset', PasswordReset.guard, schemaMiddleware(PasswordReset.requestSchema), PasswordReset.endpoint)
+	userRouter.post('/password-reset', PasswordReset.guard, schemaMiddleware(PasswordReset.requestSchema), PasswordReset.workflow)
 
 	app.use('/user', userRouter)
 

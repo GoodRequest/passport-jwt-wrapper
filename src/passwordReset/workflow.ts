@@ -1,19 +1,50 @@
-import { createHash } from '../utils/jwt'
-import { State } from '../State'
-import { ID } from '../types/interfaces'
+import { Request, AuthRequest, Response, NextFunction } from 'express'
+import Joi from 'joi'
+
+import { fullMessagesResponse, passwordSchema } from '../utils/joiSchemas'
+import runner from './runner'
+import { MESSAGE_TYPE } from '../utils/enums'
+import { customTFunction } from '../utils/translations'
 
 /**
- * Workflow method used in the `PasswordReset.endpoint`.
- * Internally hashes user new password and subsequently call `userRepository.updateUserPassword` with this hash.
- * It also invalidates all user refresh tokens, if `userRepository.invalidateUserRefreshTokens` method is provided.
- * @param password
- * @param userID
+ * Password reset request schema - password in the body
  */
-export default async function workflow(password: string, userID: ID): Promise<void> {
-	const hash = await createHash(password)
+export const requestSchema = Joi.object({
+	body: Joi.object({
+		password: passwordSchema
+	}),
+	query: Joi.object(),
+	params: Joi.object()
+})
 
-	const state = State.getInstance()
-	await state.userRepository.updateUserPassword(userID, hash)
+/**
+ * Password reset response schema - full message
+ */
+export const responseSchema = fullMessagesResponse
 
-	await state.refreshTokenRepository.invalidateUserRefreshTokens?.(userID)
+/**
+ * Password reset endpoint.
+ * Usage: `router.post('/password-reset', PasswordReset.guard, schemaMiddleware(PasswordReset.requestSchema), PasswordReset.endpoint)`
+ * @param req
+ * @param res
+ * @param next
+ */
+export async function workflow(req: Request, res: Response, next: NextFunction) {
+	try {
+		const { body, user } = req as AuthRequest
+
+		await runner(body.password, user.id)
+
+		const t = req.t ?? customTFunction
+		return res.json({
+			messages: [
+				{
+					message: t('Password was successfully changed'),
+					type: MESSAGE_TYPE.SUCCESS
+				}
+			]
+		})
+	} catch (err) {
+		return next(err)
+	}
 }

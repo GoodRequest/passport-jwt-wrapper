@@ -1,4 +1,4 @@
-import workflow from './workflow'
-import { endpoint, requestSchema, responseSchema } from './endpoint'
+import runner from './runner'
+import { workflow, requestSchema, responseSchema } from './workflow'
 
-export { workflow, endpoint, requestSchema, responseSchema }
+export { runner, workflow, requestSchema, responseSchema }

@@ -39,8 +39,8 @@ function getLogoutMessage(language?: string): string {
 function setupRouters() {
 	const loginRouter = LoginRouter()
 
-	loginRouter.post('/logout-everywhere', ApiAuth.guard(), schemaMiddleware(LogoutEverywhere.requestSchema), LogoutEverywhere.endpoint)
-	loginRouter.post('/refresh-token', schemaMiddleware(RefreshToken.requestSchema), RefreshToken.endpoint)
+	loginRouter.post('/logout-everywhere', ApiAuth.guard(), schemaMiddleware(LogoutEverywhere.requestSchema), LogoutEverywhere.workflow)
+	loginRouter.post('/refresh-token', schemaMiddleware(RefreshToken.requestSchema), RefreshToken.workflow)
 
 	app.use('/auth', loginRouter)
 

@@ -1,3 +1,3 @@
-import { endpoint, requestSchema, responseSchema } from './endpoint'
+import { workflow, requestSchema, responseSchema } from './workflow'
 
-export { endpoint, requestSchema, responseSchema }
+export { workflow, requestSchema, responseSchema }

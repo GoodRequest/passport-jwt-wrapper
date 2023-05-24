@@ -1,7 +1,7 @@
 import getToken from './getToken'
 import guard from './guard'
-import { endpoint, requestSchema, responseSchema } from './endpoint'
+import { workflow, requestSchema, responseSchema } from './workflow'
 import { strategy, strategyVerifyFunction, secretOrKeyProvider } from './strategy'
-import workflow from './workflow'
+import runner from './runner'
 
-export { getToken, endpoint, requestSchema, responseSchema, guard, strategy, strategyVerifyFunction, secretOrKeyProvider, workflow }
+export { getToken, requestSchema, responseSchema, guard, strategy, strategyVerifyFunction, secretOrKeyProvider, workflow, runner }

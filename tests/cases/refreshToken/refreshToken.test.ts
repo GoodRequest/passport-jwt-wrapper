@@ -65,7 +65,7 @@ before(async () => {
 function setupRouters() {
 	const loginRouter = LoginRouter()
 
-	loginRouter.post('/refresh-token', schemaMiddleware(RefreshToken.requestSchema), RefreshToken.endpoint)
+	loginRouter.post('/refresh-token', schemaMiddleware(RefreshToken.requestSchema), RefreshToken.workflow)
 
 	app.use('/auth', loginRouter)
 
