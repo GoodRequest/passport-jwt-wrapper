@@ -60,12 +60,12 @@ router.post('/login',
 router.post('/logout',
 	ApiAuth.guard(),
 	schemaMiddleware(Logout.requestSchema),
-	Logout.endpoint)
+	Logout.workflow)
 
 router.post('/logout-everywhere',
 	ApiAuth.guard(),
 	schemaMiddleware(LogoutEverywhere.requestSchema),
-	LogoutEverywhere.endpoint)
+	LogoutEverywhere.workflow)
 
 router.post('/refresh-token',
 	schemaMiddleware(RefreshToken.requestSchema),
@@ -78,7 +78,7 @@ router.post('/reset-password-request',
 router.post('/reset-password',
 	schemaMiddleware(PasswordReset.requestSchema),
 	PasswordReset.guard,
-	PasswordReset.endpoint)
+	PasswordReset.workflow)
 ```
 
 #### Methods that needs to be implemented separately
@@ -176,6 +176,10 @@ Config needs to have properties specified in [IPassportConfig interface](./src/t
 |--------------|-------------|------------|--------------------------------------------|
 | JWT_SECRET   | required    | required   | development/test/production															 |
 
+## Changelog
+### v1.7.0
+ - Renamed `workflow` -> `runer` and `endpoint` -> `workflow`. See [issue 69](https://github.com/GoodRequest/passport-jwt-wrapper/issues/69)
+
 ## Modules
 This library is divided into modules:
 #### Login
@@ -262,19 +266,20 @@ Each of the modules exports its parts:
 - `resposneSchema`: [Joi](https://joi.dev/) response schema. Can be used for documentation.
 
 ## API
-### Endpoints
+### Workflows - Endpoints
 Express endpoints (`(req, res, next)`). They return object, typically JWTs.
-- [`Logout.endpoint`](./src/logout/endpoint.ts): Returns just the message. Internally invalidates refresh token family.
-- [`LogoutEverywhere.endpoint`](src/logoutEverywhere/endpoint.ts): Returns just the message. Internally invalidates all users refresh tokens.
-- [`PasswordReset.endpoint`](src/passwordReset/endpoint.ts): Returns just the message. Changes user password and invalidates all user refresh tokens, if `userRepository.invalidateUserRefreshTokens` method is provided.
-- [`RefreshToken.endpoint`](src/refreshToken/endpoint.ts): Returns new access and refresh tokens. Used refresh token is invalidated, since this library is using refresh token rotation.
+Need to be named `workflow`, so swagger documentation is properly generated.
+- [`Logout.endpoint`](./src/logout/workflow.ts): Returns just the message. Internally invalidates refresh token family.
+- [`LogoutEverywhere.endpoint`](src/logoutEverywhere/workflow.ts): Returns just the message. Internally invalidates all users refresh tokens.
+- [`PasswordReset.endpoint`](src/passwordReset/workflow.ts): Returns just the message. Changes user password and invalidates all user refresh tokens, if `userRepository.invalidateUserRefreshTokens` method is provided.
+- [`RefreshToken.endpoint`](src/refreshToken/workflow.ts): Returns new access and refresh tokens. Used refresh token is invalidated, since this library is using refresh token rotation.
 
-### Workflow
+### Runner
 Internal function used by endpoint.
-- [`Logout.workflow`](./src/logout/workflow.ts)
-- [`LogoutEverywhere.workflow`](src/logoutEverywhere/workflow.ts)
-- [`PasswordReset.workflow`](src/passwordReset/workflow.ts)
-- [`RefreshToken.workflow`](src/refreshToken/workflow.ts)
+- [`Logout.workflow`](./src/logout/runner.ts)
+- [`LogoutEverywhere.workflow`](src/logoutEverywhere/runner.ts)
+- [`PasswordReset.workflow`](src/passwordReset/runner.ts)
+- [`RefreshToken.workflow`](src/refreshToken/runner.ts)
 
 ### Guards
 [express](https://expressjs.com/) middlewares (calls `next` function):
