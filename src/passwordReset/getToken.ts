@@ -35,7 +35,7 @@ function getRandomString(length: number): string {
  */
 export default async function getToken(email: string): Promise<[string, IUser<ID>] | undefined> {
 	const state = State.getInstance()
-	let user = await state.userRepository.getUserByEmail(email)
+	let user = await state.userRepository.getUserByEmail(email, true)
 
 	const passportConfig = State.getInstance().config.passport
 

@@ -32,7 +32,7 @@ export const strategyVerifyFunction = async (req: Request, payload: IJwtPayload,
 		}
 
 		// without the bind, this (userRepo) is lost in the context
-		const user = await getUser.bind(userRepo)(payload.uid)
+		const user = await getUser.bind(userRepo)(payload.uid, false)
 
 		if (!user) {
 			throw new ErrorBuilder(401, t('error:User was not found'))

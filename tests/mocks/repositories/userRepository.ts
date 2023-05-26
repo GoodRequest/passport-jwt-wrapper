@@ -16,7 +16,7 @@ interface IConfirmedUser extends IUser {
 export class UserRepository implements IUserRepository<string> {
 	private users = new Map<string, IUser>()
 
-	getUserByEmail(email: string): Promise<IConfirmedUser | undefined> {
+	getUserByEmail(email: string, returnHash = false): Promise<typeof returnHash extends true ? IConfirmedUser : IUser | undefined> {
 		let result: IConfirmedUser | undefined
 		Array.from(this.users.values()).forEach((user) => {
 			if (user.email === email && user.hash) {
@@ -27,7 +27,7 @@ export class UserRepository implements IUserRepository<string> {
 		return Promise.resolve(result)
 	}
 
-	getUserById(id: string): Promise<IUser | undefined> {
+	getUserById(id: string, returnHash = false): Promise<typeof returnHash extends true ? IConfirmedUser : IUser | undefined> {
 		return Promise.resolve(this.users.get(id))
 	}
 

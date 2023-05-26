@@ -34,7 +34,7 @@ export default async function runner(refreshToken: string, req: Request): Promis
 	}
 
 	// check if the user exists
-	const user = await userRepository.getUserById(`${decodedRefreshTokenData.uid}`)
+	const user = await userRepository.getUserById(`${decodedRefreshTokenData.uid}`, false)
 
 	if (!user) {
 		// invalidate refresh token family (all tokens granted from single login action)

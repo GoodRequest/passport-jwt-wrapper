@@ -17,7 +17,7 @@ export async function strategyVerifyFunction(req: Request, payload: IJwtPayload,
 	const libConfig = State.getInstance().config
 
 	try {
-		const user = await State.getInstance().userRepository.getUserById(payload.uid)
+		const user = await State.getInstance().userRepository.getUserById(payload.uid, false)
 
 		const t = req.t ?? customTFunction
 		if (!user) {

@@ -17,7 +17,7 @@ export async function secretOrKeyProvider(req: Request, rawJwtToken: string, don
 	try {
 		const decodedToken: any = jsonwebtoken.decode(rawJwtToken)
 
-		const user = await State.getInstance().userRepository.getUserById(decodedToken.uid)
+		const user = await State.getInstance().userRepository.getUserById(decodedToken.uid, true)
 
 		if (!user) {
 			return done(null)
@@ -43,7 +43,7 @@ export async function secretOrKeyProvider(req: Request, rawJwtToken: string, don
 export async function strategyVerifyFunction(req: Request, payload: IJwtPayload, done: VerifiedCallback) {
 	try {
 		const state = State.getInstance()
-		const user = await state.userRepository.getUserById(payload.uid)
+		const user = await state.userRepository.getUserById(payload.uid, false)
 
 		const t = req.t ?? customTFunction
 

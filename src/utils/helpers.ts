@@ -4,7 +4,7 @@ import { ID } from '../types/interfaces'
 import { State } from '../State'
 
 export async function checkUserPassword(password: string, userID: ID) {
-	const user = await State.getInstance().userRepository.getUserById(userID)
+	const user = await State.getInstance().userRepository.getUserById(userID, true)
 	if (!user || !user.hash) {
 		return false
 	}

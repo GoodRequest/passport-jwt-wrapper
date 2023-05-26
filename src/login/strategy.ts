@@ -19,7 +19,7 @@ export async function strategyVerifyFunction(
 	done: (error: any, userCallback?: any, options?: IVerifyOptions) => void
 ) {
 	try {
-		const user = await State.getInstance().userRepository.getUserByEmail(email)
+		const user = await State.getInstance().userRepository.getUserByEmail(email, true)
 
 		if (!user) {
 			return done(null, false)
