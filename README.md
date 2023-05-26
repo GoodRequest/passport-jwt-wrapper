@@ -179,6 +179,8 @@ Config needs to have properties specified in [IPassportConfig interface](./src/t
 ## Changelog
 ### v1.7.0
  - Renamed `workflow` -> `runer` and `endpoint` -> `workflow`. See [issue 69](https://github.com/GoodRequest/passport-jwt-wrapper/issues/69)
+ - Locked `joi` package version to v17.7.0
+ - Added option to include user hash in `getUserByEmail` and `getUserById` method. See [issue 58](https://github.com/GoodRequest/passport-jwt-wrapper/issues/58)
 
 ## Modules
 This library is divided into modules:
