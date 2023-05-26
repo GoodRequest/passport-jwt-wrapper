@@ -9,12 +9,12 @@ export interface IConfirmedUser<UserIDType extends ID> extends IUser<UserIDType>
 
 export type GetUserByEmailFunction<UserIDType extends ID> = (
 	email: string,
-	returnHash: boolean
+	returnHash?: boolean
 ) => Promise<typeof returnHash extends true ? IConfirmedUser<UserIDType> : IUser<UserIDType> | undefined>
 
 export type GetUserByIdFunction<UserIDType extends ID> = (
 	id: UserIDType,
-	returnHash: boolean
+	returnHash?: boolean
 ) => Promise<typeof returnHash extends true ? IConfirmedUser<UserIDType> : IUser<UserIDType> | undefined>
 
 export interface IUserRepository<UserIDType extends ID> {
